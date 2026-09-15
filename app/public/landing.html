@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>film.coop — En film ägs av de som gör den</title>
+  <meta name="description" content="Öppen infrastruktur för kooperativ filmproduktion. Utan att be om lov.">
+  <meta property="og:title" content="film.coop">
+  <meta property="og:description" content="En film ägs av de som gör den.">
+  <meta property="og:type" content="website">
+  <style>
+    :root {
+      --svart: #080808;
+      --vit: #f2f0eb;
+      --rod: #b5281c;
+      --gra: #777;
+      --ljus: #e2e0db;
+      --panel: #111;
+      --linje: #1e1e1e;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; font-size: 16px; }
+
+    body {
+      font-family: "Georgia", "Times New Roman", serif;
+      background: var(--svart);
+      color: var(--vit);
+      line-height: 1.7;
+    }
+
+    /* ── Typografi ── */
+    h1, h2, h3 { font-weight: normal; line-height: 1.1; }
+
+    strong { color: var(--vit); font-weight: normal; font-style: italic; }
+
+    /* ── Nav ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 50;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 16px 48px;
+      background: var(--svart);
+      border-bottom: 1px solid var(--linje);
+    }
+
+    .logo {
+      font-family: monospace;
+      font-size: 14px;
+      letter-spacing: 0.06em;
+      color: var(--vit);
+      text-decoration: none;
+    }
+
+    .logo span { color: var(--rod); }
+
+    nav ul {
+      list-style: none;
+      display: flex;
+      gap: 36px;
+    }
+
+    nav a {
+      font-family: system-ui, sans-serif;
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--gra);
+      text-decoration: none;
+      transition: color 0.1s;
+    }
+
+    nav a:hover { color: var(--vit); }
+
+    /* ── Hero ── */
+    .hero {
+      min-height: 100vh;
+      padding: 140px 48px 80px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      max-width: 1000px;
+    }
+
+    .eyebrow {
+      font-family: system-ui, sans-serif;
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--rod);
+      margin-bottom: 28px;
+    }
+
+    .hero h1 {
+      font-size: clamp(48px, 7vw, 96px);
+      color: var(--vit);
+      margin-bottom: 36px;
+    }
+
+    .hero h1 em {
+      font-style: italic;
+      color: #444;
+    }
+
+    .hero-ingress {
+      font-size: clamp(18px, 2.2vw, 24px);
+      color: var(--gra);
+      max-width: 600px;
+      margin-bottom: 52px;
+      line-height: 1.6;
+    }
+
+    .hero-knappar {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .knapp {
+      display: inline-block;
+      padding: 13px 26px;
+      font-family: system-ui, sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      text-decoration: none;
+      border: 1px solid;
+      transition: all 0.12s;
+    }
+
+    .knapp-prim {
+      background: var(--vit);
+      color: var(--svart);
+      border-color: var(--vit);
+    }
+    .knapp-prim:hover { background: var(--ljus); }
+
+    .knapp-ghost {
+      background: transparent;
+      color: var(--vit);
+      border-color: #333;
+    }
+    .knapp-ghost:hover { border-color: var(--vit); }
+
+    /* ── Avdelare ── */
+    .avdelare {
+      border: none;
+      border-top: 1px solid var(--linje);
+      margin: 0 48px;
+    }
+
+    /* ── Sektioner ── */
+    .sektion {
+      padding: 96px 48px;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .sektion-nr {
+      font-family: system-ui, sans-serif;
+      font-size: 10px;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--rod);
+      margin-bottom: 20px;
+    }
+
+    .sektion h2 {
+      font-size: clamp(28px, 4vw, 52px);
+      color: var(--vit);
+      margin-bottom: 36px;
+    }
+
+    .ingress {
+      font-size: clamp(18px, 2vw, 22px);
+      color: var(--vit);
+      max-width: 660px;
+      margin-bottom: 40px;
+      line-height: 1.55;
+    }
+
+    p {
+      color: #999;
+      max-width: 600px;
+      margin-bottom: 18px;
+      font-size: 17px;
+    }
+
+    /* ── Citat ── */
+    .citat {
+      border-left: 2px solid var(--rod);
+      padding: 4px 0 4px 32px;
+      margin: 56px 0;
+    }
+
+    .citat blockquote {
+      font-size: clamp(20px, 2.5vw, 32px);
+      color: var(--vit);
+      font-style: italic;
+      line-height: 1.35;
+      margin-bottom: 14px;
+    }
+
+    .citat cite {
+      font-family: system-ui, sans-serif;
+      font-size: 12px;
+      letter-spacing: 0.05em;
+      color: var(--gra);
+      font-style: normal;
+    }
+
+    /* ── Formel ── */
+    .formel {
+      background: var(--panel);
+      border: 1px solid var(--linje);
+      padding: 36px 40px;
+      margin: 44px 0;
+      font-family: monospace;
+      font-size: 14px;
+      color: #666;
+      line-height: 2.2;
+    }
+
+    .formel .stor { color: var(--vit); font-size: 19px; }
+    .formel .exempel { color: #555; margin-top: 8px; }
+    .formel .svar { color: var(--rod); }
+
+    /* ── Tre faktorer ── */
+    .faktorer {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1px;
+      background: var(--linje);
+      border: 1px solid var(--linje);
+      margin: 48px 0;
+    }
+
+    .faktor {
+      background: var(--svart);
+      padding: 36px 32px;
+    }
+
+    .faktor-nr {
+      font-family: monospace;
+      font-size: 10px;
+      color: var(--rod);
+      letter-spacing: 0.1em;
+      margin-bottom: 14px;
+    }
+
+    .faktor h3 {
+      font-size: 17px;
+      color: var(--vit);
+      margin-bottom: 10px;
+    }
+
+    .faktor p {
+      font-size: 14px;
+      color: #555;
+      margin: 0;
+    }
+
+    /* ── Waterfall ── */
+    .waterfall { margin: 44px 0; }
+
+    .wf-rad {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      padding: 13px 0;
+      border-bottom: 1px solid var(--linje);
+      font-size: 15px;
+    }
+
+    .wf-rad:last-child { border-bottom: none; }
+    .wf-etikett { color: #666; font-family: system-ui, sans-serif; }
+    .wf-belopp { color: var(--vit); font-family: monospace; }
+    .wf-belopp.minus { color: #444; }
+    .wf-belopp.du { color: var(--rod); font-size: 20px; }
+    .wf-total { background: var(--panel); padding: 16px 0 16px 0; margin-top: 8px; }
+    .wf-du { background: #0d0504; padding: 16px 20px; margin-top: 2px; }
+    .wf-du .wf-etikett { color: var(--vit); }
+    .wf-indent .wf-etikett { padding-left: 20px; color: #444; }
+
+    /* ── Verktyg ── */
+    .verktyg {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1px;
+      background: var(--linje);
+      border: 1px solid var(--linje);
+      margin-top: 44px;
+    }
+
+    .verktyg-kort {
+      background: var(--svart);
+      padding: 36px 32px;
+    }
+
+    .verktyg-ikon {
+      font-size: 22px;
+      display: block;
+      margin-bottom: 18px;
+    }
+
+    .verktyg-kort h3 {
+      font-size: 16px;
+      color: var(--vit);
+      margin-bottom: 10px;
+    }
+
+    .verktyg-kort p {
+      font-size: 14px;
+      color: #555;
+      margin-bottom: 0;
+      max-width: none;
+    }
+
+    .verktyg-lank {
+      display: inline-block;
+      margin-top: 18px;
+      font-family: system-ui, sans-serif;
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--gra);
+      text-decoration: none;
+    }
+    .verktyg-lank:hover { color: var(--vit); }
+
+    /* ── Coming soon badge ── */
+    .badge {
+      display: inline-block;
+      background: #0f0f0f;
+      border: 1px solid #2a2a2a;
+      padding: 3px 10px;
+      font-family: system-ui, sans-serif;
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #444;
+      margin-left: 10px;
+      vertical-align: middle;
+      position: relative;
+      top: -2px;
+    }
+
+    /* ── Manifest-sektion ── */
+    .manifest {
+      background: var(--rod);
+      padding: 80px 48px;
+      margin: 0;
+    }
+
+    .manifest h2 {
+      font-size: clamp(28px, 4vw, 52px);
+      color: var(--vit);
+      margin-bottom: 32px;
+      max-width: 700px;
+    }
+
+    .manifest p {
+      color: rgba(255,255,255,0.7);
+      font-size: 18px;
+      max-width: 580px;
+      margin-bottom: 16px;
+    }
+
+    .manifest .knapp-manifest {
+      display: inline-block;
+      margin-top: 32px;
+      padding: 13px 26px;
+      font-family: system-ui, sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--rod);
+      background: var(--vit);
+      text-decoration: none;
+      border: 1px solid var(--vit);
+      transition: background 0.12s;
+    }
+    .manifest .knapp-manifest:hover { background: var(--ljus); }
+
+    /* ── Footer ── */
+    footer {
+      border-top: 1px solid var(--linje);
+      padding: 44px 48px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 24px;
+    }
+
+    .footer-logo {
+      font-family: monospace;
+      font-size: 13px;
+      color: #333;
+      text-decoration: none;
+    }
+
+    .footer-logo span { color: var(--rod); }
+
+    footer ul {
+      list-style: none;
+      display: flex;
+      gap: 28px;
+    }
+
+    footer a {
+      font-family: system-ui, sans-serif;
+      font-size: 12px;
+      color: #333;
+      text-decoration: none;
+    }
+
+    footer a:hover { color: var(--vit); }
+
+    .footer-licens {
+      font-family: system-ui, sans-serif;
+      font-size: 11px;
+      color: #2a2a2a;
+    }
+
+    /* ── Responsiv ── */
+    @media (max-width: 640px) {
+      nav { padding: 14px 20px; }
+      nav ul { display: none; }
+      .hero { padding: 120px 20px 60px; }
+      .sektion { padding: 60px 20px; }
+      .avdelare { margin: 0 20px; }
+      .manifest { padding: 60px 20px; }
+      footer { padding: 32px 20px; }
+      .formel { padding: 20px; }
+      footer ul { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Nav -->
+  <nav>
+    <a href="/" class="logo">film<span>.coop</span></a>
+    <ul>
+      <li><a href="#systemet">Systemet</a></li>
+      <li><a href="#verktyg">Verktygen</a></li>
+      <li><a href="#crowdfunding">Crowdfunding</a></li>
+      <li><a href="https://github.com/tvaatrad/filmcoop" target="_blank">GitHub ↗</a></li>
+    </ul>
+  </nav>
+
+  <!-- Hero -->
+  <div class="hero">
+    <p class="eyebrow">Kooperativ filmproduktion</p>
+    <h1>En film ägs av<br><em>de som gör den.</em></h1>
+    <p class="hero-ingress">
+      film.coop är öppen infrastruktur för filmteam som vill äga
+      sina produktioner tillsammans — utan att be om lov.
+    </p>
+    <div class="hero-knappar">
+      <a href="#systemet" class="knapp knapp-prim">Hur det fungerar</a>
+      <a href="https://github.com/tvaatrad/filmcoop" class="knapp knapp-ghost" target="_blank">Källkod på GitHub</a>
+    </div>
+  </div>
+
+  <hr class="avdelare">
+
+  <!-- Problemet -->
+  <section class="sektion">
+    <p class="sektion-nr">01 — Varför</p>
+    <h2>Filmfinansiering<br>är brutet.</h2>
+
+    <p class="ingress">De flesta oberoende filmer finansieras genom bidrag. Man söker, väntar, anpassar, söker igen.</p>
+
+    <p>Det är ett system som gynnar det etablerade och bromsar det nya. Och det finns ett alternativ som har fungerat i decennier — i musikbranschen, i spelindustrin, i tech. Men filmbranschen har inte velat prata om det.</p>
+
+    <p>Tanken är enkel: <strong>om du skjuter upp din lön tar du en risk. Den risken ska ge dig ägarskap.</strong> Inte ett tack i eftertexterna. Inte ett muntligt löfte. En faktisk, juridiskt bindande andel i det du skapade.</p>
+
+    <div class="citat">
+      <blockquote>"Det är väldigt enkelt — alla som jobbar på filmen delar på vinsten."</blockquote>
+      <cite>Greg Kwedar, regissör — Sing Sing (2024) · Sundance Grand Jury Prize</cite>
+    </div>
+
+    <p>film.coop är infrastrukturen. Öppen, gratis, och byggd för hur nordisk film faktiskt fungerar.</p>
+  </section>
+
+  <hr class="avdelare">
+
+  <!-- Systemet -->
+  <section class="sektion" id="systemet">
+    <p class="sektion-nr">02 — Systemet</p>
+    <h2>Hur ägarskapet<br>fördelas.</h2>
+
+    <p>Tre faktorer avgör hur stor andel du äger:</p>
+
+    <div class="faktorer">
+      <div class="faktor">
+        <p class="faktor-nr">Faktor 01</p>
+        <h3>När du gick in</h3>
+        <p>Development är hög risk — 1,5× multiplikator. Pre-production 1,25×. Inspelning och post är basnivå 1,0×.</p>
+      </div>
+      <div class="faktor">
+        <p class="faktor-nr">Faktor 02</p>
+        <h3>Vad du gör</h3>
+        <p>Regissör, DOP, scenograf är klass A (1,5×). Avdelningsansvariga är B (1,2×). Övrig crew är C (1,0×).</p>
+      </div>
+      <div class="faktor">
+        <p class="faktor-nr">Faktor 03</p>
+        <h3>Hur länge</h3>
+        <p>Ägarenheter tjänas in dag för dag. Varje dag i systemet är dokumenterad och reviderbar.</p>
+      </div>
+    </div>
+
+    <div class="formel">
+      <div class="stor">Ägarenheter = dagar × faspoäng × rollmultiplikator</div>
+      <div class="exempel">
+        DOP · klass A · 30 dagar pre-production + 40 dagar inspelning:<br>
+        (30 × 12 × 1,5) + (40 × 10 × 1,5) = <span class="svar">1 140 ägarenheter</span>
+      </div>
+    </div>
+
+    <p>Ägarenheterna är relativa. Om teamet har 8 691 enheter totalt och du har 1 140 äger du 13,1% av teamets pool.</p>
+
+    <p>Och teamets pool ser ut så här — med riktiga siffror från en svensk produktion:</p>
+
+    <div class="waterfall">
+      <div class="wf-rad">
+        <span class="wf-etikett">Bruttointäkt (streamingaffär)</span>
+        <span class="wf-belopp">4 000 000 kr</span>
+      </div>
+      <div class="wf-rad wf-indent">
+        <span class="wf-etikett">Distributionsavgift (25%)</span>
+        <span class="wf-belopp minus">−500 000 kr</span>
+      </div>
+      <div class="wf-rad wf-indent">
+        <span class="wf-etikett">Investerarens återbetalning (1,2×)</span>
+        <span class="wf-belopp minus">−600 000 kr</span>
+      </div>
+      <div class="wf-rad wf-indent">
+        <span class="wf-etikett">Uppskjutna arvoden betalas ut</span>
+        <span class="wf-belopp minus">−398 300 kr</span>
+      </div>
+      <div class="wf-rad wf-total">
+        <span class="wf-etikett" style="color:#999">Teamets pool (50% av netto)</span>
+        <span class="wf-belopp">250 850 kr</span>
+      </div>
+      <div class="wf-rad wf-du">
+        <span class="wf-etikett">Din andel som DOP (13,1%)</span>
+        <span class="wf-belopp du">32 861 kr</span>
+      </div>
+    </div>
+
+    <p>Alla siffror är öppna. Alla formler är dokumenterade. Hela teamet ser hela bilden — alltid.</p>
+  </section>
+
+  <hr class="avdelare">
+
+  <!-- Verktyg -->
+  <section class="sektion" id="verktyg">
+    <p class="sektion-nr">03 — Verktygen</p>
+    <h2>Tre delar.<br>Ingenting mer.</h2>
+
+    <p>Systemet är byggt för att fungera med det du redan har. Du behöver inte lära dig något nytt — du lägger ett lager på det du redan gör.</p>
+
+    <div class="verktyg">
+      <div class="verktyg-kort">
+        <span class="verktyg-ikon">📊</span>
+        <h3>Kalkylbladet</h3>
+        <p>Google Sheets baserat på SFI:s standardbudgetmall. Lägg till en e-postkolumn, fyll i dagar och arvodesnivåer — ägarandelarna räknas automatiskt. Fungerar för kortfilm, dokumentär och lång spelfilm. Budgetmallen är densamma.</p>
+        <a class="verktyg-lank" href="https://docs.google.com/spreadsheets/d/1dx43tN7y3KS6KGdJs1TEFgOwkvgqB6eps2IiH_eyvT8/copy" target="_blank">Kopiera mallen →</a>
+      </div>
+
+      <div class="verktyg-kort">
+        <span class="verktyg-ikon">🖥</span>
+        <h3>Portalen</h3>
+        <p>Webbapp där teamet loggar in med Gmail och ser sin ägarandel, sina uppskjutna arvoden och vad andelen ger i tre försäljningsscenarier. Kör på din server (Docker) för 0 kr/mån. Källkoden är öppen.</p>
+        <a class="verktyg-lank" href="https://github.com/tvaatrad/filmcoop" target="_blank">Källkod på GitHub →</a>
+      </div>
+
+      <div class="verktyg-kort">
+        <span class="verktyg-ikon">📄</span>
+        <h3>Ramverket</h3>
+        <p>Fullständigt konceptdokument: poängsystem, fasindelning, lock-punkter, utbetalningsordning, koppling till SFI-budgeten. Öppet att använda och anpassa. MIT-licens.</p>
+        <a class="verktyg-lank" href="https://github.com/tvaatrad/filmcoop/blob/main/docs/ramverk.md" target="_blank">Läs ramverket →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Manifest (röd sektion) -->
+  <div class="manifest">
+    <h2>Kooperativet är inte en kompromiss. Det är en ståndpunkt.</h2>
+    <p>En film är ett kooperativt verk. Regissören kan inte göra den utan scenografen. Scenografen kan inte göra den utan ljusmästaren. Ljusmästaren kan inte göra den utan PA:t.</p>
+    <p>Men bara ett fåtal äger resultatet. Det är inte ett naturlag. Det är ett val som görs varje gång ett avtal skrivs — eller inte skrivs.</p>
+    <p>film.coop är infrastrukturen för ett annat val.</p>
+    <a href="https://github.com/tvaatrad/filmcoop/blob/main/docs/ramverk.md" class="knapp-manifest" target="_blank">Läs ramverket</a>
+  </div>
+
+  <!-- Crowdfunding -->
+  <section class="sektion" id="crowdfunding">
+    <p class="sektion-nr">04 — Nästa steg</p>
+    <h2>Crowdfunding <span class="badge">Under utveckling</span></h2>
+
+    <p class="ingress">Vad händer om publiken inte bara betalar för en film — utan äger den?</p>
+
+    <p>Vi bygger integration för crowdfunding direkt i systemet. En person som stödjer en film via crowdfunding ska få dokumenterade ägarenheter — inte merchandise, inte credits, utan en faktisk andel i filmens ekonomiska resultat.</p>
+
+    <p>Samma waterfall. Samma transparens. Inga separata villkor.</p>
+
+    <p>Det kräver juridisk struktur (sannolikt ett kooperativ eller ekonomisk förening per film) men tekniken finns. Vi bygger det öppet och välkomnar bidrag.</p>
+
+    <div style="margin-top: 36px; display: flex; gap: 14px; flex-wrap: wrap;">
+      <a href="https://github.com/tvaatrad/filmcoop/blob/main/docs/crowdfunding.md" class="knapp knapp-ghost" target="_blank">Läs visionen</a>
+      <a href="https://github.com/tvaatrad/filmcoop/issues" class="knapp knapp-ghost" target="_blank">Diskutera på GitHub</a>
+    </div>
+  </section>
+
+  <hr class="avdelare">
+
+  <!-- Kom igång -->
+  <section class="sektion">
+    <p class="sektion-nr">05 — Kom igång</p>
+    <h2>Tio minuter.<br>Ett projekt.</h2>
+
+    <p>Kopiera kalkylbladet. Fyll i ditt team. Dela länken. Inget konto, inga avgifter, ingen inlåsning. Om du vill ha portalen — klona repot och kör Docker.</p>
+
+    <div style="margin-top: 40px; display: flex; gap: 14px; flex-wrap: wrap;">
+      <a href="https://docs.google.com/spreadsheets/d/1dx43tN7y3KS6KGdJs1TEFgOwkvgqB6eps2IiH_eyvT8/copy" class="knapp knapp-prim" target="_blank">Kopiera kalkylbladet</a>
+      <a href="https://github.com/tvaatrad/filmcoop" class="knapp knapp-ghost" target="_blank">GitHub →</a>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <a href="/" class="footer-logo">film<span>.coop</span></a>
+    <ul>
+      <li><a href="https://github.com/tvaatrad/filmcoop" target="_blank">GitHub</a></li>
+      <li><a href="https://github.com/tvaatrad/filmcoop/blob/main/docs/ramverk.md" target="_blank">Ramverket</a></li>
+      <li><a href="https://github.com/tvaatrad/filmcoop/blob/main/docs/setup.md" target="_blank">Setup</a></li>
+      <li><a href="https://tvaatrad.se" target="_blank">Två Träd</a></li>
+    </ul>
+    <p class="footer-licens">MIT-licensierat · Svante Tidholm / Två Träd AB</p>
+  </footer>
+
+</body>
+</html>

@@ -17,9 +17,9 @@ fungerar
   standardbudgetmall. Lägg till en e-postkolumn, fyll i dagar och
   arvodesnivåer — ägarandelarna räknas automatiskt. Fungerar för kortfilm,
   dokumentär och lång spelfilm.
-- **Portalen** — webbapp där teamet loggar in med Google och ser sin
+- **[Portalen](app/)** — webbapp där teamet loggar in med Google och ser sin
   ägarandel, sina uppskjutna arvoden och vad andelen ger i olika
-  försäljningsscenarier. Körs på egen server via Docker.
+  försäljningsscenarier. Next.js, körs på egen server via Docker.
 - **[Ramverket](docs/ramverk.md)** — fullständigt konceptdokument:
   poängsystem, fasindelning, lock-punkter, utbetalningsordning, koppling till
   SFI-budgeten.
@@ -28,6 +28,13 @@ fungerar
 
 Se [docs/setup.md](docs/setup.md) för en komplett guide till kalkylbladet,
 Google Cloud-uppsättningen och portalen.
+
+```bash
+git clone https://github.com/svenbox/filmcoop
+cd filmcoop
+cp .env.example .env   # fyll i värden, se docs/setup.md
+docker compose up -d --build
+```
 
 ## Crowdfunding
 

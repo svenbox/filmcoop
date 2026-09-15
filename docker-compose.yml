@@ -1,0 +1,17 @@
+services:
+  app:
+    build: ./app
+    container_name: filmcoop_app
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      PORT: "3000"
+    networks:
+      - filmcoop_net
+      - mediastack
+
+networks:
+  filmcoop_net:
+    internal: true
+  mediastack:
+    external: true
