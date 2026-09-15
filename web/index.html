@@ -291,6 +291,22 @@
     .wf-du .wf-etikett { color: var(--text); }
     .wf-indent .wf-etikett { padding-left: 20px; color: var(--text-3); }
 
+    /* ── Skärmdump ── */
+    .skarmdump { margin: 44px 0; }
+    .skarmdump img {
+      width: 100%;
+      border: 1px solid var(--kant);
+      border-radius: 6px;
+      display: block;
+    }
+    .skarmdump .bildtext {
+      font-family: system-ui, sans-serif;
+      font-size: 12px;
+      color: var(--text-3);
+      margin-top: 10px;
+      text-align: center;
+    }
+
     /* ── Verktyg ── */
     .verktyg {
       display: grid;
@@ -562,6 +578,11 @@
         <span class="wf-etikett">Din andel som DOP (13,1%)</span>
         <span class="wf-belopp du">32 861 kr</span>
       </div>
+    </div>
+
+    <div class="skarmdump">
+      <img src="/screenshots/utbetalningsordning.png" alt="Utbetalningsordningen i portalen: ett reglage för bruttointäkt och en vattenfallstabell som räknas om live" loading="lazy">
+      <p class="bildtext">Samma vattenfall, i portalen — dra i reglaget, se din andel räknas om direkt.</p>
     </div>
 
     <p>Alla siffror är öppna. Alla formler är dokumenterade. Hela teamet ser hela bilden — alltid.</p>

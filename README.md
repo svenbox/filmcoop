@@ -11,6 +11,15 @@ faktiskt bidrar med. Uppskjutna arvoden konverteras till dokumenterade
 → [filmcoop.soxbox.uk](https://filmcoop.soxbox.uk) — läs mer och se hur det
 fungerar
 
+## Portalen i praktiken
+
+| | |
+|---|---|
+| ![Utbetalningsordning](docs/screenshots/utbetalningsordning.png) | ![Team](docs/screenshots/team.png) |
+| Dra i reglaget och se din andel räknas om live, för valfri intäktsnivå | Rankad lista efter ägarenheter, med totalsumma |
+| ![Min insats](docs/screenshots/min-insats.png) | ![Översikt](docs/screenshots/oversikt.png) |
+| Din egen insats, indelad per produktionsfas | Ägarandel, ägarenheter och lock-punkter på ett ställe |
+
 ## Tre delar
 
 - **[Kalkylbladet](tools/filmcoop_v1.xlsx)** — Google Sheets baserat på SFI:s
