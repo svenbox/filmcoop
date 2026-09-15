@@ -18,15 +18,15 @@ interface ProducerResponse {
 
 type Tab = "oversikt" | "crew" | "team" | "waterfall";
 
-const BRUTTO_MAX = 10_000_000;
-const BRUTTO_STEP = 50_000;
+const BRUTTO_MAX = 2_000_000;
+const BRUTTO_STEP = 25_000;
 
 export default function ProducerPage() {
   const { status } = useSession();
   const [data, setData] = useState<ProducerResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [tab, setTab] = useState<Tab>("oversikt");
-  const [brutto, setBrutto] = useState<number>(2_000_000);
+  const [brutto, setBrutto] = useState<number>(1_000_000);
 
   useEffect(() => {
     if (status === "unauthenticated") {
