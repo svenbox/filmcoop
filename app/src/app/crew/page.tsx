@@ -108,7 +108,7 @@ export default function CrewPage() {
           className={`tab-btn ${tab === "rader" ? "active" : ""}`}
           onClick={() => setTab("rader")}
         >
-          Mitt bidrag
+          Min insats
           <span className="badge-count">{rows.length}</span>
         </button>
         <button
