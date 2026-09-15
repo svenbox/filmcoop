@@ -41,7 +41,7 @@ Komplett instruktion för att sätta upp film.coop (filmcoop.soxbox.uk) på din 
 ## Steg 3 — Konfigurera portalen
 
 ```bash
-git clone https://github.com/svenbox/filmcoop
+git clone https://github.com/tvaatrad/filmcoop
 cd filmcoop
 cp .env.example .env
 ```
