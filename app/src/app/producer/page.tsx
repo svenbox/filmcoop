@@ -6,7 +6,9 @@ import type { CrewMember, ProjectSettings, WaterfallData } from "@/lib/sheets";
 import { groupByPerson } from "@/lib/team";
 import { groupByFas } from "@/lib/fas";
 import { formatPercent, formatSek } from "@/lib/format";
-import { SCENARIO_LABELS } from "@/lib/scenarios";
+import { WATERFALL_TOOLTIP } from "@/lib/scenarios";
+import { interpolateWaterfall } from "@/lib/waterfallSlider";
+import { Tooltip } from "../components/Tooltip";
 
 interface ProducerResponse {
   project: ProjectSettings;
@@ -15,14 +17,16 @@ interface ProducerResponse {
 }
 
 type Tab = "oversikt" | "crew" | "team" | "waterfall";
-type Scenario = "A" | "B" | "C";
+
+const BRUTTO_MAX = 10_000_000;
+const BRUTTO_STEP = 50_000;
 
 export default function ProducerPage() {
   const { status } = useSession();
   const [data, setData] = useState<ProducerResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [tab, setTab] = useState<Tab>("oversikt");
-  const [scenario, setScenario] = useState<Scenario>("A");
+  const [brutto, setBrutto] = useState<number>(2_000_000);
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -57,7 +61,7 @@ export default function ProducerPage() {
   const totalDagar = rows.reduce((sum, r) => sum + r.dagar, 0);
   const totalPoang = rows.reduce((sum, r) => sum + r.poang, 0);
   const totalDeferred = rows.reduce((sum, r) => sum + r.deferredFee, 0);
-  const scenarioData = waterfall[scenario];
+  const scenarioData = interpolateWaterfall(waterfall, brutto);
   const team = groupByPerson(rows);
   const fasGrupper = groupByFas(rows);
 
@@ -259,65 +263,106 @@ export default function ProducerPage() {
 
         {tab === "waterfall" && (
           <>
-            <div className="scen-tabs">
-              {(["A", "B", "C"] as Scenario[]).map((s) => (
-                <div key={s} className="scen-tab-col">
-                  <button
-                    className={`pill ${scenario === s ? "active" : ""}`}
-                    onClick={() => setScenario(s)}
-                  >
-                    {SCENARIO_LABELS[s]}
-                  </button>
-                  <div className="scen-amount">{formatSek(waterfall[s].bruttointakt)}</div>
-                </div>
-              ))}
+            <div className="brutto-slider">
+              <div className="label-row">
+                <span className="label">
+                  Bruttointäkt
+                  <Tooltip text={WATERFALL_TOOLTIP.bruttointakt} />
+                </span>
+                <span className="value">{formatSek(brutto)}</span>
+              </div>
+              <input
+                type="range"
+                min={0}
+                max={BRUTTO_MAX}
+                step={BRUTTO_STEP}
+                value={brutto}
+                onChange={(e) => setBrutto(Number(e.target.value))}
+              />
+              <div className="range-ends">
+                <span>0 kr</span>
+                <span>{formatSek(BRUTTO_MAX)}</span>
+              </div>
             </div>
+
+            <p className="wf-estimate-note">
+              Räknat genom att interpolera mellan de tre scenarierna som
+              finns i kalkylbladet — en uppskattning, inte en ny
+              affärsformel.
+            </p>
 
             <div className="card">
               <div className="wf-row">
-                <span>Bruttointäkt</span>
+                <span>
+                  Bruttointäkt
+                  <Tooltip text={WATERFALL_TOOLTIP.bruttointakt} />
+                </span>
                 <span className="wf-value">{formatSek(scenarioData.bruttointakt)}</span>
               </div>
               <div className="wf-row">
-                <span>Distributionsavgift</span>
+                <span>
+                  Distributionsavgift
+                  <Tooltip text={WATERFALL_TOOLTIP.distributionsavgift} />
+                </span>
                 <span className="wf-value">{formatSek(scenarioData.distributionsavgift)}</span>
               </div>
               <div className="wf-row">
-                <span>Kvar efter distribution</span>
+                <span>
+                  Kvar efter distribution
+                  <Tooltip text={WATERFALL_TOOLTIP.nettoEfterDistribution} />
+                </span>
                 <span className="wf-value">{formatSek(scenarioData.nettoEfterDistribution)}</span>
               </div>
               <div className="wf-row">
-                <span>Investerarens återbetalning</span>
+                <span>
+                  Investerarens återbetalning
+                  <Tooltip text={WATERFALL_TOOLTIP.finansiarsRecoupment} />
+                </span>
                 <span className="wf-value">{formatSek(scenarioData.finansiarsRecoupment)}</span>
               </div>
               <div className="wf-row">
-                <span>Kvar efter investerare</span>
+                <span>
+                  Kvar efter investerare
+                  <Tooltip text={WATERFALL_TOOLTIP.nettoEfterFinansiar} />
+                </span>
                 <span className="wf-value">{formatSek(scenarioData.nettoEfterFinansiar)}</span>
               </div>
               <div className="wf-row">
-                <span>Uppskjutna arvoden</span>
+                <span>
+                  Uppskjutna arvoden
+                  <Tooltip text={WATERFALL_TOOLTIP.deferredFeePool} />
+                </span>
                 <span className="wf-value">{formatSek(scenarioData.deferredFeePool)}</span>
               </div>
               <div className="wf-row">
-                <span>Kvar efter löner</span>
+                <span>
+                  Kvar efter löner
+                  <Tooltip text={WATERFALL_TOOLTIP.nettoEfterDeferred} />
+                </span>
                 <span className="wf-value">{formatSek(scenarioData.nettoEfterDeferred)}</span>
               </div>
               <div className="wf-row total">
-                <span>Teamets andel (50% av netto)</span>
+                <span>
+                  Teamets andel (50% av netto)
+                  <Tooltip text={WATERFALL_TOOLTIP.crewPool} />
+                </span>
                 <span className="wf-value">{formatSek(scenarioData.crewPool)}</span>
               </div>
               <div className="wf-footnote">
                 ← fördelas bland {team.length} samägare efter ägarenheter
               </div>
               <div className="wf-row total">
-                <span>Investerarnas andel (50% av netto)</span>
+                <span>
+                  Investerarnas andel (50% av netto)
+                  <Tooltip text={WATERFALL_TOOLTIP.finansiarspool} />
+                </span>
                 <span className="wf-value">{formatSek(scenarioData.finansiarspool)}</span>
               </div>
             </div>
 
             {scenarioData.crewPool === 0 && (
               <div className="alert">
-                Teamets andel är 0 kr i det här scenariot eftersom de
+                Teamets andel är 0 kr vid den här intäktsnivån eftersom de
                 uppskjutna arvodena är lika stora som eller större än vad som
                 finns kvar efter investerare — det finns inget överskott kvar
                 att dela ut ännu.
