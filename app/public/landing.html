@@ -73,6 +73,14 @@
 
     nav a:hover { color: var(--text); }
 
+    .nav-login {
+      border: 1px solid var(--kant-stark);
+      border-radius: 999px;
+      padding: 6px 16px;
+      color: var(--text) !important;
+    }
+    .nav-login:hover { background: var(--bg-panel); border-color: var(--text); }
+
     /* ── Hero ── */
     .hero {
       min-height: 100vh;
@@ -429,7 +437,8 @@
     /* ── Responsiv ── */
     @media (max-width: 640px) {
       nav { padding: 14px 20px; }
-      nav ul { display: none; }
+      nav ul { display: flex; gap: 0; }
+      nav ul li:not(.nav-login-item) { display: none; }
       .hero { padding: 120px 20px 60px; }
       .sektion { padding: 60px 20px; }
       .avdelare { margin: 0 20px; }
@@ -450,13 +459,14 @@
       <li><a href="#verktyg">Verktygen</a></li>
       <li><a href="#crowdfunding">Crowdfunding</a></li>
       <li><a href="https://github.com/svenbox/filmcoop" target="_blank">GitHub ↗</a></li>
+      <li class="nav-login-item"><a href="/login" class="nav-login">Logga in</a></li>
     </ul>
   </nav>
 
   <!-- Hero -->
   <div class="hero">
     <p class="eyebrow">Kooperativ filmproduktion</p>
-    <h1>En film ägs av<br><em>de som gör den.</em></h1>
+    <h1>En film ska ägas av<br><em>dom som gör den.</em></h1>
     <p class="hero-ingress">
       film.coop är öppen infrastruktur för filmteam som vill äga
       sina produktioner tillsammans — utan att be om lov.
@@ -472,13 +482,13 @@
   <!-- Problemet -->
   <section class="sektion">
     <p class="sektion-nr">01 — Varför</p>
-    <h2>Filmfinansiering<br>är brutet.</h2>
+    <h2>Filmfinansiering<br>funkar inte.</h2>
 
-    <p class="ingress">De flesta oberoende filmer finansieras genom bidrag. Man söker, väntar, anpassar, söker igen.</p>
+    <p class="ingress">De flesta oberoende filmer finansieras genom bidrag. Man söker, väntar, anpassar, söker igen. Står med mössan i hand.</p>
 
-    <p>Det är ett system som gynnar det etablerade och bromsar det nya. Och det finns ett alternativ som har fungerat i decennier — i musikbranschen, i spelindustrin, i tech. Men filmbranschen har inte velat prata om det.</p>
+    <p>Det är ett system som gynnar det etablerade och bromsar det nya.</p>
 
-    <p>Tanken är enkel: <strong>om du skjuter upp din lön tar du en risk. Den risken ska ge dig ägarskap.</strong> Inte ett tack i eftertexterna. Inte ett muntligt löfte. En faktisk, juridiskt bindande andel i det du skapade.</p>
+    <p>Tanken med film.coop är enkel: <strong>vi gör filmen tillsamans istället. Om du skjuter upp din lön tar du en risk. Den risken ska ge dig ägarskap.</strong> Inte ett tack i eftertexterna. Inte ett muntligt löfte. En faktisk, juridiskt bindande andel i det du skapade.</p>
 
     <div class="citat">
       <blockquote>"Det är väldigt enkelt — alla som jobbar på filmen delar på vinsten."</blockquote>
@@ -592,10 +602,10 @@
 
   <!-- Manifest (röd sektion) -->
   <div class="manifest">
-    <h2>Kooperativet är inte en kompromiss. Det är en ståndpunkt.</h2>
-    <p>En film är ett kooperativt verk. Regissören kan inte göra den utan scenografen. Scenografen kan inte göra den utan ljusmästaren. Ljusmästaren kan inte göra den utan PA:t.</p>
+    <h2>Kooperativet är inte en kompromiss. Det är en utgångspunkt.</h2>
+    <p>En film är ett kooperativt verk. Regissören kan inte göra film utan scenograf. Scenografen kan inte göra film utan ljusmästaren. Ljusmästaren kan inte göra den utan en crafts som fixar fika.</p>
     <p>Men bara ett fåtal äger resultatet. Det är inte ett naturlag. Det är ett val som görs varje gång ett avtal skrivs — eller inte skrivs.</p>
-    <p>film.coop är infrastrukturen för ett annat val.</p>
+    <p>film.coop är infrastrukturen.</p>
     <a href="https://github.com/svenbox/filmcoop/blob/main/docs/ramverk.md" class="knapp-manifest" target="_blank">Läs ramverket</a>
   </div>
 
@@ -606,14 +616,12 @@
 
     <p class="ingress">Vad händer om publiken inte bara betalar för en film — utan äger den?</p>
 
-    <p>Vi bygger integration för crowdfunding direkt i systemet. En person som stödjer en film via crowdfunding ska få dokumenterade ägarenheter — inte merchandise, inte credits, utan en faktisk andel i filmens ekonomiska resultat.</p>
+    <p>En idé vi vill utforska vidare är att integrera crowdfunding direkt i systemet. En person som stödjer en film via crowdfunding ska få dokumenterade ägarenheter — inte merchandise, inte credits, utan en faktisk andel i filmens ekonomiska resultat.</p>
 
     <p>Samma waterfall. Samma transparens. Inga separata villkor.</p>
 
-    <p>Det kräver juridisk struktur (sannolikt ett kooperativ eller ekonomisk förening per film) men tekniken finns. Vi bygger det öppet och välkomnar bidrag.</p>
-
     <div style="margin-top: 36px; display: flex; gap: 14px; flex-wrap: wrap;">
-      <a href="https://github.com/svenbox/filmcoop/blob/main/docs/crowdfunding.md" class="knapp knapp-ghost" target="_blank">Läs visionen</a>
+      <a href="https://github.com/svenbox/filmcoop/blob/main/docs/crowdfunding.md" class="knapp knapp-ghost" target="_blank">Läs konceptet</a>
       <a href="https://github.com/svenbox/filmcoop/issues" class="knapp knapp-ghost" target="_blank">Diskutera på GitHub</a>
     </div>
   </section>
