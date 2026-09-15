@@ -10,13 +10,15 @@
   <meta property="og:type" content="website">
   <style>
     :root {
-      --svart: #080808;
-      --vit: #f2f0eb;
-      --rod: #b5281c;
-      --gra: #777;
-      --ljus: #e2e0db;
-      --panel: #111;
-      --linje: #1e1e1e;
+      --bg: #faf9f6;
+      --bg-panel: #f0eee8;
+      --text: #171717;
+      --text-2: #6b6b66;
+      --text-3: #9a9890;
+      --rod: #a8291d;
+      --rod-bg: #f7ece9;
+      --kant: #e2ded4;
+      --kant-stark: #c9c4b6;
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -24,30 +26,30 @@
 
     body {
       font-family: "Georgia", "Times New Roman", serif;
-      background: var(--svart);
-      color: var(--vit);
+      background: var(--bg);
+      color: var(--text);
       line-height: 1.7;
     }
 
     /* ── Typografi ── */
     h1, h2, h3 { font-weight: normal; line-height: 1.1; }
 
-    strong { color: var(--vit); font-weight: normal; font-style: italic; }
+    strong { color: var(--text); font-weight: normal; font-style: italic; }
 
     /* ── Nav ── */
     nav {
       position: fixed; top: 0; left: 0; right: 0; z-index: 50;
       display: flex; justify-content: space-between; align-items: center;
       padding: 16px 48px;
-      background: var(--svart);
-      border-bottom: 1px solid var(--linje);
+      background: var(--bg);
+      border-bottom: 1px solid var(--kant);
     }
 
     .logo {
       font-family: monospace;
       font-size: 14px;
       letter-spacing: 0.06em;
-      color: var(--vit);
+      color: var(--text);
       text-decoration: none;
     }
 
@@ -64,12 +66,12 @@
       font-size: 12px;
       letter-spacing: 0.08em;
       text-transform: uppercase;
-      color: var(--gra);
+      color: var(--text-2);
       text-decoration: none;
       transition: color 0.1s;
     }
 
-    nav a:hover { color: var(--vit); }
+    nav a:hover { color: var(--text); }
 
     /* ── Hero ── */
     .hero {
@@ -92,18 +94,18 @@
 
     .hero h1 {
       font-size: clamp(48px, 7vw, 96px);
-      color: var(--vit);
+      color: var(--text);
       margin-bottom: 36px;
     }
 
     .hero h1 em {
       font-style: italic;
-      color: #444;
+      color: var(--text-3);
     }
 
     .hero-ingress {
       font-size: clamp(18px, 2.2vw, 24px);
-      color: var(--gra);
+      color: var(--text-2);
       max-width: 600px;
       margin-bottom: 52px;
       line-height: 1.6;
@@ -128,23 +130,23 @@
     }
 
     .knapp-prim {
-      background: var(--vit);
-      color: var(--svart);
-      border-color: var(--vit);
+      background: var(--text);
+      color: var(--bg);
+      border-color: var(--text);
     }
-    .knapp-prim:hover { background: var(--ljus); }
+    .knapp-prim:hover { background: #333; border-color: #333; }
 
     .knapp-ghost {
       background: transparent;
-      color: var(--vit);
-      border-color: #333;
+      color: var(--text);
+      border-color: var(--kant-stark);
     }
-    .knapp-ghost:hover { border-color: var(--vit); }
+    .knapp-ghost:hover { border-color: var(--text); }
 
     /* ── Avdelare ── */
     .avdelare {
       border: none;
-      border-top: 1px solid var(--linje);
+      border-top: 1px solid var(--kant);
       margin: 0 48px;
     }
 
@@ -166,20 +168,20 @@
 
     .sektion h2 {
       font-size: clamp(28px, 4vw, 52px);
-      color: var(--vit);
+      color: var(--text);
       margin-bottom: 36px;
     }
 
     .ingress {
       font-size: clamp(18px, 2vw, 22px);
-      color: var(--vit);
+      color: var(--text);
       max-width: 660px;
       margin-bottom: 40px;
       line-height: 1.55;
     }
 
     p {
-      color: #999;
+      color: var(--text-2);
       max-width: 600px;
       margin-bottom: 18px;
       font-size: 17px;
@@ -194,7 +196,7 @@
 
     .citat blockquote {
       font-size: clamp(20px, 2.5vw, 32px);
-      color: var(--vit);
+      color: var(--text);
       font-style: italic;
       line-height: 1.35;
       margin-bottom: 14px;
@@ -204,24 +206,24 @@
       font-family: system-ui, sans-serif;
       font-size: 12px;
       letter-spacing: 0.05em;
-      color: var(--gra);
+      color: var(--text-2);
       font-style: normal;
     }
 
     /* ── Formel ── */
     .formel {
-      background: var(--panel);
-      border: 1px solid var(--linje);
+      background: var(--bg-panel);
+      border: 1px solid var(--kant);
       padding: 36px 40px;
       margin: 44px 0;
       font-family: monospace;
       font-size: 14px;
-      color: #666;
+      color: var(--text-2);
       line-height: 2.2;
     }
 
-    .formel .stor { color: var(--vit); font-size: 19px; }
-    .formel .exempel { color: #555; margin-top: 8px; }
+    .formel .stor { color: var(--text); font-size: 19px; }
+    .formel .exempel { color: var(--text-2); margin-top: 8px; }
     .formel .svar { color: var(--rod); }
 
     /* ── Tre faktorer ── */
@@ -229,13 +231,13 @@
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
       gap: 1px;
-      background: var(--linje);
-      border: 1px solid var(--linje);
+      background: var(--kant);
+      border: 1px solid var(--kant);
       margin: 48px 0;
     }
 
     .faktor {
-      background: var(--svart);
+      background: var(--bg);
       padding: 36px 32px;
     }
 
@@ -249,13 +251,13 @@
 
     .faktor h3 {
       font-size: 17px;
-      color: var(--vit);
+      color: var(--text);
       margin-bottom: 10px;
     }
 
     .faktor p {
       font-size: 14px;
-      color: #555;
+      color: var(--text-2);
       margin: 0;
     }
 
@@ -267,32 +269,32 @@
       justify-content: space-between;
       align-items: baseline;
       padding: 13px 0;
-      border-bottom: 1px solid var(--linje);
+      border-bottom: 1px solid var(--kant);
       font-size: 15px;
     }
 
     .wf-rad:last-child { border-bottom: none; }
-    .wf-etikett { color: #666; font-family: system-ui, sans-serif; }
-    .wf-belopp { color: var(--vit); font-family: monospace; }
-    .wf-belopp.minus { color: #444; }
+    .wf-etikett { color: var(--text-2); font-family: system-ui, sans-serif; }
+    .wf-belopp { color: var(--text); font-family: monospace; }
+    .wf-belopp.minus { color: var(--text-3); }
     .wf-belopp.du { color: var(--rod); font-size: 20px; }
-    .wf-total { background: var(--panel); padding: 16px 0 16px 0; margin-top: 8px; }
-    .wf-du { background: #0d0504; padding: 16px 20px; margin-top: 2px; }
-    .wf-du .wf-etikett { color: var(--vit); }
-    .wf-indent .wf-etikett { padding-left: 20px; color: #444; }
+    .wf-total { background: var(--bg-panel); padding: 16px 0 16px 0; margin-top: 8px; }
+    .wf-du { background: var(--rod-bg); padding: 16px 20px; margin-top: 2px; }
+    .wf-du .wf-etikett { color: var(--text); }
+    .wf-indent .wf-etikett { padding-left: 20px; color: var(--text-3); }
 
     /* ── Verktyg ── */
     .verktyg {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
       gap: 1px;
-      background: var(--linje);
-      border: 1px solid var(--linje);
+      background: var(--kant);
+      border: 1px solid var(--kant);
       margin-top: 44px;
     }
 
     .verktyg-kort {
-      background: var(--svart);
+      background: var(--bg);
       padding: 36px 32px;
     }
 
@@ -304,13 +306,13 @@
 
     .verktyg-kort h3 {
       font-size: 16px;
-      color: var(--vit);
+      color: var(--text);
       margin-bottom: 10px;
     }
 
     .verktyg-kort p {
       font-size: 14px;
-      color: #555;
+      color: var(--text-2);
       margin-bottom: 0;
       max-width: none;
     }
@@ -322,22 +324,22 @@
       font-size: 11px;
       letter-spacing: 0.08em;
       text-transform: uppercase;
-      color: var(--gra);
+      color: var(--text-2);
       text-decoration: none;
     }
-    .verktyg-lank:hover { color: var(--vit); }
+    .verktyg-lank:hover { color: var(--text); }
 
     /* ── Coming soon badge ── */
     .badge {
       display: inline-block;
-      background: #0f0f0f;
-      border: 1px solid #2a2a2a;
+      background: var(--bg-panel);
+      border: 1px solid var(--kant-stark);
       padding: 3px 10px;
       font-family: system-ui, sans-serif;
       font-size: 10px;
       letter-spacing: 0.1em;
       text-transform: uppercase;
-      color: #444;
+      color: var(--text-3);
       margin-left: 10px;
       vertical-align: middle;
       position: relative;
@@ -346,20 +348,23 @@
 
     /* ── Manifest-sektion ── */
     .manifest {
-      background: var(--rod);
+      background: var(--bg-panel);
+      border-top: 1px solid var(--kant);
+      border-bottom: 1px solid var(--kant);
+      border-left: 3px solid var(--rod);
       padding: 80px 48px;
       margin: 0;
     }
 
     .manifest h2 {
       font-size: clamp(28px, 4vw, 52px);
-      color: var(--vit);
+      color: var(--text);
       margin-bottom: 32px;
       max-width: 700px;
     }
 
     .manifest p {
-      color: rgba(255,255,255,0.7);
+      color: var(--text-2);
       font-size: 18px;
       max-width: 580px;
       margin-bottom: 16px;
@@ -372,17 +377,17 @@
       font-family: system-ui, sans-serif;
       font-size: 13px;
       font-weight: 600;
-      color: var(--rod);
-      background: var(--vit);
+      color: var(--bg);
+      background: var(--rod);
       text-decoration: none;
-      border: 1px solid var(--vit);
-      transition: background 0.12s;
+      border: 1px solid var(--rod);
+      transition: opacity 0.12s;
     }
-    .manifest .knapp-manifest:hover { background: var(--ljus); }
+    .manifest .knapp-manifest:hover { opacity: 0.85; }
 
     /* ── Footer ── */
     footer {
-      border-top: 1px solid var(--linje);
+      border-top: 1px solid var(--kant);
       padding: 44px 48px;
       display: flex;
       justify-content: space-between;
@@ -394,7 +399,7 @@
     .footer-logo {
       font-family: monospace;
       font-size: 13px;
-      color: #333;
+      color: var(--text-2);
       text-decoration: none;
     }
 
@@ -409,16 +414,16 @@
     footer a {
       font-family: system-ui, sans-serif;
       font-size: 12px;
-      color: #333;
+      color: var(--text-2);
       text-decoration: none;
     }
 
-    footer a:hover { color: var(--vit); }
+    footer a:hover { color: var(--text); }
 
     .footer-licens {
       font-family: system-ui, sans-serif;
       font-size: 11px;
-      color: #2a2a2a;
+      color: var(--text-3);
     }
 
     /* ── Responsiv ── */
@@ -444,7 +449,7 @@
       <li><a href="#systemet">Systemet</a></li>
       <li><a href="#verktyg">Verktygen</a></li>
       <li><a href="#crowdfunding">Crowdfunding</a></li>
-      <li><a href="https://github.com/tvaatrad/filmcoop" target="_blank">GitHub ↗</a></li>
+      <li><a href="https://github.com/svenbox/filmcoop" target="_blank">GitHub ↗</a></li>
     </ul>
   </nav>
 
@@ -458,7 +463,7 @@
     </p>
     <div class="hero-knappar">
       <a href="#systemet" class="knapp knapp-prim">Hur det fungerar</a>
-      <a href="https://github.com/tvaatrad/filmcoop" class="knapp knapp-ghost" target="_blank">Källkod på GitHub</a>
+      <a href="https://github.com/svenbox/filmcoop" class="knapp knapp-ghost" target="_blank">Källkod på GitHub</a>
     </div>
   </div>
 
@@ -573,14 +578,14 @@
         <span class="verktyg-ikon">🖥</span>
         <h3>Portalen</h3>
         <p>Webbapp där teamet loggar in med Gmail och ser sin ägarandel, sina uppskjutna arvoden och vad andelen ger i tre försäljningsscenarier. Kör på din server (Docker) för 0 kr/mån. Källkoden är öppen.</p>
-        <a class="verktyg-lank" href="https://github.com/tvaatrad/filmcoop" target="_blank">Källkod på GitHub →</a>
+        <a class="verktyg-lank" href="https://github.com/svenbox/filmcoop" target="_blank">Källkod på GitHub →</a>
       </div>
 
       <div class="verktyg-kort">
         <span class="verktyg-ikon">📄</span>
         <h3>Ramverket</h3>
         <p>Fullständigt konceptdokument: poängsystem, fasindelning, lock-punkter, utbetalningsordning, koppling till SFI-budgeten. Öppet att använda och anpassa. MIT-licens.</p>
-        <a class="verktyg-lank" href="https://github.com/tvaatrad/filmcoop/blob/main/docs/ramverk.md" target="_blank">Läs ramverket →</a>
+        <a class="verktyg-lank" href="https://github.com/svenbox/filmcoop/blob/main/docs/ramverk.md" target="_blank">Läs ramverket →</a>
       </div>
     </div>
   </section>
@@ -591,7 +596,7 @@
     <p>En film är ett kooperativt verk. Regissören kan inte göra den utan scenografen. Scenografen kan inte göra den utan ljusmästaren. Ljusmästaren kan inte göra den utan PA:t.</p>
     <p>Men bara ett fåtal äger resultatet. Det är inte ett naturlag. Det är ett val som görs varje gång ett avtal skrivs — eller inte skrivs.</p>
     <p>film.coop är infrastrukturen för ett annat val.</p>
-    <a href="https://github.com/tvaatrad/filmcoop/blob/main/docs/ramverk.md" class="knapp-manifest" target="_blank">Läs ramverket</a>
+    <a href="https://github.com/svenbox/filmcoop/blob/main/docs/ramverk.md" class="knapp-manifest" target="_blank">Läs ramverket</a>
   </div>
 
   <!-- Crowdfunding -->
@@ -608,8 +613,8 @@
     <p>Det kräver juridisk struktur (sannolikt ett kooperativ eller ekonomisk förening per film) men tekniken finns. Vi bygger det öppet och välkomnar bidrag.</p>
 
     <div style="margin-top: 36px; display: flex; gap: 14px; flex-wrap: wrap;">
-      <a href="https://github.com/tvaatrad/filmcoop/blob/main/docs/crowdfunding.md" class="knapp knapp-ghost" target="_blank">Läs visionen</a>
-      <a href="https://github.com/tvaatrad/filmcoop/issues" class="knapp knapp-ghost" target="_blank">Diskutera på GitHub</a>
+      <a href="https://github.com/svenbox/filmcoop/blob/main/docs/crowdfunding.md" class="knapp knapp-ghost" target="_blank">Läs visionen</a>
+      <a href="https://github.com/svenbox/filmcoop/issues" class="knapp knapp-ghost" target="_blank">Diskutera på GitHub</a>
     </div>
   </section>
 
@@ -624,7 +629,7 @@
 
     <div style="margin-top: 40px; display: flex; gap: 14px; flex-wrap: wrap;">
       <a href="https://docs.google.com/spreadsheets/d/1dx43tN7y3KS6KGdJs1TEFgOwkvgqB6eps2IiH_eyvT8/copy" class="knapp knapp-prim" target="_blank">Kopiera kalkylbladet</a>
-      <a href="https://github.com/tvaatrad/filmcoop" class="knapp knapp-ghost" target="_blank">GitHub →</a>
+      <a href="https://github.com/svenbox/filmcoop" class="knapp knapp-ghost" target="_blank">GitHub →</a>
     </div>
   </section>
 
@@ -632,9 +637,9 @@
   <footer>
     <a href="/" class="footer-logo">film<span>.coop</span></a>
     <ul>
-      <li><a href="https://github.com/tvaatrad/filmcoop" target="_blank">GitHub</a></li>
-      <li><a href="https://github.com/tvaatrad/filmcoop/blob/main/docs/ramverk.md" target="_blank">Ramverket</a></li>
-      <li><a href="https://github.com/tvaatrad/filmcoop/blob/main/docs/setup.md" target="_blank">Setup</a></li>
+      <li><a href="https://github.com/svenbox/filmcoop" target="_blank">GitHub</a></li>
+      <li><a href="https://github.com/svenbox/filmcoop/blob/main/docs/ramverk.md" target="_blank">Ramverket</a></li>
+      <li><a href="https://github.com/svenbox/filmcoop/blob/main/docs/setup.md" target="_blank">Setup</a></li>
       <li><a href="https://tvaatrad.se" target="_blank">Två Träd</a></li>
     </ul>
     <p class="footer-licens">MIT-licensierat · Svante Tidholm / Två Träd AB</p>
