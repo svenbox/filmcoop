@@ -171,7 +171,7 @@ export default function ProducerPage() {
                       <tr>
                         <th>Namn</th>
                         <th>Roll</th>
-                        <th>Klass</th>
+                        <th>Grupp</th>
                         <th>Dagar</th>
                         <th>Utbetalt dagarvode</th>
                         <th>Markn.pris/dag</th>
@@ -212,7 +212,7 @@ export default function ProducerPage() {
                   <th>#</th>
                   <th>Namn</th>
                   <th>Roll</th>
-                  <th>Klass</th>
+                  <th>Grupp</th>
                   <th>Ägarenheter</th>
                   <th>Andel</th>
                   <th>Uppskjutet arvode</th>

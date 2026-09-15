@@ -4,10 +4,13 @@ export const SCENARIO_LABELS: Record<"A" | "B" | "C", string> = {
   C: "Stor försäljning",
 };
 
-export const KLASS_TOOLTIP: Record<string, string> = {
-  A: "Nyckelkreativ funktion — 1,5× multiplikator på grundpoängen",
-  B: "Avdelningsansvarig — 1,2× multiplikator",
-  C: "Operativt bidrag — 1,0× multiplikator",
+export const GRUPP_HEADER_TOOLTIP =
+  "Gruppen avgör inte vem som är viktigast — den speglar hur unikt ersättbart ansvaret är i just den här produktionen.";
+
+export const GRUPP_TOOLTIP: Record<string, string> = {
+  A: "Nyckelkreativ — unikt konstnärligt eller kreativt ansvar som inte kan delegeras. Multiplikator 1,5×.",
+  B: "Avdelningsansvarig — leder en avdelning med eget budget- och personalansvar. Multiplikator 1,2×.",
+  C: "Crew — gör produktionen möjlig i praktiken. Multiplikator 1,0×.",
 };
 
 export const WATERFALL_TOOLTIP: Record<string, string> = {

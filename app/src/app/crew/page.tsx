@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useSession, signOut } from "next-auth/react";
 import type { CrewMember, ProjectSettings, WaterfallData } from "@/lib/sheets";
 import { formatPercent, formatSek } from "@/lib/format";
-import { KLASS_TOOLTIP, WATERFALL_TOOLTIP } from "@/lib/scenarios";
+import { GRUPP_HEADER_TOOLTIP, GRUPP_TOOLTIP, WATERFALL_TOOLTIP } from "@/lib/scenarios";
 import { groupByFas } from "@/lib/fas";
 import { interpolateWaterfall } from "@/lib/waterfallSlider";
 import { OnboardingModal } from "../components/OnboardingModal";
@@ -189,7 +189,10 @@ export default function CrewPage() {
                     <thead>
                       <tr>
                         <th>Roll</th>
-                        <th>Klass</th>
+                        <th>
+                          Grupp
+                          <Tooltip text={GRUPP_HEADER_TOOLTIP} />
+                        </th>
                         <th>Dagar</th>
                         <th>Utbetalt dagarvode</th>
                         <th>
@@ -205,7 +208,7 @@ export default function CrewPage() {
                           <td>{r.roll}</td>
                           <td>
                             <span className="klass-badge">{r.klass}</span>
-                            <Tooltip text={KLASS_TOOLTIP[r.klass] || "Funktionsklass"} />
+                            <Tooltip text={GRUPP_TOOLTIP[r.klass] || "Funktionsgrupp"} />
                           </td>
                           <td>{r.dagar}</td>
                           <td>{formatSek(r.cashFeePerDag)}</td>
