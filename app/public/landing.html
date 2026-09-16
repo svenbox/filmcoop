@@ -550,7 +550,7 @@
 
       /* Ge sidan padding i botten så innehåll inte döljs av navbaren */
       body {
-        padding-bottom: 64px;
+        padding-bottom: 84px;
       }
     }
   </style>
@@ -561,10 +561,11 @@
   <nav>
     <a href="/" class="logo">film<span>.coop</span></a>
     <ul>
+      <li><a href="#varfor">Varför</a></li>
       <li><a href="#systemet">Systemet</a></li>
       <li><a href="#verktyg">Verktygen</a></li>
-      <li><a href="#crowdfunding">Crowdfunding</a></li>
       <li><a href="#wip">Work in progress</a></li>
+      <li><a href="#crowdfunding">Crowdfunding</a></li>
       <li><a href="#kom-igang">Kom igång</a></li>
       <li class="nav-login-item"><a href="/login" class="nav-login">Logga in</a></li>
     </ul>
@@ -587,7 +588,7 @@
   <hr class="avdelare">
 
   <!-- Problemet -->
-  <section class="sektion">
+  <section class="sektion" id="varfor">
     <p class="sektion-nr">01 — Varför</p>
     <h2>Filmfinansiering<br>funkar... dåligt.</h2>
 
@@ -724,9 +725,27 @@
     <a href="https://github.com/svenbox/filmcoop/blob/main/docs/ramverk.md" class="knapp-manifest" target="_blank">Läs ramverket</a>
   </div>
 
+  <!-- Work in progress -->
+  <section class="sektion" id="wip">
+    <p class="sektion-nr">04 — Work in progress</p>
+    <h2>Det här är en start.<br>Inte en produkt.</h2>
+
+    <p class="ingress">film.coop är inte ett färdigt system. Det är en första version.</p>
+
+    <p>Det är inget nytt att skapa film utan full finansiering eller pengar. Men med hjälp av AI kan vi skapa system där allas tid och rättigheter blir synliga och transparenta. Där det går att följa värdet av ens insats även om pengar kommer in från olika håll i olika skeden. Sajten, portalen och kalkylbladet är byggda med hjälp av Claude och Chat GPT, på kort tid. Poängmodellen är inte huggen i sten. Waterfall-logiken - liksom mycket annat - kan säkert bli bättre. Det finns mycket kvar att testa, ifrågasätta och bygga vidare på.</p>
+
+    <p>Därför är allt publicerat som öppen källkod från start. Jag som startat detta är en independent producent och jag vill verkligen peppa alla att komma med idéer för hur detta kan utv ecklas. Hur ägarenheter borde räknas, eller testa det här skarpt i en egen produktion — på vilket sätt som helst. Ju fler som bygger vidare på det här, desto bättre.</p>
+
+    <div style="margin-top: 36px; display: flex; gap: 14px; flex-wrap: wrap;">
+      <a href="https://github.com/svenbox/filmcoop" class="knapp knapp-prim" target="_blank">Bidra på GitHub</a>
+    </div>
+  </section>
+
+  <hr class="avdelare">
+
   <!-- Crowdfunding -->
   <section class="sektion" id="crowdfunding">
-    <p class="sektion-nr">04 — Nästa steg</p>
+    <p class="sektion-nr">05 — Nästa steg</p>
     <h2>Crowdfunding <span class="badge">Under utveckling</span></h2>
 
     <p class="ingress">Vad händer om publiken inte bara betalar för en film — utan äger den?</p>
@@ -738,24 +757,6 @@
     <div style="margin-top: 36px; display: flex; gap: 14px; flex-wrap: wrap;">
       <a href="https://github.com/svenbox/filmcoop/blob/main/docs/crowdfunding.md" class="knapp knapp-ghost" target="_blank">Läs konceptet</a>
       <a href="https://github.com/svenbox/filmcoop/issues" class="knapp knapp-ghost" target="_blank">Diskutera på GitHub</a>
-    </div>
-  </section>
-
-  <hr class="avdelare">
-
-  <!-- Work in progress -->
-  <section class="sektion" id="wip">
-    <p class="sektion-nr">05 — Work in progress</p>
-    <h2>Det här är en start.<br>Inte en produkt.</h2>
-
-    <p class="ingress">film.coop är inte ett färdigt system. Det är en första version.</p>
-
-    <p>Det är inget nytt att skapa film utan full finansiering eller pengar. Men med hjälp av AI kan vi skapa system där allas tid och rättigheter blir synliga och transparenta. Där det går att följa värdet av ens insats även om pengar kommer in från olika håll i olika skeden. Sajten, portalen och kalkylbladet är byggda med hjälp av Claude och Chat GPT, på kort tid. Poängmodellen är inte huggen i sten. Waterfall-logiken - liksom mycket annat - kan säkert bli bättre. Det finns mycket kvar att testa, ifrågasätta och bygga vidare på.</p>
-
-    <p>Därför är allt publicerat som öppen källkod från start. Jag som startat detta är en independent producent och jag vill verkligen peppa alla att komma med idéer för hur detta kan utv ecklas. Hur ägarenheter borde räknas, eller testa det här skarpt i en egen produktion — på vilket sätt som helst. Ju fler som bygger vidare på det här, desto bättre.</p>
-
-    <div style="margin-top: 36px; display: flex; gap: 14px; flex-wrap: wrap;">
-      <a href="https://github.com/svenbox/filmcoop" class="knapp knapp-prim" target="_blank">Bidra på GitHub</a>
     </div>
   </section>
 
@@ -804,9 +805,12 @@
 
   <!-- Mobile bottom nav -->
   <nav class="mobile-nav" aria-label="Mobilnavigation">
+    <a href="#varfor" class="mobile-nav-item">Varför</a>
     <a href="#systemet" class="mobile-nav-item">Systemet</a>
     <a href="#verktyg" class="mobile-nav-item">Verktygen</a>
+    <a href="#wip" class="mobile-nav-item">Work in progress</a>
     <a href="#crowdfunding" class="mobile-nav-item">Crowdfunding</a>
+    <a href="#kom-igang" class="mobile-nav-item">Kom igång</a>
     <a href="https://github.com/svenbox/filmcoop" class="mobile-nav-item" target="_blank">GitHub</a>
   </nav>
 
