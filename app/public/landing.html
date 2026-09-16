@@ -346,6 +346,26 @@
     }
     .verktyg-lank:hover { color: var(--text); }
 
+    .portal-galleri {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+      margin-top: 32px;
+    }
+    .portal-galleri figure { margin: 0; }
+    .portal-galleri img {
+      width: 100%;
+      border: 1px solid var(--kant);
+      border-radius: 6px;
+      display: block;
+    }
+    .portal-galleri figcaption {
+      font-family: system-ui, sans-serif;
+      font-size: 12px;
+      color: var(--text-3);
+      margin-top: 10px;
+    }
+
     /* ── Coming soon badge ── */
     .badge {
       display: inline-block;
@@ -544,7 +564,7 @@
 
     <p>Ägarenheterna är relativa. Om teamet har 8 691 enheter totalt och du har 1 140 äger du 13,1% av teamets pool.</p>
 
-    <p>Och teamets pool ser ut så här — ett team på nio personer, ingen extern finansiär:</p>
+    <p>Med ett team på nio personer, ingen extern finansiär, kan kalkylen komma att se ut ungefär så här:</p>
 
     <div class="waterfall">
       <div class="wf-rad">
@@ -569,7 +589,7 @@
       </div>
     </div>
 
-    <p class="wf-fotnot">Utan extern finansiär äger teamet hela nettovinsten. Systemet delar 50/50 med investerare enbart när ett separat investeraravtal tecknats.</p>
+    <p class="wf-fotnot">Utan extern finansiär äger teamet hela nettovinsten. </p>
 
     <p>Alla siffror är öppna. Alla formler är dokumenterade. Hela teamet ser hela bilden — alltid.</p>
   </section>
@@ -594,7 +614,7 @@
       <div class="verktyg-kort">
         <span class="verktyg-ikon">🖥</span>
         <h3>Portalen</h3>
-        <p>Webbapp där teamet loggar in med Gmail och ser sin ägarandel, sina uppskjutna arvoden och vad andelen ger i tre försäljningsscenarier. Kör på din server (Docker) för 0 kr/mån. Källkoden är öppen.</p>
+        <p>Webbapp där teamet loggar in med Gmail och ser sin ägarandel, sina uppskjutna arvoden och vad andelen kan bli värd vid olika intäktsnivåer. Kör på din server (Docker) för 0 kr/mån. Källkoden är öppen.</p>
         <a class="verktyg-lank" href="https://github.com/svenbox/filmcoop" target="_blank">Källkod på GitHub →</a>
       </div>
 
@@ -605,6 +625,17 @@
         <a class="verktyg-lank" href="https://github.com/svenbox/filmcoop/blob/main/docs/ramverk.md" target="_blank">Läs ramverket →</a>
       </div>
     </div>
+
+    <div class="portal-galleri">
+      <figure>
+        <img src="/screenshots/utbetalningsordning.png" alt="Utbetalningsordningen i portalen: ett reglage för bruttointäkt och en vattenfallstabell som räknas om live" loading="lazy">
+        <figcaption>Dra i reglaget — se din andel räknas om direkt, för valfri intäktsnivå.</figcaption>
+      </figure>
+      <figure>
+        <img src="/screenshots/team.png" alt="Team-vyn i portalen: en rankad lista över crew efter ägarenheter, med totalsumma" loading="lazy">
+        <figcaption>Producentens team-vy — rankad efter ägarenheter, med totalsumma.</figcaption>
+      </figure>
+    </div>
   </section>
 
   <!-- Manifest (röd sektion) -->
@@ -612,7 +643,6 @@
     <h2>Kooperativet är inte en kompromiss. Det är en utgångspunkt.</h2>
     <p>En film är ett kooperativt verk. Regissören kan inte göra film utan scenograf. Scenografen kan inte göra film utan ljusmästaren. Ljusmästaren kan inte göra den utan en crafts som fixar fika.</p>
     <p>Men bara ett fåtal äger resultatet. Det är inte ett naturlag. Det är ett val som görs varje gång ett avtal skrivs — eller inte skrivs.</p>
-    <p>film.coop är infrastrukturen.</p>
     <a href="https://github.com/svenbox/filmcoop/blob/main/docs/ramverk.md" class="knapp-manifest" target="_blank">Läs ramverket</a>
   </div>
 
