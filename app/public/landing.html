@@ -300,6 +300,32 @@
       margin: -8px 0 18px;
     }
 
+    /* ── Steglista ── */
+    .steg-lista {
+      list-style: none;
+      counter-reset: steg;
+      margin: 24px 0 32px;
+      max-width: 640px;
+    }
+    .steg-lista li {
+      counter-increment: steg;
+      position: relative;
+      padding-left: 40px;
+      margin-bottom: 16px;
+      color: var(--text-2);
+      font-size: 17px;
+      line-height: 1.55;
+    }
+    .steg-lista li::before {
+      content: counter(steg);
+      position: absolute;
+      left: 0;
+      top: 1px;
+      font-family: monospace;
+      font-weight: 700;
+      color: var(--rod);
+    }
+
     /* ── Verktyg ── */
     .verktyg {
       display: grid;
@@ -670,17 +696,16 @@
   <!-- Work in progress -->
   <section class="sektion">
     <p class="sektion-nr">05 — Work in progress</p>
-    <h2>Det här är en start.<br>Inte ett facit.</h2>
+    <h2>Det här är en start.<br>Inte en produkt.</h2>
 
     <p class="ingress">film.coop är inte ett färdigt system. Det är en första version.</p>
 
-    <p>Sajten, portalen och kalkylbladet är byggda med hjälp av AI, på kort tid, av en person som ville se om idén höll ihop. Poängmodellen är inte huggen i sten. Waterfall-logiken kan säkert bli bättre. Det finns mycket kvar att testa, ifrågasätta och bygga vidare på.</p>
+    <p>Det är inget nytt att skapa film utan full finansiering eller pengar. Men med hjälp av AI kan vi skapa system där allas tid och rättigheter blir synliga och transparenta. Där det går att följa värdet av ens insats även om pengar kommer in från olika håll i olika skeden. Sajten, portalen och kalkylbladet är byggda med hjälp av AI, på kort tid. Poängmodellen är inte huggen i sten. Waterfall-logiken kan säkert bli bättre. Det finns mycket kvar att testa, ifrågasätta och bygga vidare på.</p>
 
-    <p>Därför är allt publicerat som öppen källkod från start. Om du hittar fel, har bättre idéer för hur ägarenheter borde räknas, eller vill testa det här skarpt i en egen produktion — på vilket sätt som helst — hör av dig, forka repot, eller bara kör. Det vore fantastiskt om fler ville bygga vidare på det här.</p>
+    <p>Därför är allt publicerat som öppen källkod från start. Jag som satt igång detta vill verkligen peppa alla att hitta fel, komma med bättre idéer för hur ägarenheter borde räknas, eller testa det här skarpt i en egen produktion — på vilket sätt som helst. Forka repot eller bara kör. Ju fler som bygger vidare på det här, desto bättre.</p>
 
     <div style="margin-top: 36px; display: flex; gap: 14px; flex-wrap: wrap;">
       <a href="https://github.com/svenbox/filmcoop" class="knapp knapp-prim" target="_blank">Bidra på GitHub</a>
-      <a href="https://github.com/svenbox/filmcoop/issues" class="knapp knapp-ghost" target="_blank">Öppna ett issue</a>
     </div>
   </section>
 
@@ -691,15 +716,27 @@
     <p class="sektion-nr">06 — Kom igång</p>
     <h2>Börja med<br>kalkylbladet.</h2>
 
-    <p>Kopiera kalkylbladet och fyll i ditt team — tar någon minut, inget
-    konto eller avgift krävs. Ingen inlåsning: det är en vanlig Google
-    Sheets-fil du äger själv.</p>
+    <p class="ingress">Kalkylbladet är kärnan i systemet — en vanlig Google
+    Sheets-fil där du skriver in vem som gör vad, hur länge och till vilket
+    arvode. Formlerna räknar sedan ut varje persons ägarandel automatiskt,
+    enligt modellen i <a href="https://github.com/svenbox/filmcoop/blob/main/docs/ramverk.md" target="_blank" style="color: var(--text); text-decoration: underline;">ramverket</a>.</p>
 
-    <p>Portalen är ett separat, mer tekniskt steg — du behöver sätta upp ett
-    Google Cloud-projekt för inloggning och läsbehörighet, och en egen
-    server för att köra den. Räkna med en stund, inte tio minuter. Se
-    <a href="https://github.com/svenbox/filmcoop/blob/main/docs/setup.md" target="_blank" style="color: var(--text); text-decoration: underline;">setup-guiden</a>
-    för alla steg.</p>
+    <p>Portalen (webbappen) är valfri. Det är ett gränssnitt så att teamet
+    kan se sin egen andel utan att öppna kalkylbladet själva — den läser
+    samma data direkt ur Sheets, du matar aldrig in något två gånger.</p>
+
+    <p>I korta drag:</p>
+
+    <ol class="steg-lista">
+      <li>Kopiera kalkylbladet till ditt eget Google-konto.</li>
+      <li>Fyll i projektinställningar och teamet — roller, faser, dagar och arvoden. Ägarandelarna räknas ut automatiskt.</li>
+      <li>(Valfritt) Sätt upp portalen: en liten webbserver (Docker) som du kör på egen hårdvara eller en billig molnserver, kopplad till samma kalkylblad via Google-inloggning.</li>
+      <li>Dela länken till portalen — eller bara själva kalkylbladet — med teamet.</li>
+    </ol>
+
+    <p>Det här är den förenklade versionen. Fullständig steg-för-steg-guide,
+    inklusive hur du sätter upp Google Cloud och portalen, finns i
+    <a href="https://github.com/svenbox/filmcoop/blob/main/docs/setup.md" target="_blank" style="color: var(--text); text-decoration: underline;">setup-guiden på GitHub</a>.</p>
 
     <div style="margin-top: 40px; display: flex; gap: 14px; flex-wrap: wrap;">
       <a href="https://docs.google.com/spreadsheets/d/1dx43tN7y3KS6KGdJs1TEFgOwkvgqB6eps2IiH_eyvT8/copy" class="knapp knapp-prim" target="_blank">Kopiera kalkylbladet</a>
