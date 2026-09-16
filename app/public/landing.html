@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>film.coop — En film ägs av de som gör den</title>
-  <meta name="description" content="Öppen infrastruktur för kooperativ filmproduktion. Utan att be om lov.">
-  <meta property="og:title" content="film.coop">
+  <meta name="description" content="Öppen infrastruktur för kooperativ samägd filmproduktion. ">
+  <meta property="og:title" content="film coop">
   <meta property="og:description" content="En film ägs av de som gör den.">
   <meta property="og:type" content="website">
   <style>
@@ -502,6 +502,64 @@
       .formel { padding: 20px; }
       footer ul { display: none; }
     }
+
+    /* ── Mobile bottom nav ─────────────────────────────── */
+    .mobile-nav {
+      display: none;
+    }
+
+    @media (max-width: 640px) {
+      .mobile-nav {
+        display: flex;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 100;
+        background: var(--bg);
+        border-top: 1px solid var(--kant);
+        padding: 0;
+        padding-bottom: env(safe-area-inset-bottom);
+      }
+
+      .mobile-nav-item {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 10px 4px 8px;
+        text-decoration: none;
+        color: var(--text-3);
+        font-family: system-ui, sans-serif;
+        font-size: 10px;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        gap: 4px;
+        transition: color 0.1s;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      .mobile-nav-item:hover,
+      .mobile-nav-item:active {
+        color: var(--text);
+      }
+
+      .mobile-nav-icon {
+        font-size: 18px;
+        line-height: 1;
+      }
+
+      .mobile-nav-label {
+        font-size: 9px;
+        line-height: 1;
+      }
+
+      /* Ge sidan padding i botten så innehåll inte döljs av navbaren */
+      body {
+        padding-bottom: 64px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -513,7 +571,8 @@
       <li><a href="#systemet">Systemet</a></li>
       <li><a href="#verktyg">Verktygen</a></li>
       <li><a href="#crowdfunding">Crowdfunding</a></li>
-      <li><a href="https://github.com/svenbox/filmcoop" target="_blank">GitHub ↗</a></li>
+      <li><a href="#wip">Work in progress</a></li>
+      <li><a href="#kom-igang">Kom igång</a></li>
       <li class="nav-login-item"><a href="/login" class="nav-login">Logga in</a></li>
     </ul>
   </nav>
@@ -537,22 +596,20 @@
   <!-- Problemet -->
   <section class="sektion">
     <p class="sektion-nr">01 — Varför</p>
-    <h2>Filmfinansiering<br>funkar inte.</h2>
+    <h2>Filmfinansiering<br>funkar... dåligt.</h2>
 
-    <p class="ingress">De flesta oberoende filmer finansieras genom bidrag. Man söker, väntar, anpassar, söker igen. </p>
+    <p class="ingress">De flesta oberoende filmer finansieras genom stöd och samproduktionsmedel. Man söker, väntar, pitchar, anpassar, söker igen. </p>
 
-    <p>Det är ett system som gynnar det etablerade och bromsar det nya.</p>
-
-    <p>Tanken med film.coop är enkel: <strong>vi gör filmen tillsammans istället. </strong>Du går in med din kreativitet, din tid. Du skjuter upp din lön och tar en risk. Den risken ska ge dig ägarskap. Inte ett tack i eftertexterna. Inte ett muntligt löfte. En faktisk, juridiskt bindande andel i det du skapade.</p>
+    <p>Tanken med film.coop är enkel: <strong>vi väntar inte. Vi gör filmen tillsammans istället. </strong>Du går in med din kreativitet, din tid. Du skjuter upp din lön och tar en risk. Den risken ska ge dig ägarskap. Inte ett tack i eftertexterna. Inte ett muntligt löfte. En faktisk, juridiskt bindande andel i det du skapade.</p>
 
     <div class="citat">
       <blockquote>"Det är väldigt enkelt — alla som jobbar på filmen delar på vinsten."</blockquote>
       <cite>Greg Kwedar, regissör — Sing Sing (2024) · Sundance Grand Jury Prize</cite>
     </div>
 
-    <p>film.coop är inspirerat av hur <em>Sing Sing</em> faktiskt gjordes. Bentley och Kwedar lät hela teamet — från produktionsassistenter till huvudrollsinnehavare — arbeta för samma grundlön och en andel i en gemensam vinstpool, där crew och cast fick del av intäkterna redan innan externa finansiärer var fullt återbetalda <a href="https://www.hollywoodreporter.com/movies/movie-news/sing-sing-filmmakers-paid-everyone-on-set-the-same-1235945503/" target="_blank" style="color: var(--text); text-decoration: underline;">(Hollywood Reporter)</a> <a href="https://thoolie.com/guides/sing-sing-film-deal-cast-crew-equity/" target="_blank" style="color: var(--text); text-decoration: underline;">(Thoolie)</a>. Framgången fick Bentley och Kwedar att starta produktionsbolaget Ethos, för att bygga fler filmer på samma sätt.</p>
+    <p>film.coop är inspirerat av hur prisbelönade långfilmen <em>Sing Sing</em> gjordes. Filmskaparna Bentley och Kwedar lät hela teamet — från produktionsassistenter till huvudrollsinnehavare — arbeta för samma grundlön och en andel i en gemensam vinstpool, där crew och cast fick del av intäkterna innan externa finansiärer var fullt återbetalda <a href="https://www.hollywoodreporter.com/movies/movie-news/sing-sing-filmmakers-paid-everyone-on-set-the-same-1235945503/" target="_blank" style="color: var(--text); text-decoration: underline;">(Hollywood Reporter)</a> <a href="https://thoolie.com/guides/sing-sing-film-deal-cast-crew-equity/" target="_blank" style="color: var(--text); text-decoration: underline;">(Thoolie)</a>. Framgången ledde till bildandet av produktionsbolaget Ethos, för att bygga fler filmer på samma sätt.</p>
 
-    <p>film.coop är ett försök att skapa infrastrukturen. Öppen, gratis, och byggd för hur nordisk film fungerar.</p>
+    <p>film.coop är ett försök att med hjälp av AI skapa en liknande infrastruktur. Öppen, gratis, och byggd för hur nordisk film fungerar.</p>
   </section>
 
   <hr class="avdelare">
@@ -670,7 +727,7 @@
   <div class="manifest">
     <h2>Kooperativet är inte en kompromiss. Det är en utgångspunkt.</h2>
     <p>En film är ett kooperativt verk. Regissören kan inte göra film utan scenograf. Scenografen kan inte göra film utan ljusmästaren. Ljusmästaren kan inte göra den utan en crafts som fixar fika.</p>
-    <p>Men bara ett fåtal äger resultatet. Det är inte ett naturlag. Det är ett val som görs varje gång ett avtal skrivs — eller inte skrivs.</p>
+    <p>Men i verkligheten slutar det ofta med att bara ett fåtal äger resultatet. Vi menar att detta inte är en naturlag.</p>
     <a href="https://github.com/svenbox/filmcoop/blob/main/docs/ramverk.md" class="knapp-manifest" target="_blank">Läs ramverket</a>
   </div>
 
@@ -683,7 +740,7 @@
 
     <p>En idé vi vill utforska vidare är att integrera crowdfunding direkt i systemet. En person som stödjer en film via crowdfunding ska få dokumenterade ägarenheter — inte merchandise, inte credits, utan en faktisk andel i filmens ekonomiska resultat.</p>
 
-    <p>Samma waterfall. Samma transparens. Inga separata villkor.</p>
+    <p>Samma återbetalningsschema. Samma transparens. Inga separata villkor.</p>
 
     <div style="margin-top: 36px; display: flex; gap: 14px; flex-wrap: wrap;">
       <a href="https://github.com/svenbox/filmcoop/blob/main/docs/crowdfunding.md" class="knapp knapp-ghost" target="_blank">Läs konceptet</a>
@@ -694,15 +751,15 @@
   <hr class="avdelare">
 
   <!-- Work in progress -->
-  <section class="sektion">
+  <section class="sektion" id="wip">
     <p class="sektion-nr">05 — Work in progress</p>
     <h2>Det här är en start.<br>Inte en produkt.</h2>
 
     <p class="ingress">film.coop är inte ett färdigt system. Det är en första version.</p>
 
-    <p>Det är inget nytt att skapa film utan full finansiering eller pengar. Men med hjälp av AI kan vi skapa system där allas tid och rättigheter blir synliga och transparenta. Där det går att följa värdet av ens insats även om pengar kommer in från olika håll i olika skeden. Sajten, portalen och kalkylbladet är byggda med hjälp av AI, på kort tid. Poängmodellen är inte huggen i sten. Waterfall-logiken kan säkert bli bättre. Det finns mycket kvar att testa, ifrågasätta och bygga vidare på.</p>
+    <p>Det är inget nytt att skapa film utan full finansiering eller pengar. Men med hjälp av AI kan vi skapa system där allas tid och rättigheter blir synliga och transparenta. Där det går att följa värdet av ens insats även om pengar kommer in från olika håll i olika skeden. Sajten, portalen och kalkylbladet är byggda med hjälp av Claude och Chat GPT, på kort tid. Poängmodellen är inte huggen i sten. Waterfall-logiken - liksom mycket annat - kan säkert bli bättre. Det finns mycket kvar att testa, ifrågasätta och bygga vidare på.</p>
 
-    <p>Därför är allt publicerat som öppen källkod från start. Jag som satt igång detta vill verkligen peppa alla att hitta fel, komma med bättre idéer för hur ägarenheter borde räknas, eller testa det här skarpt i en egen produktion — på vilket sätt som helst. Forka repot eller bara kör. Ju fler som bygger vidare på det här, desto bättre.</p>
+    <p>Därför är allt publicerat som öppen källkod från start. Jag som startat detta är en independent producent och jag vill verkligen peppa alla att komma med idéer för hur detta kan utv ecklas. Hur ägarenheter borde räknas, eller testa det här skarpt i en egen produktion — på vilket sätt som helst. Ju fler som bygger vidare på det här, desto bättre.</p>
 
     <div style="margin-top: 36px; display: flex; gap: 14px; flex-wrap: wrap;">
       <a href="https://github.com/svenbox/filmcoop" class="knapp knapp-prim" target="_blank">Bidra på GitHub</a>
@@ -712,18 +769,14 @@
   <hr class="avdelare">
 
   <!-- Kom igång -->
-  <section class="sektion">
+  <section class="sektion" id="kom-igang">
     <p class="sektion-nr">06 — Kom igång</p>
     <h2>Börja med<br>kalkylbladet.</h2>
 
-    <p class="ingress">Kalkylbladet är kärnan i systemet — en vanlig Google
-    Sheets-fil där du skriver in vem som gör vad, hur länge och till vilket
-    arvode. Formlerna räknar sedan ut varje persons ägarandel automatiskt,
-    enligt modellen i <a href="https://github.com/svenbox/filmcoop/blob/main/docs/ramverk.md" target="_blank" style="color: var(--text); text-decoration: underline;">ramverket</a>.</p>
+    <p class="ingress">Kalkylbladet är kärnan i systemet — en vanlig Google Sheets-fil där du skriver in vem som gör vad, hur länge och till vilket
+    arvode. Formlerna räknar sedan ut varje persons ägarandel automatiskt, enligt modellen i <a href="https://github.com/svenbox/filmcoop/blob/main/docs/ramverk.md" target="_blank" style="color: var(--text); text-decoration: underline;">ramverket</a>.</p>
 
-    <p>Portalen (webbappen) är valfri. Det är ett gränssnitt så att teamet
-    kan se sin egen andel utan att öppna kalkylbladet själva — den läser
-    samma data direkt ur Sheets, du matar aldrig in något två gånger.</p>
+    <p>Portalen (webbappen) är valfri. Det är ett gränssnitt så att teamet kan se sin egen andel utan att öppna kalkylbladet själva — den läser samma data direkt ur Sheets, du matar aldrig in något två gånger.</p>
 
     <p>I korta drag:</p>
 
@@ -755,6 +808,26 @@
     </ul>
     <p class="footer-licens">MIT-licensierat · Svante Tidholm / Två Träd AB</p>
   </footer>
+
+  <!-- Mobile bottom nav -->
+  <nav class="mobile-nav" aria-label="Mobilnavigation">
+    <a href="#systemet" class="mobile-nav-item">
+      <span class="mobile-nav-icon">⚙</span>
+      <span class="mobile-nav-label">Systemet</span>
+    </a>
+    <a href="#verktyg" class="mobile-nav-item">
+      <span class="mobile-nav-icon">🛠</span>
+      <span class="mobile-nav-label">Verktygen</span>
+    </a>
+    <a href="#crowdfunding" class="mobile-nav-item">
+      <span class="mobile-nav-icon">◎</span>
+      <span class="mobile-nav-label">Crowdfunding</span>
+    </a>
+    <a href="https://github.com/svenbox/filmcoop" class="mobile-nav-item" target="_blank">
+      <span class="mobile-nav-icon">↗</span>
+      <span class="mobile-nav-label">GitHub</span>
+    </a>
+  </nav>
 
 </body>
 </html>
