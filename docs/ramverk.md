@@ -133,27 +133,47 @@ Alla avdrag definieras explicit i ett separat Recoupment Schedule-dokument som b
 
 ## 8. Koppling till SFI-budgeten
 
-Systemet är byggt för att fungera med SFI:s standardmall för filmbudget — samma mall som används för kortfilm, dokumentär och lång spelfilm. Uppskjutna arvoden bokförs som reella budgetposter under respektive avdelning, inte som sidoarrangemang. Det gör dem läsbara för finansiärer, revisorer och SFI utan att hela equity-systemet behöver förklaras.
+SFI:s budgetmall har en rad som heter *Egeninsats/Deferment* under varje avdelning. Den har alltid funnits där. film.coop fyller i den raden — inget annat förändras i hur budgeten ser ut.
 
-För varje relevant budgetrad anges tre saker:
-- Faktiskt utbetalt arvode (cash fee) — bokas som normal lönekostnad
-- Uppskjutet arvode — bokas som kostnad under relevant post (ex. 09 Scenografi — Egeninsats)
-- Ägarenheter — anges i separat bilaga, inte på budgeten
+Här är post 09 Scenografi i en verklig budget, med och utan film.coop:
 
-**Konkret exempel — Scenograf:**
+**Utan film.coop:**
+```
+09.1 Scenografarvode        69 300 kr
+─────────────────────────────────────
+Summa post 09               69 300 kr
+```
 
-| | Belopp |
+**Med film.coop:**
+```
+09.1 Scenografarvode        69 300 kr
+09.1 Egeninsats/Deferment   50 050 kr   ← samma rad som alltid funnits
+─────────────────────────────────────
+Summa post 09              119 350 kr
+```
+
+Det är den enda skillnaden i själva budgetdokumentet. Egeninsatsen syns som en reell kostnad — vilket den är. Scenografen har utfört arbete värt 119 350 kr. Projektet betalar 69 300 kr nu och 50 050 kr ur intäkterna senare.
+
+Att egeninsatsen är en bokförd kostnad är viktigt av tre skäl:
+
+- SFI och regionala finansiärer ser ett korrekt ifyllt underlag med verkliga produktionskostnader
+- Revisorn kan följa pengarna utan att förstå ägarenheter — uppskjutet arvode är en skuld som återbetalas, inte en gåva
+- Projektets totala budgetunderlag stärks, inte försvagas
+
+Ägarenheterna — hur egeninsatsen omvandlas till en andel av vinsten — hanteras i ett separat kalkylblad och en separat bilaga (Participation Agreement). De syns aldrig på budgeten. En finansiär som bara vill se budgeten behöver aldrig exponeras för equity-systemet.
+
+**Konkret för scenografen i exemplet:**
+
+| | |
 |---|---|
 | Marknadspris | 1 550 kr/dag |
-| Cash fee under produktion | 900 kr/dag |
-| Uppskjutet arvode per dag | 650 kr |
-| Antal dagar (F2 + F4) | 77 dagar |
-| Utbetalt under produktion | 69 300 kr |
-| Uppskjutet arvode totalt | 50 050 kr |
-| Bokförs som | Kostnad post 09 — betalas ur intäkter steg 3 |
-| Konverteras till | 1 485 ägarenheter (990 + 495) |
-
-En revisor kan följa pengarna utan att förstå poängsystemet. En finansiär ser att egeninsatsen är en reell kostnad som återbetalas före vinst — inte en osäker post.
+| Utbetalt under produktion | 900 kr/dag |
+| Uppskjutet per dag | 650 kr |
+| Dagar (F2 förprod + F4 insp) | 77 dagar |
+| Utbetalt totalt | 69 300 kr |
+| Uppskjutet totalt (post 09 Egeninsats) | 50 050 kr |
+| Konverteras till | 1 485 ägarenheter |
+| Betalas tillbaka | ur filmens intäkter, steg 3 i utbetalningsordningen — före vinst |
 
 ---
 
