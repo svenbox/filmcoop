@@ -291,20 +291,13 @@
     .wf-du .wf-etikett { color: var(--text); }
     .wf-indent .wf-etikett { padding-left: 20px; color: var(--text-3); }
 
-    /* ── Skärmdump ── */
-    .skarmdump { margin: 44px 0; }
-    .skarmdump img {
-      width: 100%;
-      border: 1px solid var(--kant);
-      border-radius: 6px;
-      display: block;
-    }
-    .skarmdump .bildtext {
+    .wf-fotnot {
       font-family: system-ui, sans-serif;
-      font-size: 12px;
+      font-size: 13px;
+      font-style: italic;
       color: var(--text-3);
-      margin-top: 10px;
-      text-align: center;
+      max-width: 600px;
+      margin: -8px 0 18px;
     }
 
     /* ── Verktyg ── */
@@ -482,7 +475,7 @@
   <!-- Hero -->
   <div class="hero">
     <p class="eyebrow">Kooperativ filmproduktion</p>
-    <h1>En film ska ägas av<br><em>dom som gör den.</em></h1>
+    <h1>Film ska ägas av<br><em>filmskaparna.</em></h1>
     <p class="hero-ingress">
       film.coop är öppen infrastruktur för filmteam som vill äga
       sina produktioner tillsammans.
@@ -498,20 +491,20 @@
   <!-- Problemet -->
   <section class="sektion">
     <p class="sektion-nr">01 — Varför</p>
-    <h2>Filmfinansiering<br>ett system som funkar dåligt.</h2>
+    <h2>Filmfinansiering<br>funkar inte.</h2>
 
-    <p class="ingress">De flesta oberoende filmer finansieras genom bidrag. Man söker, väntar, anpassar, söker igen. Står med mössan i hand.</p>
+    <p class="ingress">De flesta oberoende filmer finansieras genom bidrag. Man söker, väntar, anpassar, söker igen. </p>
 
     <p>Det är ett system som gynnar det etablerade och bromsar det nya.</p>
 
-    <p>Tanken med film.coop är enkel: <strong>vi gör filmen tillsamans istället. Du går in med din kreativitet, din tid. Du skjuter upp din lön och tar en risk. Den risken ska ge dig ägarskap.</strong> Inte ett tack i eftertexterna. Inte ett muntligt löfte. En faktisk, juridiskt bindande andel i det du skapade.</p>
+    <p>Tanken med film.coop är enkel: <strong>vi gör filmen tillsammans istället. </strong>Du går in med din kreativitet, din tid. Du skjuter upp din lön och tar en risk. Den risken ska ge dig ägarskap. Inte ett tack i eftertexterna. Inte ett muntligt löfte. En faktisk, juridiskt bindande andel i det du skapade.</p>
 
     <div class="citat">
       <blockquote>"Det är väldigt enkelt — alla som jobbar på filmen delar på vinsten."</blockquote>
       <cite>Greg Kwedar, regissör — Sing Sing (2024) · Sundance Grand Jury Prize</cite>
     </div>
 
-    <p>film.coop är infrastrukturen. Öppen, gratis, och byggd för hur nordisk film fungerar.</p>
+    <p>film.coop är ett försök att skapa infrastrukturen. Öppen, gratis, och byggd för hur nordisk film fungerar.</p>
   </section>
 
   <hr class="avdelare">
@@ -526,32 +519,32 @@
     <div class="faktorer">
       <div class="faktor">
         <p class="faktor-nr">Faktor 01</p>
-        <h3>När du gick in</h3>
+        <h3>När du gick in i projektet</h3>
         <p>Utveckling är hög risk — 1,5× multiplikator. Förproduktion 1,25×. Inspelning och post är basnivå 1,0×.</p>
       </div>
       <div class="faktor">
         <p class="faktor-nr">Faktor 02</p>
         <h3>Vad du gör</h3>
-        <p>Ju högre kreativt ansvar, desto högre ägande. Regissör, DOP, scenograf ger 1,5×. Avdelningsansvariga  ger 1,2×. Övrig crew är C 1,0×.</p>
+        <p>Ju större kreativt ansvar, desto högre ägande. Regissör, DOP, scenograf ger 1,5×. Avdelningsansvariga  ger 1,2×. Övrig crew är C 1,0×.</p>
       </div>
       <div class="faktor">
         <p class="faktor-nr">Faktor 03</p>
-        <h3>Hur länge</h3>
-        <p>Ägarenheter tjänas in dag för dag. Varje dag i systemet är dokumenterad och reviderbar.</p>
+        <h3>Hur länge du jobbar</h3>
+        <p>Ägarenheter tjänas in utifrån den tid du jobbar. Varje dag i systemet är dokumenterad och reviderbar.</p>
       </div>
     </div>
 
     <div class="formel">
       <div class="stor">Ägarenheter = dagar × faspoäng × rollmultiplikator</div>
       <div class="exempel">
-        DOP · klass A · 30 dagar pre-production + 40 dagar inspelning:<br>
+        Fotograf (Grupp A) · 30 dagar pre-production + 40 dagar inspelning:<br>
         (30 × 12 × 1,5) + (40 × 10 × 1,5) = <span class="svar">1 140 ägarenheter</span>
       </div>
     </div>
 
     <p>Ägarenheterna är relativa. Om teamet har 8 691 enheter totalt och du har 1 140 äger du 13,1% av teamets pool.</p>
 
-    <p>Och teamets pool ser ut så här — med riktiga siffror från en svensk produktion:</p>
+    <p>Och teamets pool ser ut så här — ett team på nio personer, ingen extern finansiär:</p>
 
     <div class="waterfall">
       <div class="wf-rad">
@@ -560,30 +553,23 @@
       </div>
       <div class="wf-rad wf-indent">
         <span class="wf-etikett">Distributionsavgift (25%)</span>
-        <span class="wf-belopp minus">−500 000 kr</span>
-      </div>
-      <div class="wf-rad wf-indent">
-        <span class="wf-etikett">Investerarens återbetalning (1,2×)</span>
-        <span class="wf-belopp minus">−600 000 kr</span>
+        <span class="wf-belopp minus">−1 000 000 kr</span>
       </div>
       <div class="wf-rad wf-indent">
         <span class="wf-etikett">Uppskjutna arvoden betalas ut</span>
-        <span class="wf-belopp minus">−398 300 kr</span>
+        <span class="wf-belopp minus">−380 000 kr</span>
       </div>
       <div class="wf-rad wf-total">
-        <span class="wf-etikett" style="color:#999">Teamets pool (50% av netto)</span>
-        <span class="wf-belopp">250 850 kr</span>
+        <span class="wf-etikett" style="color:#999">Teamets pool (100% av netto)</span>
+        <span class="wf-belopp">2 620 000 kr</span>
       </div>
       <div class="wf-rad wf-du">
-        <span class="wf-etikett">Din andel som DOP (13,1%)</span>
-        <span class="wf-belopp du">32 861 kr</span>
+        <span class="wf-etikett">Din andel som fotograf (13,1%)</span>
+        <span class="wf-belopp du">343 220 kr</span>
       </div>
     </div>
 
-    <div class="skarmdump">
-      <img src="/screenshots/utbetalningsordning.png" alt="Utbetalningsordningen i portalen: ett reglage för bruttointäkt och en vattenfallstabell som räknas om live" loading="lazy">
-      <p class="bildtext">Samma vattenfall, i portalen — dra i reglaget, se din andel räknas om direkt.</p>
-    </div>
+    <p class="wf-fotnot">Utan extern finansiär äger teamet hela nettovinsten. Systemet delar 50/50 med investerare enbart när ett separat investeraravtal tecknats.</p>
 
     <p>Alla siffror är öppna. Alla formler är dokumenterade. Hela teamet ser hela bilden — alltid.</p>
   </section>
