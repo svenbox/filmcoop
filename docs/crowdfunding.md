@@ -10,7 +10,7 @@ Vad händer om publiken inte bara betalar för en film — utan äger den?
 
 Traditionell filmcrowdfunding (Kickstarter, Indiegogo) ger bidragsgivare merchandise, screenings och credits. Det är transaktionellt, inte transformativt.
 
-filmcoop.soxbox.uk-modellen erbjuder något annat: **dokumenterade ägarenheter i filmens ekonomiska resultat**. Samma system som teamet använder — öppet, transparent, juridiskt bindande.
+filmcoop.nu-modellen erbjuder något annat: **dokumenterade ägarenheter i filmens ekonomiska resultat**. Samma system som teamet använder — öppet, transparent, juridiskt bindande.
 
 ---
 
@@ -70,11 +70,11 @@ Alla ägare — team och publik — ser samma waterfall via portalen. Ingen skil
 
 ## Plattformsalternativ
 
-### Option A: Befintlig plattform + filmcoop.soxbox.uk
-Integrera med Kickstarter/Indiegogo för pengainsamling. Ägarenheterna registreras separat i filmcoop.soxbox.uk-systemet. Enklast att bygga, svårast att kommunicera.
+### Option A: Befintlig plattform + filmcoop.nu
+Integrera med Kickstarter/Indiegogo för pengainsamling. Ägarenheterna registreras separat i filmcoop.nu-systemet. Enklast att bygga, svårast att kommunicera.
 
 ### Option B: Fristående kampanjsida
-Bygg en enkel kampanjsida som integreras direkt med filmcoop.soxbox.uk. Betalning via Stripe. Ägarenheter registreras automatiskt.
+Bygg en enkel kampanjsida som integreras direkt med filmcoop.nu. Betalning via Stripe. Ägarenheter registreras automatiskt.
 
 ### Option C: Befintlig equity crowdfunding
 Samarbeta med befintliga equity crowdfunding-plattformar (FundedByMe m.fl.). Kräver att de förstår och accepterar filmbranschens specifika waterfall-logik.

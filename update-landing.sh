@@ -10,4 +10,4 @@ cp web/index.html app/public/landing.html
 echo "Bygger om och startar om containern..."
 docker compose up -d --build
 
-echo "Klart. https://filmcoop.soxbox.uk/ kör den uppdaterade sidan."
+echo "Klart. https://filmcoop.nu/ kör den uppdaterade sidan."

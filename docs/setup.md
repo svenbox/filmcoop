@@ -1,6 +1,6 @@
 # Setup-guide
 
-Komplett instruktion för att sätta upp film.coop (filmcoop.soxbox.uk) på din server.
+Komplett instruktion för att sätta upp film.coop (filmcoop.nu) på din server.
 
 ## Förutsättningar
 
@@ -35,13 +35,13 @@ Komplett instruktion för att sätta upp film.coop (filmcoop.soxbox.uk) på din 
 
 1. APIs & Services → Credentials → Create OAuth client ID
 2. Application type: Web application
-3. Authorized redirect URIs: `https://filmcoop.soxbox.uk/api/auth/callback/google`
+3. Authorized redirect URIs: `https://filmcoop.nu/api/auth/callback/google`
 4. Kopiera Client ID och Client Secret
 
 ## Steg 3 — Konfigurera portalen
 
 ```bash
-git clone https://github.com/tvaatrad/filmcoop
+git clone https://github.com/svenbox/filmcoop
 cd filmcoop
 cp .env.example .env
 ```
@@ -55,7 +55,7 @@ GOOGLE_SERVICE_ACCOUNT_EMAIL=filmcoop-sheets@ditt-projekt.iam.gserviceaccount.co
 GOOGLE_PRIVATE_KEY="-----BEGIN RSA PRIVATE KEY-----\n...\n-----END RSA PRIVATE KEY-----\n"
 SPREADSHEET_ID=   # ID:t från din Sheets-URL
 NEXTAUTH_SECRET=  # openssl rand -base64 32
-NEXTAUTH_URL=https://filmcoop.soxbox.uk
+NEXTAUTH_URL=https://filmcoop.nu
 PRODUCER_EMAILS=din@epost.se
 ```
 

@@ -8,7 +8,7 @@ på när i produktionen man går in, vilken funktion man har, och hur mycket man
 faktiskt bidrar med. Uppskjutna arvoden konverteras till dokumenterade
 ägarenheter som ger rätt till en andel av filmens intäkter.
 
-→ [filmcoop.soxbox.uk](https://filmcoop.soxbox.uk) — läs mer och se hur det
+→ [filmcoop.nu](https://filmcoop.nu) — läs mer och se hur det
 fungerar
 
 ## Portalen i praktiken

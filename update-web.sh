@@ -36,4 +36,4 @@ fi
 echo "Startar om containern (krävs för att nya filer ska bli synliga)..."
 docker restart "${CONTAINER}" >/dev/null
 
-echo "Klart. https://filmcoop.soxbox.uk/ kör den uppdaterade sidan."
+echo "Klart. https://filmcoop.nu/ kör den uppdaterade sidan."
