@@ -193,14 +193,47 @@ Varje teammedlem får ett skriftligt utdrag vid varje lock-punkt. Utdraget visar
 
 ---
 
+## 9b. Vad en finansiär ser
+
+I ett möte med en potentiell finansiär finns tre dokument:
+
+**Budgeten** (SFI-format)
+Ser ut som alla andra filmbudgetar. Egeninsats/Deferment är ifyllt under
+respektive avdelning. Finansiären ser vad projektet faktiskt kostar,
+vad som betalas under produktion och vad som skjuts upp.
+
+**Recoupment Schedule**
+En separat bilaga med utbetalningsordningen konkretiserad i tre scenarier —
+litet utfall, mellant, stort. Finansiären ser exakt var sin investering
+rankas, när den återbetalas och vad som krävs i intäkter för att nå
+vinststadiet. Det är samma typ av dokument som används i
+fastighetssyndikering och musikpublishing.
+
+**Ägarenhetsregistret** (anonymiserat)
+Visar hur teamets ägarenheter fördelar sig i procent, utan individuella
+löner. Finansiären ser att ägarstrukturen är dokumenterad och låst vid
+definierade tidpunkter — inte ett löfte som kan omförhandlas.
+
+Teamets uppskjutna arvoden är kontrakterade skulder som rankas under
+finansiärens recoupment. Det innebär att finansiären återfår sitt
+kapital innan teamet ser någon vinst. För en finansiär van vid andra
+branscher är det en välbekant struktur.
+
+---
+
 ## 10. Crowdfunding (under utveckling)
 
-Vi bygger integration för crowdfunding direkt i systemet — så att publiken kan äga delar av filmen på samma villkor som teamet:
+Frågan är egentligen enkel: varför ska en person som älskar film
+nöja sig med en t-shirt och ett tack i eftertexterna när hen
+finansierar ett projekt?
 
-- Publik finansierar via crowdfunding och får dokumenterade ägarenheter
-- Ägarenheterna följer samma utbetalningsordning som teamets
-- Kräver lämplig juridisk struktur (kooperativ eller ekonomisk förening per film)
-- Full transparens: alla ägare ser samma information
+Det vi försöker bygga är en modell där en publik kan finansiera en
+film och få en dokumenterad andel i resultatet — på samma villkor
+som teamet. Inte merchandise. En faktisk ekonomisk andel.
+
+Det kräver juridisk struktur (troligen ett kooperativ eller ekonomisk
+förening per film) och vi är inte där än. Men tekniken finns och vi
+bygger det öppet.
 
 Se `docs/crowdfunding.md` för aktuell status och hur du kan bidra.
 
