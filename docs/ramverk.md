@@ -28,6 +28,12 @@ Systemet bygger på tre grundprinciper:
 
 Ägarenheter är **relativa**: om teamet har 8 000 enheter totalt och du har 800 äger du 10% av teamets pool. Det absoluta antalet enheter spelar ingen roll — bara förhållandet dem emellan.
 
+### Ägarenheter är royalty, inte ett engångsbelopp
+
+En ägarenhet är inte en bonus som betalas ut en gång. Den ger rätt till en andel av **alla** framtida intäkter filmen genererar — ny försäljning, förlängda avtal, nypremiärer, streaming år efter år — under hela filmens upphovsrättsliga skyddstid. Ekonomiskt är det samma mekanism som en royalty: en löpande andel kopplad till användning, inte en engångsersättning för utfört arbete.
+
+Det här är inte i konflikt med de royalties som redan finns i kollektivavtalen för skådespelare (se 4b) — de är en separat, lagstadgad lägstanivå per återanvändning. Ägarenheterna i film.coop är ett tillägg ovanpå den nivån, inte en ersättning för den.
+
 ### Uppskjutet arvode
 
 Skillnaden mellan marknadsmässigt arvode och det reducerade arvode som betalas under produktion. Bokförs som en reell produktionskostnad och återbetalas ur filmens intäkter **innan** vinst räknas — det är inte en gåva, utan en uppskjuten lön.
@@ -59,11 +65,21 @@ Utöver fas multipliceras ägarenheterna med en faktor som speglar funktionens k
 
 | Kategori | Vad det innebär | Multiplikator | Roller (exempel) |
 |---|---|---|---|
-| Nyckelkreativ | Unikt konstnärligt eller kreativt ansvar som inte kan delegeras | 1,5× | Regissör, DOP, Scenograf, Klippare, Kompositör, Producent (lead) |
-| Avdelningsansvarig | Leder en avdelning med eget budget- och personalansvar | 1,2× | 1:e AD, Kostymör, Ljudmästare, Colorist, Manusförfattare |
-| Crew | Operativt bidrag och stödfunktioner | 1,0× | PA, Grip, Gaffer, Rekvisitör, övrig crew |
+| Nyckelkreativ | Unikt konstnärligt eller kreativt ansvar som inte kan delegeras | 1,5× | Regissör, DOP, Scenograf, Klippare, Kompositör, Producent (lead), Skådespelare i huvudroll |
+| Avdelningsansvarig | Leder en avdelning med eget budget- och personalansvar | 1,2× | 1:e AD, Kostymör, Ljudmästare, Colorist, Manusförfattare, Skådespelare i återkommande biroll |
+| Crew | Operativt bidrag och stödfunktioner | 1,0× | PA, Grip, Gaffer, Rekvisitör, övrig crew, Statist / enstaka replikroll |
 
 Producenten beslutar vilken kategori varje funktion tilldelas vid projektstart. Beslutet dokumenteras och kommuniceras till hela teamet.
+
+---
+
+## 4b. Skådespelare och kollektivavtalet
+
+Skådespelare tjänar in ägarenheter enligt exakt samma formel som resten av teamet — dagar × faspoäng × kategorimultiplikator (se ovan). Inspelningsdagar bokas på F4/F5 precis som för crew. Ingen särskild mekanism behövs.
+
+Den enda skillnaden är en gräns som måste respekteras: för skådespelare bundna av kollektivavtal (Fackförbundet Scen & Film) får **uppskjutet arvode aldrig innebära att den faktiska utbetalningen understiger avtalets minimibelopp**. Ägarenheter läggs ovanpå scale — de ersätter den inte. Det är samma princip som filmen *Sing Sing* använde: hela ensemblen fick minst SAG:s minimilön, och därutöver samma ägarandelspool som crewet.
+
+Kollektivavtalet ger också skådespelare en egen, lagstadgad royalty vid återanvändning (rerun, ny visningsperiod etc.) — helt separat från ägarenheterna. De två systemen samexisterar: kollektivavtalets royalty är en golvnivå per användning, ägarenheterna är en öppen andel av filmens hela ekonomiska resultat.
 
 ---
 

@@ -10,7 +10,7 @@ export const GRUPP_HEADER_TOOLTIP =
 export const GRUPP_TOOLTIP: Record<string, string> = {
   A: "Nyckelkreativ — unikt konstnärligt eller kreativt ansvar som inte kan delegeras. Multiplikator 1,5×.",
   B: "Avdelningsansvarig — leder en avdelning med eget budget- och personalansvar. Multiplikator 1,2×.",
-  C: "Crew — gör produktionen möjlig i praktiken. Multiplikator 1,0×.",
+  C: "Crew — gör produktionen möjlig i praktiken. Gäller även statister och enstaka replikroller. Multiplikator 1,0×.",
 };
 
 export const WATERFALL_TOOLTIP: Record<string, string> = {
