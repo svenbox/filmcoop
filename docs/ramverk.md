@@ -83,6 +83,32 @@ Kollektivavtalet ger också skådespelare en egen, lagstadgad royalty vid återa
 
 ---
 
+## 4c. Ägarandel är inte detsamma som konstnärligt inflytande
+
+Ägarenheter beskriver en ekonomisk rätt. De beskriver ingenting om vem som bestämmer. Det är lätt att blanda ihop de två — särskilt när fler typer av bidragsgivare (crowdfunding-backare, sena investerare, skådespelare i enstaka scener) äger enheter i samma projekt. Systemet skiljer på tre olika saker:
+
+| | Vad det är | Styrs av |
+|---|---|---|
+| Ägarandel | Ekonomisk rätt till en andel av intäkterna | Ägarenhetsregistret (denna modell) |
+| Konstnärligt beslutsmandat | Rätten att faktiskt bestämma — final cut, casting, manusgodkännande, distributionsavtal | Roll och avtal, dokumenteras separat |
+| Ideella rättigheter | Rätt till namngivning och skydd mot kränkande ändringar (Upphovsrättslagen §3) | Följer den enskilda upphovspersonen, inte överlåtbara |
+
+En sen investerare eller en crowdfunding-backare kan äga en betydande andel utan någon som helst beslutsrätt. En regissör har normalt final cut fram till leverans oavsett hur stor eller liten dennes ägarandel är i förhållande till andra. De två är inte kopplade, och ska inte vara det — annars riskerar den som lägger in mest pengar sent i processen att kunna styra det konstnärliga resultatet.
+
+**Regel:** konstnärligt beslutsmandat definieras explicit per roll i Participation Agreement — vem har final cut, vem godkänner större manusändringar, vem beslutar om distributionsavtal — och räknas aldrig proportionellt mot ägarenheter. Ideella rättigheter nämns för tydlighetens skull: de följer alltid upphovspersonen och påverkas inte av vem som äger ekonomiska andelar.
+
+---
+
+## 4d. Originalidé och grundkoncept
+
+Manusförfattande (§4, Avdelningsansvarig) värderar **utfört skrivarbete** — dagar spenderade på manuset. Det täcker inte alltid själva idén. Den som föder grundkonceptet, eller äger rättigheterna till en sann historia filmen bygger på, kan ha bidragit med projektets mest avgörande kreativa insats utan att logga en enda arbetsdag. Det är samma distinktion som Writers Guild gör mellan "Story by" och "Screenplay by" — idé och utförande är olika bidrag och värderas olika.
+
+Dagar × faspoäng × multiplikator fungerar dåligt för det här, eftersom en idés värde inte är proportionellt mot tid — en avgörande idé kan uppstå på en eftermiddag.
+
+**Lösning:** originalidé/grundkoncept hanteras utanför formeln, som en fast engångstilldelning av ägarenheter som producenten beslutar vid Lock 1, dokumenterad separat i registret. Tilldelningen läggs till *utöver* eventuella ägarenheter personen senare tjänar in genom faktiskt arbete — om idéns upphovsperson också skriver manuset får de båda delarna, de ersätter inte varandra. Samma princip gäller den som äger underliggande rättigheter (t.ex. "life rights") till en verklig historia.
+
+---
+
 ## 5. Beräkningsformel
 
 ```
