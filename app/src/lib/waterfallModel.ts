@@ -36,7 +36,6 @@ export interface ModelResult {
   /** Delandelar av nettot (före ev. begränsning till 100 %), per finansiär. */
   andelSamproducent: number;
   andelKontant: number;
-  andelStod: number;
   andelMg: number;
   crewPool: number;
   finansiarspool: number;
@@ -64,8 +63,8 @@ function clamp01(n: number): number {
  *     och kontantinsats, som får samproducentens villkor.
  *  5. Kvarvarande uppskjutna arvoden.
  *  6. Netto delas: samproducentens och kontantinsatsens andelar = belopp /
- *     total budget, plus de fasta andelar för stöd och MG som anges i
- *     kalkylbladet. Resten till teamet.
+ *     total budget, plus distributörens fasta andel (MG) från kalkylbladet.
+ *     Stöd har inget anspråk på ägande och tar ingen andel. Resten till teamet.
  */
 export function computeWaterfall(
   params: ModelParams,
@@ -102,9 +101,8 @@ export function computeWaterfall(
 
   const samAndel = params.totalBudget > 0 ? samproducent / params.totalBudget : 0;
   const kontantAndel = params.totalBudget > 0 ? kontant / params.totalBudget : 0;
-  const andelStod = stod > 0 ? params.stod.andelAvNetto : 0;
   const andelMg = mg > 0 ? params.distributor.andelAvNetto : 0;
-  const rawAndel = samAndel + kontantAndel + andelStod + andelMg;
+  const rawAndel = samAndel + kontantAndel + andelMg;
   const finansiarsAndel = clamp01(rawAndel);
   const finansiarspool = nettoEfterDeferred * finansiarsAndel;
   const finansiarspoolKontant = rawAndel > 0 ? finansiarspool * (kontantAndel / rawAndel) : 0;
@@ -136,7 +134,6 @@ export function computeWaterfall(
     finansiarsAndel,
     andelSamproducent: samAndel,
     andelKontant: kontantAndel,
-    andelStod,
     andelMg,
     crewPool,
     finansiarspool,

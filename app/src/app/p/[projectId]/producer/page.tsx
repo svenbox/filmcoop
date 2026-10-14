@@ -460,12 +460,6 @@ export default function ProducerPage() {
                     <span className="wf-value">{formatPercent(wf.andelKontant)}</span>
                   </div>
                 )}
-                {wf.andelStod > 0 && (
-                  <div className="wf-row">
-                    <span>Stöd (fast andel)</span>
-                    <span className="wf-value">{formatPercent(wf.andelStod)}</span>
-                  </div>
-                )}
                 {wf.andelMg > 0 && (
                   <div className="wf-row">
                     <span>Distributör (fast andel)</span>

@@ -30,7 +30,7 @@ export const WATERFALL_TOOLTIP: Record<string, string> = {
   crewPool:
     "Teamets del av nettovinsten, fördelad efter ägarenheter. Utan samproducent går hela nettot till teamet.",
   finansiarspool:
-    "Finansiärernas del av nettot. Samproducentens och kontantinsatsens andel motsvarar deras del av totalbudgeten, plus eventuella fasta andelar för stöd eller distributör som angetts i kalkylbladet.",
+    "Finansiärernas del av nettot. Samproducentens och kontantinsatsens andel motsvarar deras del av totalbudgeten, plus en eventuell fast andel för distributören som angetts i kalkylbladet. Stöd tar ingen andel.",
   stod:
     "Stöd som inte betalas tillbaka ur filmens intäkter, t.ex. produktionsstöd från Filminstitutet eller kommunalt stöd. Bidrar först till att täcka budgetens kontantbehov och sedan till att betala arvoden direkt.",
   samproducent:
