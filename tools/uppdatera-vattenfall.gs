@@ -16,9 +16,58 @@
  *   - Övrig egeninsats (totalbudget minus kontant minus uppskjutna löner)
  *     återbetalas före vinst, på samma sätt som de uppskjutna lönerna.
  *   - Hjälpberäkningen läggs på rad 40–54 i Waterfall Simulering.
+ *
+ * Skriptet markerar också tydligt var du får skriva och var du inte ska det:
+ *   - GUL cell med blå text = inmatning, fyll i själv.
+ *   - GRÅ cell med mörk text = formel eller länk, ändra inte manuellt. Ändra i
+ *     stället källan (t.ex. tabellen Finansiärer eller fliken Teamlista).
+ *   Färgen sätts efter vad cellen faktiskt innehåller, så en cell som ser ut som
+ *   inmatning men är en formel blir grå. Formelblocken får dessutom ett
+ *   varningsskydd: du kan fortfarande ändra, men får en varning först.
  */
 
 const KOLUMNER = ["D", "E", "F"]; // scenario A, B, C
+
+const STIL_INMATNING = { bakgrund: "#fffde7", text: "#0000cc" };
+const STIL_FORMEL = { bakgrund: "#f1f3f4", text: "#202124" };
+const SKYDD_PREFIX = "film.coop: ";
+
+// [flik, intervall, typ]
+//   "inmatning": cellen blir gul/blå om den är tom eller har ett fast värde, men
+//                grå om den innehåller en formel eller länk.
+//   "formel":    cellen blir alltid grå.
+const ZONER = [
+  ["Waterfall Simulering", "D7:F8", "inmatning"],
+  ["Waterfall Simulering", "D9:F12", "inmatning"],
+  ["Waterfall Simulering", "D15:F24", "formel"],
+  ["Waterfall Simulering", "D29:F30", "formel"],
+  ["Waterfall Simulering", "D35:E37", "inmatning"],
+  ["Waterfall Simulering", "F35:F36", "formel"],
+  ["Waterfall Simulering", "F37", "inmatning"],
+  ["Waterfall Simulering", "D41:F54", "formel"],
+  ["Projektinställningar", "C5:C13", "inmatning"],
+  ["Projektinställningar", "C14", "formel"],
+  ["Projektinställningar", "C17:C19", "inmatning"],
+  ["Projektinställningar", "D24:F31", "inmatning"],
+  ["Projektinställningar", "G24:G31", "formel"],
+  ["Projektinställningar", "D36:D38", "inmatning"],
+  ["Projektinställningar", "C42:C43", "formel"],
+  ["Projektinställningar", "C44", "inmatning"],
+  ["Projektinställningar", "C49:C50", "inmatning"],
+  ["Projektinställningar", "C51", "formel"],
+];
+
+// Block som får varningsskydd (du kan ändra, men får en varning först).
+const SKYDDADE_BLOCK = [
+  ["Waterfall Simulering", "D15:F24"],
+  ["Waterfall Simulering", "D29:F30"],
+  ["Waterfall Simulering", "D41:F54"],
+  ["Projektinställningar", "G24:G31"],
+  ["Projektinställningar", "C14"],
+];
+
+const FÖRKLARING =
+  "GUL cell med blå text = fyll i  ·  GRÅ cell = formel eller länk, ändra inte manuellt";
 
 // [rad, text] i kolumn B (Waterfall Simulering)
 const ETIKETTER = [
@@ -100,7 +149,112 @@ function uppdateraVattenfall() {
   pi.getRange("B43").setValue("Premie på kontantinsats — används inte längre");
   pi.getRange("D43").setValue("Kontantinsatsen återbetalas med samproducentens multiplikator");
 
+  markeraInmatning();
+
   SpreadsheetApp.getUi().alert(
-    "Klart. Waterfall Simulering använder nu samma modell som portalen."
+    "Klart. Waterfall Simulering använder nu samma modell som portalen, och " +
+      "inmatningsceller (gula) och formler (grå) är markerade."
   );
+}
+
+/** Färgar inmatning respektive formler och lägger varningsskydd på formelblock. */
+function markeraInmatning() {
+  const ss = SpreadsheetApp.getActive();
+
+  ZONER.forEach(([flik, intervall, typ]) => {
+    const blad = ss.getSheetByName(flik);
+    if (blad) färgaZon_(blad.getRange(intervall), typ);
+  });
+
+  // Egeninsats & Poäng: antalet rader varierar, så hitta SUMMERING-raden.
+  const eg = ss.getSheetByName("Egeninsats & Poäng");
+  if (eg) {
+    const kolB = eg.getRange("B1:B300").getValues();
+    const summering = kolB.findIndex((r) => String(r[0]).trim().toUpperCase() === "SUMMERING") + 1;
+    const sista = summering > 0 ? summering - 1 : eg.getLastRow();
+    färgaZon_(eg.getRange("C5:I" + sista), "inmatning");
+    färgaZon_(eg.getRange("N5:Q" + sista), "inmatning");
+    färgaZon_(eg.getRange("J5:M" + sista), "formel");
+    if (summering > 0) färgaZon_(eg.getRange("J" + summering + ":M" + summering), "formel");
+    skydda_(eg, "J5:M" + sista);
+    skrivFörklaring_(eg, "B3", true);
+  }
+
+  SKYDDADE_BLOCK.forEach(([flik, intervall]) => {
+    const blad = ss.getSheetByName(flik);
+    if (blad) skydda_(blad, intervall);
+  });
+
+  const wf = ss.getSheetByName("Waterfall Simulering");
+  if (wf) {
+    skrivFörklaring_(wf, "B4", false);
+    wf.getRange("F35").setNote("Används inte: stöd tar ingen andel av nettot.");
+  }
+  const pi = ss.getSheetByName("Projektinställningar");
+  if (pi) skrivFörklaring_(pi, "B3", false);
+
+  // Equity Dashboard räknas ut automatiskt: varna vid manuell ändring av hela fliken.
+  const dash = ss.getSheetByName("Equity Dashboard");
+  if (dash) {
+    skyddaFlik_(dash);
+    const info = dash.getRange("B4");
+    if (String(info.getValue()).trim() === "") {
+      info.setValue("Hela fliken räknas ut automatiskt — redigera inte här. Ändra i Egeninsats & Poäng.")
+        .setFontStyle("italic");
+    }
+  }
+}
+
+function färgaZon_(intervall, typ) {
+  const bakgrunder = [];
+  const texter = [];
+  intervall.getFormulas().forEach((rad) => {
+    const b = [];
+    const t = [];
+    rad.forEach((formel) => {
+      const stil = typ === "inmatning" && formel === "" ? STIL_INMATNING : STIL_FORMEL;
+      b.push(stil.bakgrund);
+      t.push(stil.text);
+    });
+    bakgrunder.push(b);
+    texter.push(t);
+  });
+  intervall.setBackgrounds(bakgrunder).setFontColors(texter);
+}
+
+function skydda_(blad, a1) {
+  taBortSkydd_(blad, a1);
+  blad
+    .getRange(a1)
+    .protect()
+    .setDescription(SKYDD_PREFIX + "formler — ändra inte manuellt (" + a1 + ")")
+    .setWarningOnly(true);
+}
+
+function skyddaFlik_(blad) {
+  taBortSkydd_(blad, null);
+  blad
+    .protect()
+    .setDescription(SKYDD_PREFIX + "räknas ut automatiskt — ändra inte manuellt")
+    .setWarningOnly(true);
+}
+
+// Tar bort skydd som det här skriptet satt tidigare, så att det går att köra om.
+function taBortSkydd_(blad, a1) {
+  const typer = [SpreadsheetApp.ProtectionType.RANGE, SpreadsheetApp.ProtectionType.SHEET];
+  typer.forEach((typ) => {
+    blad.getProtections(typ).forEach((skydd) => {
+      const beskrivning = skydd.getDescription();
+      if (beskrivning.indexOf(SKYDD_PREFIX) !== 0) return;
+      if (a1 === null || beskrivning.indexOf("(" + a1 + ")") !== -1) skydd.remove();
+    });
+  });
+}
+
+// Skriver förklaringen i en cell, men bara om cellen är tom (eller ersätt = true).
+function skrivFörklaring_(blad, a1, ersätt) {
+  const cell = blad.getRange(a1);
+  if (ersätt || String(cell.getValue()).trim() === "") {
+    cell.setValue(FÖRKLARING).setFontStyle("italic");
+  }
 }
