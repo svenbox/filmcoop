@@ -281,7 +281,9 @@ export async function getModelParams(spreadsheetId: string): Promise<ModelParams
     totalBudget: iv("C11"),
     kontantinsats: iv("C51", wv("D9")),
     kontantBudget: iv("C12"),
-    distributionsavgift: wv("D8", 0.25),
+    // Scenario B (mellanstort utfall). Scenario A:s kolumn kan ha 0 % för små
+    // utfall utan distributör och ger då en för låg break-even.
+    distributionsavgift: wv("E8", 0.25),
     deferredPool: wv("D12"),
     ovrigEgeninsats: Math.max(0, iv("C13") - wv("D12")),
     stod: fin(35, 0),
