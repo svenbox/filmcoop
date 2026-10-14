@@ -33,7 +33,7 @@ export function OnboardingModal({ projektnamn }: { projektnamn: string }) {
       <div className="modal">
         <h3>Välkommen till {projektnamn || "produktionen"}</h3>
         <p>
-          Den här filmen görs med delat ägande. Du och resten av teamet
+          Den här filmen görs med delad intäktsandel. Du och resten av teamet
           skjuter upp en del av ert arvode under produktionen.
         </p>
         <p>

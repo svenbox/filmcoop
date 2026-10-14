@@ -34,6 +34,9 @@ export interface ProjectSettings {
   projektnamn: string;
   produktionsbolag: string;
   producent: string;
+  startDevelopment: string;
+  inspelningsstart: string;
+  leverans: string;
   lock1: string;
   lock2: string;
   lock3: string;
@@ -201,10 +204,60 @@ export async function getProjectSettings(spreadsheetId: string): Promise<Project
     projektnamn: String(cell("C5") ?? ""),
     produktionsbolag: String(cell("C6") ?? ""),
     producent: String(cell("C7") ?? ""),
+    startDevelopment: String(cell("C8") ?? ""),
+    inspelningsstart: String(cell("C9") ?? ""),
+    leverans: String(cell("C10") ?? ""),
     lock1: String(cell("C17") ?? ""),
     lock2: String(cell("C18") ?? ""),
     lock3: String(cell("C19") ?? ""),
   };
+}
+
+export interface Kontakt {
+  namn: string;
+  epost: string;
+  telefon: string;
+}
+
+export interface FaqPost {
+  fraga: string;
+  svar: string;
+}
+
+/**
+ * Producentens kontaktuppgifter ur fliken Teamlista (raden vars position innehåller
+ * "Producent"). Visas bara om kolumnen "Visa på webb" är JA. Saknas fliken eller
+ * raden returneras null.
+ */
+export async function getProducentKontakt(spreadsheetId: string): Promise<Kontakt | null> {
+  const doc = await getDoc(spreadsheetId);
+  const sheet = doc.sheetsByTitle["Teamlista"];
+  if (!sheet) return null;
+
+  await sheet.loadCells("A1:F40");
+  for (let rad = 2; rad <= 40; rad++) {
+    const v = (kol: string) => String(sheet.getCellByA1(`${kol}${rad}`).formattedValue ?? "").trim();
+    if (!v("C").toLowerCase().includes("producent")) continue;
+    if (v("F").toUpperCase() !== "JA") return null;
+    return { namn: v("B"), epost: v("D"), telefon: v("E") };
+  }
+  return null;
+}
+
+/** Frågor och svar till teamet ur fliken "Frågor och svar" (kolumn A = fråga, B = svar). */
+export async function getFaq(spreadsheetId: string): Promise<FaqPost[]> {
+  const doc = await getDoc(spreadsheetId);
+  const sheet = doc.sheetsByTitle["Frågor och svar"];
+  if (!sheet) return [];
+
+  await sheet.loadCells("A2:B60");
+  const poster: FaqPost[] = [];
+  for (let rad = 2; rad <= 60; rad++) {
+    const fraga = String(sheet.getCellByA1(`A${rad}`).formattedValue ?? "").trim();
+    if (!fraga) continue;
+    poster.push({ fraga, svar: String(sheet.getCellByA1(`B${rad}`).formattedValue ?? "").trim() });
+  }
+  return poster;
 }
 
 function scenarioColumn(sheet: GoogleSpreadsheetWorksheet, col: number): WaterfallScenario {

@@ -16,6 +16,9 @@
  *   - Övrig egeninsats (totalbudget minus kontant minus uppskjutna löner)
  *     återbetalas före vinst, på samma sätt som de uppskjutna lönerna.
  *   - Hjälpberäkningen läggs på rad 40–54 i Waterfall Simulering.
+ *   - Fliken "Frågor och svar" skapas (om den saknas) med de frågor en medverkande brukar
+ *     ställa. Skriv svaren i kolumn B: de visas för crew i portalen, och obesvarade
+ *     frågor visas som "Inte besvarat än".
  *   - Kolumnen "Avtal" (JA/NEJ) läggs till sist i Egeninsats & Poäng. JA betyder att
  *     personen skrivit under rättighetsöverlåtelse och Participation Agreement.
  *     Portalen visar avtalsstatus per person och varnar för dem som saknar avtal.
@@ -152,12 +155,38 @@ function uppdateraVattenfall() {
   pi.getRange("B43").setValue("Premie på kontantinsats — används inte längre");
   pi.getRange("D43").setValue("Kontantinsatsen återbetalas med samproducentens multiplikator");
 
+  skapaFragorOchSvar_();
   markeraInmatning();
 
   SpreadsheetApp.getUi().alert(
     "Klart. Waterfall Simulering använder nu samma modell som portalen, och " +
       "inmatningsceller (gula) och formler (grå) är markerade."
   );
+}
+
+const STANDARDFRAGOR = [
+  "Hur och när betalas mitt uppskjutna arvode?",
+  "Vem betalar sociala avgifter och semesterersättning när arvodet betalas ut?",
+  "Gäller försäkring under inspelningen?",
+  "Gäller mitt kollektivavtal (Scen & Film), och vad händer med min royalty vid återanvändning?",
+  "Vad händer om jag hoppar av?",
+  "Vad händer om filmen aldrig blir gjord eller såld?",
+  "Vad händer med rättigheterna, och hur blir jag namngiven?",
+];
+
+// Skapar fliken "Frågor och svar" om den saknas. Befintliga svar skrivs aldrig över.
+function skapaFragorOchSvar_() {
+  const ss = SpreadsheetApp.getActive();
+  if (ss.getSheetByName("Frågor och svar")) return;
+
+  const blad = ss.insertSheet("Frågor och svar");
+  blad.getRange("A1:B1").setValues([["Fråga", "Svar (visas för crew i portalen)"]]).setFontWeight("bold");
+  blad
+    .getRange(2, 1, STANDARDFRAGOR.length, 2)
+    .setValues(STANDARDFRAGOR.map((fraga) => [fraga, ""]));
+  blad.setColumnWidth(1, 460);
+  blad.setColumnWidth(2, 620);
+  blad.getRange(2, 2, 59, 1).setBackground(STIL_INMATNING.bakgrund).setFontColor(STIL_INMATNING.text);
 }
 
 /** Färgar inmatning respektive formler och lägger varningsskydd på formelblock. */

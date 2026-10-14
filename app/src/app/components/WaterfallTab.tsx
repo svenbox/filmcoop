@@ -198,6 +198,11 @@ export function WaterfallTab({ params, waterfall, team = [], antalPersoner, self
             </span>
           </li>
         </ol>
+        <p className="section-intro">
+          Finansiärerna står före de uppskjutna arvodena eftersom de lägger in pengar som måste finnas
+          för att filmen ska kunna göras, och tar den kontanta risken. Det gäller även den som lagt
+          in kontanter i produktionen. Därefter betalas de uppskjutna arvodena, före någon vinst.
+        </p>
       </div>
 
       {!crewVy && params.totalBudget > 0 && (

@@ -1,6 +1,13 @@
 import { NextResponse } from "next/server";
 import { authorizeProject, isProducerOf } from "@/lib/access";
-import { getAllCrewMembers, getModelParams, getProjectSettings, getWaterfall } from "@/lib/sheets";
+import {
+  getAllCrewMembers,
+  getFaq,
+  getModelParams,
+  getProjectSettings,
+  getWaterfall,
+  type FaqPost,
+} from "@/lib/sheets";
 
 export async function GET(
   _req: Request,
@@ -16,14 +23,15 @@ export async function GET(
   const id = auth.project.spreadsheetId;
 
   try {
-    const [project, rows, waterfall, modelParams] = await Promise.all([
+    const [project, rows, waterfall, modelParams, faq] = await Promise.all([
       getProjectSettings(id),
       getAllCrewMembers(id),
       getWaterfall(id),
       getModelParams(id),
+      getFaq(id).catch(() => [] as FaqPost[]),
     ]);
 
-    return NextResponse.json({ project, rows, waterfall, params: modelParams });
+    return NextResponse.json({ project, rows, waterfall, params: modelParams, faq });
   } catch (err) {
     console.error("Kunde inte hämta producent-data från Sheets", err);
     return NextResponse.json(

@@ -1,10 +1,14 @@
 import {
   getAllCrewMembers,
   getCrewMembersForEmail,
+  getFaq,
+  getProducentKontakt,
   getModelParams,
   getProjectSettings,
   getWaterfall,
   type CrewMember,
+  type FaqPost,
+  type Kontakt,
   type ModelParams,
   type ProjectSettings,
   type WaterfallData,
@@ -16,6 +20,8 @@ export interface MyEquityData {
   rows: CrewMember[];
   waterfall: WaterfallData;
   params: ModelParams;
+  kontakt: Kontakt | null;
+  faq: FaqPost[];
   totalPoang: number;
   samagareCount: number;
 }
@@ -38,15 +44,18 @@ export async function getMyEquityData(
   const rows = await getCrewMembersForEmail(spreadsheetId, email);
   if (rows.length === 0) return null;
 
-  const [project, waterfall, params, allRows] = await Promise.all([
+  const [project, waterfall, params, allRows, kontakt, faq] = await Promise.all([
     getProjectSettings(spreadsheetId),
     getWaterfall(spreadsheetId),
     getModelParams(spreadsheetId),
     getAllCrewMembers(spreadsheetId),
+    // Kontakt och frågor är tillägg: ett fel där ska inte stoppa hela sidan.
+    getProducentKontakt(spreadsheetId).catch(() => null),
+    getFaq(spreadsheetId).catch(() => [] as FaqPost[]),
   ]);
 
   const totalPoang = allRows.reduce((sum, r) => sum + r.poang, 0);
   const samagareCount = groupByPerson(allRows).length;
 
-  return { project, rows, waterfall, params, totalPoang, samagareCount };
+  return { project, rows, waterfall, params, kontakt, faq, totalPoang, samagareCount };
 }

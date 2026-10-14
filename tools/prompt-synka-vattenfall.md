@@ -6,6 +6,7 @@ film.coop-portalen (filmcoop.nu) har en vattenfallsmodell som kalkylbladets flik
 1. Skriver om Waterfall Simulering så att den räknar som portalen (kontantinsatsen är en vanlig finansiär utan premie, stöd tar ingen andel av nettot, finansiärernas andel är insats ÷ total kostnad, övrig egeninsats återbetalas, samproducentens villkor hämtas från tabellen Finansiärer).
 2. Färgmarkerar bladet: GUL cell med blå text = fyll i, GRÅ cell = formel eller länk som man inte ska ändra manuellt. Formelblock får dessutom ett varningsskydd (man kan fortfarande ändra, men får en varning först).
 3. Lägger till kolumnen "Avtal" (JA/NEJ-rullista) sist bland rubrikerna i Egeninsats & Poäng. Portalen använder den för att visa vem som skrivit under rättighetsöverlåtelse och Participation Agreement. Den ska lämnas tom: jag fyller i den själv.
+4. Skapar fliken "Frågor och svar" med de frågor en medverkande brukar ställa (betalning, sociala avgifter, försäkring, kollektivavtal, avhopp, rättigheter). Svaren i kolumn B ska lämnas tomma: jag skriver dem själv, och de visas för crew i portalen.
 
 Kalkylbladet: [KLISTRA IN LÄNK TILL EPER-BLADET HÄR]
 
@@ -36,6 +37,7 @@ Du måste kunna redigera kalkylbladet som mig, antingen i min inloggade webbläs
    - Färger: Waterfall Simulering D7:F8 och D35:E37 är gula med blå text. D9:F12, D15:F24 och D41:F54 är grå. I Egeninsats & Poäng är kolumnerna J:M grå och till exempel Dagar och Roll gula, utom celler som är formler (grå).
    - Vid manuell ändring i en grå formelcell visas en varning.
    - Egeninsats & Poäng har en ny rubrik "Avtal" sist bland rubrikerna på rad 4 (troligen kolumn R), med JA/NEJ-rullista på datarader. Cellerna ska vara tomma. Fyll inte i några värden.
+   - En ny flik "Frågor och svar" finns, med sju frågor i kolumn A och tomma gula svarsceller i kolumn B. Skriv inga svar.
 7. Rapportera: vad du gjorde, namnet på säkerhetskopian, och alla avvikelser mot tabellen ovan (med cellreferens och faktiskt värde).
 
 ## Regler
@@ -65,6 +67,9 @@ Du måste kunna redigera kalkylbladet som mig, antingen i min inloggade webbläs
  *   - Övrig egeninsats (totalbudget minus kontant minus uppskjutna löner)
  *     återbetalas före vinst, på samma sätt som de uppskjutna lönerna.
  *   - Hjälpberäkningen läggs på rad 40–54 i Waterfall Simulering.
+ *   - Fliken "Frågor och svar" skapas (om den saknas) med de frågor en medverkande brukar
+ *     ställa. Skriv svaren i kolumn B: de visas för crew i portalen, och obesvarade
+ *     frågor visas som "Inte besvarat än".
  *   - Kolumnen "Avtal" (JA/NEJ) läggs till sist i Egeninsats & Poäng. JA betyder att
  *     personen skrivit under rättighetsöverlåtelse och Participation Agreement.
  *     Portalen visar avtalsstatus per person och varnar för dem som saknar avtal.
@@ -201,12 +206,38 @@ function uppdateraVattenfall() {
   pi.getRange("B43").setValue("Premie på kontantinsats — används inte längre");
   pi.getRange("D43").setValue("Kontantinsatsen återbetalas med samproducentens multiplikator");
 
+  skapaFragorOchSvar_();
   markeraInmatning();
 
   SpreadsheetApp.getUi().alert(
     "Klart. Waterfall Simulering använder nu samma modell som portalen, och " +
       "inmatningsceller (gula) och formler (grå) är markerade."
   );
+}
+
+const STANDARDFRAGOR = [
+  "Hur och när betalas mitt uppskjutna arvode?",
+  "Vem betalar sociala avgifter och semesterersättning när arvodet betalas ut?",
+  "Gäller försäkring under inspelningen?",
+  "Gäller mitt kollektivavtal (Scen & Film), och vad händer med min royalty vid återanvändning?",
+  "Vad händer om jag hoppar av?",
+  "Vad händer om filmen aldrig blir gjord eller såld?",
+  "Vad händer med rättigheterna, och hur blir jag namngiven?",
+];
+
+// Skapar fliken "Frågor och svar" om den saknas. Befintliga svar skrivs aldrig över.
+function skapaFragorOchSvar_() {
+  const ss = SpreadsheetApp.getActive();
+  if (ss.getSheetByName("Frågor och svar")) return;
+
+  const blad = ss.insertSheet("Frågor och svar");
+  blad.getRange("A1:B1").setValues([["Fråga", "Svar (visas för crew i portalen)"]]).setFontWeight("bold");
+  blad
+    .getRange(2, 1, STANDARDFRAGOR.length, 2)
+    .setValues(STANDARDFRAGOR.map((fraga) => [fraga, ""]));
+  blad.setColumnWidth(1, 460);
+  blad.setColumnWidth(2, 620);
+  blad.getRange(2, 2, 59, 1).setBackground(STIL_INMATNING.bakgrund).setFontColor(STIL_INMATNING.text);
 }
 
 /** Färgar inmatning respektive formler och lägger varningsskydd på formelblock. */

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
-import type { CrewMember, ModelParams, ProjectSettings, WaterfallData } from "@/lib/sheets";
+import type { CrewMember, FaqPost, Kontakt, ModelParams, ProjectSettings, WaterfallData } from "@/lib/sheets";
 import { formatPercent, formatSek } from "@/lib/format";
 import { GRUPP_HEADER_TOOLTIP, GRUPP_TOOLTIP } from "@/lib/scenarios";
 import { groupByFas } from "@/lib/fas";
@@ -11,6 +11,7 @@ import { OnboardingModal } from "../../../components/OnboardingModal";
 import { NavPills } from "../../../components/NavPills";
 import { Tooltip } from "../../../components/Tooltip";
 import { EkonomiKort } from "../../../components/EkonomiKort";
+import { FaqKort, MinInsatsKort, ScenarioTabell, TidslinjeKort } from "../../../components/CrewInfo";
 import { WaterfallTab } from "../../../components/WaterfallTab";
 
 interface MeResponse {
@@ -18,6 +19,8 @@ interface MeResponse {
   rows: CrewMember[];
   waterfall: WaterfallData;
   params: ModelParams;
+  kontakt: Kontakt | null;
+  faq: FaqPost[];
   totalPoang: number;
   samagareCount: number;
 }
@@ -61,7 +64,7 @@ export default function CrewPage() {
 
   if (!data) return null;
 
-  const { project, rows, waterfall, params, totalPoang, samagareCount } = data;
+  const { project, rows, waterfall, params, kontakt, faq, totalPoang, samagareCount } = data;
   const minPoang = rows.reduce((sum, r) => sum + r.poang, 0);
   const minDagar = rows.reduce((sum, r) => sum + r.dagar, 0);
   const minDeferred = rows.reduce((sum, r) => sum + r.deferredFee, 0);
@@ -128,6 +131,8 @@ export default function CrewPage() {
       <div className="page">
         {tab === "oversikt" && (
           <>
+            <MinInsatsKort rows={rows} andel={minAndel} params={params} />
+
             <div className="stat-grid">
               <div className="stat-box">
                 <div className="label">
@@ -135,6 +140,7 @@ export default function CrewPage() {
                   <Tooltip text="Din procentandel av den pool som fördelas bland alla i teamet. Baseras på dina ägarenheter delat med teamets totala ägarenheter." />
                 </div>
                 <div className="value">{formatPercent(minAndel)}</div>
+                <div className="muted">preliminär tills andelarna låses</div>
               </div>
               <div className="stat-box">
                 <div className="label">
@@ -152,6 +158,13 @@ export default function CrewPage() {
                 <div className="value">{project.producent || "—"}</div>
               </div>
             </div>
+
+            <ScenarioTabell
+              params={params}
+              waterfall={waterfall}
+              uppskjutet={minDeferred}
+              andel={minAndel}
+            />
 
             {minAvtal !== null && (
               <div className="card">
@@ -176,33 +189,9 @@ export default function CrewPage() {
 
             <EkonomiKort params={params} />
 
-            <div className="card">
-              <div className="section-header">Lock-punkter</div>
-              <div className="lock-row">
-                <div className="lock-head">
-                  <span>Green Light (Lock 1)</span>
-                  <span className="lock-date">{project.lock1 || "—"}</span>
-                </div>
-                <p className="lock-note">
-                  Din ägarandel för Development och Pre-produktion fastslås.
-                  Andelen kan inte ändras bakåt i tiden efter detta datum.
-                </p>
-              </div>
-              <div className="lock-row">
-                <div className="lock-head">
-                  <span>Wrap (Lock 2)</span>
-                  <span className="lock-date">{project.lock2 || "—"}</span>
-                </div>
-                <p className="lock-note">Din ägarandel för Inspelningsfasen fastslås.</p>
-              </div>
-              <div className="lock-row">
-                <div className="lock-head">
-                  <span>Leverans (Lock 3)</span>
-                  <span className="lock-date">{project.lock3 || "—"}</span>
-                </div>
-                <p className="lock-note">Slutgiltigt register fastslås. Grund för alla utbetalningar.</p>
-              </div>
-            </div>
+            <TidslinjeKort project={project} />
+
+            <FaqKort faq={faq} kontakt={kontakt} producent={project.producent} />
           </>
         )}
 

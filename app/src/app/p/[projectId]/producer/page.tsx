@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
-import type { CrewMember, ModelParams, ProjectSettings, WaterfallData } from "@/lib/sheets";
+import type { CrewMember, FaqPost, ModelParams, ProjectSettings, WaterfallData } from "@/lib/sheets";
+import { slaIhopFaq } from "@/lib/faq";
 import { groupByPerson, sharedEmails } from "@/lib/team";
 import { groupByFas } from "@/lib/fas";
 import { formatPercent, formatSek } from "@/lib/format";
@@ -18,6 +19,7 @@ interface ProducerResponse {
   rows: CrewMember[];
   waterfall: WaterfallData;
   params: ModelParams;
+  faq: FaqPost[];
 }
 
 type Tab = "oversikt" | "crew" | "team" | "waterfall";
@@ -69,6 +71,7 @@ export default function ProducerPage() {
   const obokade = team.filter((m) => !m.bokad);
   const harAvtalskolumn = team.some((m) => m.avtal !== null);
   const utanAvtal = team.filter((m) => m.avtal === "nej");
+  const obesvaradeFragor = slaIhopFaq(data.faq ?? []).filter((p) => !p.svar).length;
   const saknadeLock = [
     ["Lock 1", project.lock1],
     ["Lock 2", project.lock2],
@@ -190,6 +193,7 @@ export default function ProducerPage() {
               {obokade.length === 0 &&
               saknadeLock.length === 0 &&
               utanAvtal.length === 0 &&
+              obesvaradeFragor === 0 &&
               harAvtalskolumn ? (
                 <p className="muted">Inget att göra just nu.</p>
               ) : (
@@ -215,6 +219,13 @@ export default function ProducerPage() {
                       {utanAvtal.map((m) => m.namn).join(", ")}). Produktionsbolaget måste
                       äga rättigheterna för att kunna representera filmen, och
                       ägarandelen regleras i Participation Agreement.
+                    </li>
+                  )}
+                  {obesvaradeFragor > 0 && (
+                    <li>
+                      <strong>{obesvaradeFragor} vanliga frågor till crew saknar svar.</strong>{" "}
+                      De visas på crewens översikt som obesvarade. Skriv svaren i fliken "Frågor och
+                      svar" i kalkylbladet (skriptet skapar fliken).
                     </li>
                   )}
                   {saknadeLock.length > 0 && (
