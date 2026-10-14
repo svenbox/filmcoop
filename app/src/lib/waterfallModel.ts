@@ -7,6 +7,8 @@ export interface FinancingInput {
   samproducent: number;
   /** Distributörens minimigaranti (MG) — förskott som distributören återvinner först. */
   mg: number;
+  /** Kontantinsats från producent och regissör — en finansiär som alla andra. */
+  kontant: number;
 }
 
 export interface ModelResult {
@@ -16,9 +18,9 @@ export interface ModelResult {
   mgAtervinning: number;
   nettoEfterMg: number;
   /** Hur finansieringen används i budgeten. */
-  ersatterKontant: number;
+  taeckerBehov: number;
+  saknasKontant: number;
   betalarArvodenKontant: number;
-  kvarKontantinsats: number;
   kvarDeferredPool: number;
   /** Återbetalning till samproducent + stöd + er kontantinsats (pari passu). */
   recoupment: number;
@@ -48,12 +50,13 @@ function clamp01(n: number): number {
  * Ordning:
  *  1. Distributionsavgift.
  *  2. Distributören återvinner sin MG (× multiplikator) innan resten lämnas vidare.
- *  3. Finansieringen (stöd + samproducent + MG) täcker först er kontantinsats,
- *     sedan betalas arvoden kontant så att mindre behöver skjutas upp.
+ *  3. Finansieringen (stöd + samproducent + MG + kontantinsats) täcker först
+ *     budgetens kontantbehov; det som överstiger behovet betalar arvoden
+ *     kontant så att mindre behöver skjutas upp. Kontantinsatsen från
+ *     producent och regissör är en finansiär bland de andra — den trängs inte
+ *     undan av annan finansiering, utan man justerar dess reglage själv.
  *  4. Återbetalning pari passu: samproducent (× mult), stöd (× mult, normalt 0)
- *     och kvarvarande kontantinsats. Kontantinsatsen från producent och
- *     regissör behandlas som en vanlig finansiär och får samproducentens
- *     villkor — samma multiplikator och samma andel av netto per budgetkrona.
+ *     och kontantinsats, som får samproducentens villkor.
  *  5. Kvarvarande uppskjutna arvoden.
  *  6. Netto delas: samproducentens och kontantinsatsens andelar = belopp /
  *     total budget, plus de fasta andelar för stöd och MG som anges i
@@ -64,7 +67,7 @@ export function computeWaterfall(
   brutto: number,
   financing: FinancingInput
 ): ModelResult {
-  const { stod, samproducent, mg } = financing;
+  const { stod, samproducent, mg, kontant } = financing;
 
   const distributionsavgift = brutto * params.distributionsavgift;
   const nettoEfterDistribution = brutto - distributionsavgift;
@@ -72,18 +75,18 @@ export function computeWaterfall(
   const mgAtervinning = Math.min(mg * params.distributor.multiplikator, nettoEfterDistribution);
   const nettoEfterMg = nettoEfterDistribution - mgAtervinning;
 
-  const totalFinansiering = stod + samproducent + mg;
-  const ersatterKontant = Math.min(totalFinansiering, params.kontantinsats);
-  const kvarKontantinsats = params.kontantinsats - ersatterKontant;
+  const totalFinansiering = stod + samproducent + mg + kontant;
+  const taeckerBehov = Math.min(totalFinansiering, params.kontantinsats);
+  const saknasKontant = params.kontantinsats - taeckerBehov;
   const betalarArvodenKontant = Math.min(
-    totalFinansiering - ersatterKontant,
+    totalFinansiering - taeckerBehov,
     params.deferredPool
   );
   const kvarDeferredPool = params.deferredPool - betalarArvodenKontant;
 
   const dueSam = samproducent * params.samproducent.multiplikator;
   const dueStod = stod * params.stod.multiplikator;
-  const dueKontant = kvarKontantinsats * params.samproducent.multiplikator;
+  const dueKontant = kontant * params.samproducent.multiplikator;
   const due = dueSam + dueStod + dueKontant;
   const recoupment = Math.min(due, nettoEfterMg);
   const ratio = due === 0 ? 0 : recoupment / due;
@@ -93,7 +96,7 @@ export function computeWaterfall(
   const nettoEfterDeferred = nettoEfterRecoupment - deferredBetalt;
 
   const samAndel = params.totalBudget > 0 ? samproducent / params.totalBudget : 0;
-  const kontantAndel = params.totalBudget > 0 ? kvarKontantinsats / params.totalBudget : 0;
+  const kontantAndel = params.totalBudget > 0 ? kontant / params.totalBudget : 0;
   const ovrigAndel =
     (stod > 0 ? params.stod.andelAvNetto : 0) + (mg > 0 ? params.distributor.andelAvNetto : 0);
   const rawAndel = samAndel + kontantAndel + ovrigAndel;
@@ -113,9 +116,9 @@ export function computeWaterfall(
     nettoEfterDistribution,
     mgAtervinning: -mgAtervinning || 0,
     nettoEfterMg,
-    ersatterKontant,
+    taeckerBehov,
+    saknasKontant,
     betalarArvodenKontant,
-    kvarKontantinsats,
     kvarDeferredPool,
     recoupment: -recoupment || 0,
     recoupmentSamproducent: dueSam * ratio,

@@ -233,6 +233,7 @@ export interface Financier {
 
 export interface ModelParams {
   totalBudget: number;
+  /** Budgetens kontantbehov (hårda pengar) — summan av kontantinsatserna i kalkylbladet. */
   kontantinsats: number;
   distributionsavgift: number;
   deferredPool: number;

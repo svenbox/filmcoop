@@ -73,6 +73,7 @@ export default function ProducerPage() {
   const [stod, setStod] = useState<number>(0);
   const [samproducent, setSamproducent] = useState<number>(0);
   const [mg, setMg] = useState<number>(0);
+  const [kontant, setKontant] = useState<number>(0);
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -89,6 +90,7 @@ export default function ProducerPage() {
               setStod(d.params.stod.belopp);
               setSamproducent(d.params.samproducent.belopp);
               setMg(d.params.distributor.belopp);
+              setKontant(d.params.kontantinsats);
             }
           }
         })
@@ -114,7 +116,7 @@ export default function ProducerPage() {
   const totalDagar = rows.reduce((sum, r) => sum + r.dagar, 0);
   const totalPoang = rows.reduce((sum, r) => sum + r.poang, 0);
   const totalDeferred = rows.reduce((sum, r) => sum + r.deferredFee, 0);
-  const wf = computeWaterfall(params, brutto, { stod, samproducent, mg });
+  const wf = computeWaterfall(params, brutto, { stod, samproducent, mg, kontant });
   const budgetMax = roundUp(Math.max(params.totalBudget, 500_000), FIN_STEP);
   const bruttoMax = roundUp(Math.max(2_000_000, wf.breakEven * 2), 250_000);
   const team = groupByPerson(rows);
@@ -346,6 +348,14 @@ export default function ProducerPage() {
               onChange={setSamproducent}
             />
             <MoneySlider
+              label="Kontantinsats producent + regissör"
+              tooltip={WATERFALL_TOOLTIP.kontant}
+              value={kontant}
+              max={budgetMax}
+              step={FIN_STEP}
+              onChange={setKontant}
+            />
+            <MoneySlider
               label="Distributör (minimigaranti)"
               tooltip={WATERFALL_TOOLTIP.mg}
               value={mg}
@@ -356,21 +366,26 @@ export default function ProducerPage() {
 
             <p className="wf-estimate-note">
               Beräknat direkt från kalkylbladets parametrar (distributionsavgift,
-              kontantinsats och uppskjutna arvoden). Kontantinsatsen räknas som en
-              vanlig finansiär, med samproducentens villkor. Startvärdena för
+              kontantbehov och uppskjutna arvoden). Kontantinsatsen räknas som en
+              finansiär bland de andra, med samproducentens villkor. Startvärdena för
               finansieringen hämtas från tabellen Finansiärer i Waterfall Simulering.
             </p>
 
-            {stod + samproducent + mg > 0 && (
+            {stod + samproducent + mg + kontant > 0 && (
               <div className="card">
                 <div className="section-header">Så används finansieringen</div>
                 <div className="wf-row">
                   <span>
-                    Ersätter er kontantinsats
-                    <Tooltip text={WATERFALL_TOOLTIP.ersatterKontant} />
+                    Täcker budgetens kontantbehov
+                    <Tooltip text={WATERFALL_TOOLTIP.taeckerBehov} />
                   </span>
-                  <span className="wf-value">{formatSek(wf.ersatterKontant)}</span>
+                  <span className="wf-value">{formatSek(wf.taeckerBehov)}</span>
                 </div>
+                {wf.saknasKontant > 0 && (
+                  <div className="wf-footnote">
+                    kontantbehov som inte täcks: {formatSek(wf.saknasKontant)}
+                  </div>
+                )}
                 <div className="wf-row">
                   <span>
                     Arvoden som betalas kontant i stället för att skjutas upp
@@ -418,7 +433,7 @@ export default function ProducerPage() {
               </div>
               <div className="wf-row">
                 <span>
-                  Återbetalning kontantinsats och finansiärer
+                  Återbetalning till finansiärer
                   <Tooltip text={WATERFALL_TOOLTIP.finansiarsRecoupment} />
                 </span>
                 <span className="wf-value">{formatSek(wf.recoupment)}</span>
@@ -496,7 +511,7 @@ export default function ProducerPage() {
             {wf.crewPool === 0 && (
               <div className="alert">
                 Teamets andel är 0 kr vid den här intäktsnivån. Först
-                återbetalas kontantinsats och finansiärer, sedan de uppskjutna
+                återbetalas finansiärerna, sedan de uppskjutna
                 arvodena — ägarandelarna ger pengar först över cirka{" "}
                 {formatSek(wf.breakEven)} i bruttointäkt.
               </div>

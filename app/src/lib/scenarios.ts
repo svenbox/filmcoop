@@ -32,15 +32,17 @@ export const WATERFALL_TOOLTIP: Record<string, string> = {
   finansiarspool:
     "Finansiärernas del av nettot. Samproducentens och kontantinsatsens andel motsvarar deras del av totalbudgeten, plus eventuella fasta andelar för stöd eller distributör som angetts i kalkylbladet.",
   stod:
-    "Stöd som inte betalas tillbaka ur filmens intäkter, t.ex. produktionsstöd från Filminstitutet eller kommunalt stöd. Minskar först er kontantinsats och sedan behovet av att skjuta upp arvoden.",
+    "Stöd som inte betalas tillbaka ur filmens intäkter, t.ex. produktionsstöd från Filminstitutet eller kommunalt stöd. Bidrar först till att täcka budgetens kontantbehov och sedan till att betala arvoden direkt.",
   samproducent:
     "Samproducent eller regional filmfond som går in med pengar mot att få tillbaka dem (med multiplikator) och en andel av nettovinsten i proportion till sin del av budgeten.",
   mg:
     "Minimigaranti från en distributör: ett förskott som betalas ut före inspelning. Distributören behåller intäkterna tills förskottet är återvunnet.",
   mgAtervinning:
     "Distributören behåller intäkter efter sin avgift tills minimigarantin (gånger multiplikatorn) är återvunnen.",
-  ersatterKontant:
-    "Finansieringen används först till att minska de hårda pengar producent och regissör annars måste gå in med.",
+  kontant:
+    "Kontantinsats från producent och regissör. Räknas som vilken annan finansiär som helst: återbetalas med samproducentens villkor och tar del av nettot i proportion till sin del av budgeten.",
+  taeckerBehov:
+    "Budgetens kontantbehov, de hårda pengar som måste finnas innan inspelning. Alla finansiärer, inklusive kontantinsatsen, bidrar till att täcka det.",
   betalarArvoden:
     "Finansiering utöver kontantbehovet används till att betala arvoden direkt. Det minskar de uppskjutna arvodena som ska återbetalas senare.",
   breakEven:
