@@ -1,18 +1,17 @@
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { authorizeProject } from "@/lib/access";
 import { getMyEquityData } from "@/lib/equity";
 
-/** Samma data som /api/sheets/me, för det utskrivbara personliga utdraget. */
-export async function GET() {
-  const session = await getServerSession(authOptions);
-
-  if (!session?.user?.email) {
-    return NextResponse.json({ error: "Ej inloggad" }, { status: 401 });
-  }
+/** Samma data som /api/p/[projectId]/me, för det utskrivbara personliga utdraget. */
+export async function GET(
+  _req: Request,
+  { params }: { params: { projectId: string } }
+) {
+  const auth = await authorizeProject(params.projectId);
+  if (!auth.ok) return auth.response;
 
   try {
-    const data = await getMyEquityData(session.user.email);
+    const data = await getMyEquityData(auth.project.spreadsheetId, auth.email);
 
     if (!data) {
       return NextResponse.json(

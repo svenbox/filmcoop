@@ -1,6 +1,6 @@
 import { NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
-import { isProducerEmail } from "./sheets";
+import { isAdminEmail } from "./admin";
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -19,7 +19,7 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async session({ session }) {
       if (session.user?.email) {
-        session.user.isProducer = isProducerEmail(session.user.email);
+        session.user.isAdmin = isAdminEmail(session.user.email);
       }
       return session;
     },

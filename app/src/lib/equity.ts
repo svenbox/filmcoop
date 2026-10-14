@@ -28,14 +28,17 @@ export interface MyEquityData {
  * enheter, inte varandras individuella andelar. Den fullständiga
  * per-person-listan finns bara i /api/sheets/producer.
  */
-export async function getMyEquityData(email: string): Promise<MyEquityData | null> {
-  const rows = await getCrewMembersForEmail(email);
+export async function getMyEquityData(
+  spreadsheetId: string,
+  email: string
+): Promise<MyEquityData | null> {
+  const rows = await getCrewMembersForEmail(spreadsheetId, email);
   if (rows.length === 0) return null;
 
   const [project, waterfall, allRows] = await Promise.all([
-    getProjectSettings(),
-    getWaterfall(),
-    getAllCrewMembers(),
+    getProjectSettings(spreadsheetId),
+    getWaterfall(spreadsheetId),
+    getAllCrewMembers(spreadsheetId),
   ]);
 
   const totalPoang = allRows.reduce((sum, r) => sum + r.poang, 0);

@@ -9,5 +9,5 @@ export default async function RootPage() {
     redirect("/landing.html");
   }
 
-  redirect(session.user.isProducer ? "/producer" : "/crew");
+  redirect("/projekt");
 }

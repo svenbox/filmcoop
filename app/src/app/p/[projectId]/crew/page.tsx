@@ -1,14 +1,16 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
 import type { CrewMember, ProjectSettings, WaterfallData } from "@/lib/sheets";
 import { formatPercent, formatSek } from "@/lib/format";
 import { GRUPP_HEADER_TOOLTIP, GRUPP_TOOLTIP, WATERFALL_TOOLTIP } from "@/lib/scenarios";
 import { groupByFas } from "@/lib/fas";
 import { interpolateWaterfall } from "@/lib/waterfallSlider";
-import { OnboardingModal } from "../components/OnboardingModal";
-import { Tooltip } from "../components/Tooltip";
+import { OnboardingModal } from "../../../components/OnboardingModal";
+import { NavPills } from "../../../components/NavPills";
+import { Tooltip } from "../../../components/Tooltip";
 
 interface MeResponse {
   project: ProjectSettings;
@@ -24,6 +26,7 @@ const BRUTTO_MAX = 2_000_000;
 const BRUTTO_STEP = 25_000;
 
 export default function CrewPage() {
+  const { projectId } = useParams<{ projectId: string }>();
   const { status } = useSession();
   const [data, setData] = useState<MeResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -35,7 +38,7 @@ export default function CrewPage() {
       window.location.href = "/login";
     }
     if (status === "authenticated") {
-      fetch("/api/sheets/me")
+      fetch(`/api/p/${projectId}/me`)
         .then((r) => r.json())
         .then((d) => {
           if (d.error) setError(d.error);
@@ -43,7 +46,7 @@ export default function CrewPage() {
         })
         .catch(() => setError("Kunde inte hämta data"));
     }
-  }, [status]);
+  }, [status, projectId]);
 
   if (status === "loading" || (!data && !error)) {
     return <div className="loading-state">Laddar…</div>;
@@ -88,7 +91,8 @@ export default function CrewPage() {
           )}
         </div>
         <div className="topbar-user pill-bar">
-          <a href="/print" target="_blank" rel="noopener noreferrer" className="pill">
+          <NavPills />
+          <a href={`/p/${projectId}/print`} target="_blank" rel="noopener noreferrer" className="pill">
             Skriv ut utdrag
           </a>
           <button className="pill" onClick={() => signOut()}>

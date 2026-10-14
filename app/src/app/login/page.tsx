@@ -7,7 +7,7 @@ export default async function LoginPage() {
   const session = await getServerSession(authOptions);
 
   if (session) {
-    redirect(session.user.isProducer ? "/producer" : "/crew");
+    redirect("/projekt");
   }
 
   return (

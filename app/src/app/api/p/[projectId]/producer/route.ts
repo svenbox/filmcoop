@@ -1,24 +1,25 @@
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { authorizeProject, isProducerOf } from "@/lib/access";
 import { getAllCrewMembers, getProjectSettings, getWaterfall } from "@/lib/sheets";
 
-export async function GET() {
-  const session = await getServerSession(authOptions);
+export async function GET(
+  _req: Request,
+  { params }: { params: { projectId: string } }
+) {
+  const auth = await authorizeProject(params.projectId);
+  if (!auth.ok) return auth.response;
 
-  if (!session?.user?.email) {
-    return NextResponse.json({ error: "Ej inloggad" }, { status: 401 });
-  }
-
-  if (!session.user.isProducer) {
+  if (!isProducerOf(auth.project, auth.email)) {
     return NextResponse.json({ error: "Åtkomst nekad" }, { status: 403 });
   }
 
+  const id = auth.project.spreadsheetId;
+
   try {
     const [project, rows, waterfall] = await Promise.all([
-      getProjectSettings(),
-      getAllCrewMembers(),
-      getWaterfall(),
+      getProjectSettings(id),
+      getAllCrewMembers(id),
+      getWaterfall(id),
     ]);
 
     return NextResponse.json({ project, rows, waterfall });

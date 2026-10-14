@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
 import type { CrewMember, ProjectSettings, WaterfallData } from "@/lib/sheets";
 import { groupByPerson } from "@/lib/team";
@@ -8,7 +9,8 @@ import { groupByFas } from "@/lib/fas";
 import { formatPercent, formatSek } from "@/lib/format";
 import { WATERFALL_TOOLTIP } from "@/lib/scenarios";
 import { interpolateWaterfall } from "@/lib/waterfallSlider";
-import { Tooltip } from "../components/Tooltip";
+import { NavPills } from "../../../components/NavPills";
+import { Tooltip } from "../../../components/Tooltip";
 
 interface ProducerResponse {
   project: ProjectSettings;
@@ -22,6 +24,7 @@ const BRUTTO_MAX = 2_000_000;
 const BRUTTO_STEP = 25_000;
 
 export default function ProducerPage() {
+  const { projectId } = useParams<{ projectId: string }>();
   const { status } = useSession();
   const [data, setData] = useState<ProducerResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -33,7 +36,7 @@ export default function ProducerPage() {
       window.location.href = "/login";
     }
     if (status === "authenticated") {
-      fetch("/api/sheets/producer")
+      fetch(`/api/p/${projectId}/producer`)
         .then((r) => r.json())
         .then((d) => {
           if (d.error) setError(d.error);
@@ -41,7 +44,7 @@ export default function ProducerPage() {
         })
         .catch(() => setError("Kunde inte hämta data"));
     }
-  }, [status]);
+  }, [status, projectId]);
 
   if (status === "loading" || (!data && !error)) {
     return <div className="loading-state">Laddar…</div>;
@@ -75,7 +78,8 @@ export default function ProducerPage() {
           <span>›</span>
           <span>Producent</span>
         </div>
-        <div className="topbar-user">
+        <div className="topbar-user pill-bar">
+          <NavPills />
           <button className="pill" onClick={() => signOut()}>
             Logga ut
           </button>

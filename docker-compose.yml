@@ -6,9 +6,14 @@ services:
     env_file: .env
     environment:
       PORT: "3000"
+    volumes:
+      - filmcoop_data:/data
     networks:
       - filmcoop_net
       - mediastack
+
+volumes:
+  filmcoop_data:
 
 networks:
   filmcoop_net:

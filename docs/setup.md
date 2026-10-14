@@ -29,7 +29,7 @@ Komplett instruktion för att sätta upp film.coop (filmcoop.nu) på din server.
 1. IAM & Admin → Service Accounts → Create
 2. Namn: `filmcoop-sheets`
 3. Ladda ner JSON-nyckel
-4. Dela din Sheets-fil med service account-e-posten (Viewer-behörighet)
+4. Dela varje projekts Sheets-fil med service account-e-posten (Viewer-behörighet) — det gör du för varje nytt projekt, se Steg 5
 
 ### OAuth-klient (för inloggning)
 
@@ -53,11 +53,12 @@ GOOGLE_CLIENT_ID=...
 GOOGLE_CLIENT_SECRET=...
 GOOGLE_SERVICE_ACCOUNT_EMAIL=filmcoop-sheets@ditt-projekt.iam.gserviceaccount.com
 GOOGLE_PRIVATE_KEY="-----BEGIN RSA PRIVATE KEY-----\n...\n-----END RSA PRIVATE KEY-----\n"
-SPREADSHEET_ID=   # ID:t från din Sheets-URL
 NEXTAUTH_SECRET=  # openssl rand -base64 32
 NEXTAUTH_URL=https://filmcoop.nu
-PRODUCER_EMAILS=din@epost.se
+ADMIN_EMAILS=din@epost.se   # får använda /admin och lägga till projekt
 ```
+
+Projekt läggs till på adminsidan (Steg 5), inte i `.env`. Om du uppgraderar en äldre installation som har `SPREADSHEET_ID` och `PRODUCER_EMAILS` i `.env` skapas ett projekt av dem automatiskt första gången portalen startar, och `PRODUCER_EMAILS` räknas som admin tills du sätter `ADMIN_EMAILS`.
 
 ## Steg 4 — Starta
 
@@ -66,11 +67,26 @@ docker compose up -d --build
 docker compose logs -f app   # verifiera att allt startade
 ```
 
-## Steg 5 — Reverse proxy (valfritt)
+## Steg 5 — Lägg till projekt
+
+Portalen hanterar flera filmprojekt, ett kalkylblad per film. Projekten läggs till på adminsidan:
+
+1. Gör en kopia av kalkylbladsmallen (Steg 1) för den nya filmen och fyll i den.
+2. Dela kalkylbladet med service account-e-posten (Viewer räcker). Adressen visas på adminsidan.
+3. Logga in på `/admin` (kräver att din e-post står i `ADMIN_EMAILS`).
+4. Fyll i projektnamn, klistra in länken till kalkylbladet och ange producentens e-post (flera avgränsas med kommatecken). Portalen kontrollerar direkt att kalkylbladet går att nå och har rätt flikar.
+
+Crew behöver inte läggas till — de hittas via e-postkolumnen i kalkylbladet och ser sina projekt på `/projekt` efter inloggning. Producenter ser projektets fullständiga vy; admin ser alla projekt. Projektlistan sparas i Docker-volymen `filmcoop_data`.
+
+## Steg 6 — Reverse proxy (valfritt)
 
 Om du använder SWAG eller nginx, kopiera `nginx/filmcoop.subdomain.conf` till din proxy-conf-mapp och ladda om.
 
 ## Felsökning
+
+**"Servicekontot saknar åtkomst" när du lägger till ett projekt** — kalkylbladet är inte delat med service account-e-posten. Dela det (Viewer) och försök igen.
+
+**Jag ser inget projekt efter inloggning** — din e-post står varken i projektets producentlista eller i E-post-kolumnen i kalkylbladet.
 
 **"Din e-post finns inte i registret"** — kontrollera att e-posten i Sheets-kolumnen stämmer exakt med din Gmail.
 

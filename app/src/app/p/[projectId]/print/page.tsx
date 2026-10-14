@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import type { CrewMember, ProjectSettings, WaterfallData } from "@/lib/sheets";
 import { formatPercent, formatSek } from "@/lib/format";
@@ -16,6 +17,7 @@ interface PrintResponse {
 }
 
 export default function PrintPage() {
+  const { projectId } = useParams<{ projectId: string }>();
   const { status } = useSession();
   const [data, setData] = useState<PrintResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -26,7 +28,7 @@ export default function PrintPage() {
       window.location.href = "/login";
     }
     if (status === "authenticated") {
-      fetch("/api/sheets/print")
+      fetch(`/api/p/${projectId}/print`)
         .then((r) => r.json())
         .then((d) => {
           if (d.error) setError(d.error);
@@ -34,7 +36,7 @@ export default function PrintPage() {
         })
         .catch(() => setError("Kunde inte hämta data"));
     }
-  }, [status]);
+  }, [status, projectId]);
 
   useEffect(() => {
     if (data && !printed) {

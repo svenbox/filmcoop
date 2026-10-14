@@ -55,22 +55,31 @@ export interface WaterfallData {
   C: WaterfallScenario;
 }
 
-let docSingleton: GoogleSpreadsheet | null = null;
+const docCache = new Map<string, GoogleSpreadsheet>();
+
+export function getServiceAccountEmail(): string {
+  return process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL || "";
+}
+
+/** Tar bort ett projekts cachade dokument, t.ex. när dess kalkylblads-ID ändrats. */
+export function forgetDoc(spreadsheetId: string): void {
+  docCache.delete(spreadsheetId);
+}
 
 /**
- * Cachar GoogleSpreadsheet-instansen mellan anrop. I Next.js dev-läge kan
- * modulen laddas om vid HMR — då byggs singleton bara om, inget att undvika.
+ * Cachar GoogleSpreadsheet-instansen per kalkylblad mellan anrop. I Next.js
+ * dev-läge kan modulen laddas om vid HMR — då byggs cachen bara om.
  */
-async function getDoc(): Promise<GoogleSpreadsheet> {
-  if (docSingleton) return docSingleton;
+async function getDoc(spreadsheetId: string): Promise<GoogleSpreadsheet> {
+  const cached = docCache.get(spreadsheetId);
+  if (cached) return cached;
 
   const email = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
   const key = process.env.GOOGLE_PRIVATE_KEY;
-  const spreadsheetId = process.env.SPREADSHEET_ID;
 
-  if (!email || !key || !spreadsheetId) {
+  if (!email || !key) {
     throw new Error(
-      "Saknar GOOGLE_SERVICE_ACCOUNT_EMAIL, GOOGLE_PRIVATE_KEY eller SPREADSHEET_ID i miljövariablerna"
+      "Saknar GOOGLE_SERVICE_ACCOUNT_EMAIL eller GOOGLE_PRIVATE_KEY i miljövariablerna"
     );
   }
 
@@ -88,7 +97,7 @@ async function getDoc(): Promise<GoogleSpreadsheet> {
   const doc = new GoogleSpreadsheet(spreadsheetId, jwt);
   await doc.loadInfo();
 
-  docSingleton = doc;
+  docCache.set(spreadsheetId, doc);
   return doc;
 }
 
@@ -133,8 +142,8 @@ function rowToCrewMember(r: GoogleSpreadsheetRow): CrewMember {
 }
 
 /** Hämtar samtliga giltiga rader (med e-post) från huvudregistret. */
-export async function getAllCrewMembers(): Promise<CrewMember[]> {
-  const doc = await getDoc();
+export async function getAllCrewMembers(spreadsheetId: string): Promise<CrewMember[]> {
+  const doc = await getDoc(spreadsheetId);
   const sheet = doc.sheetsByTitle[SHEET_EGENINSATS];
   if (!sheet) {
     throw new Error(`Fliken "${SHEET_EGENINSATS}" saknas i Sheets`);
@@ -149,16 +158,19 @@ export async function getAllCrewMembers(): Promise<CrewMember[]> {
 }
 
 /** Hämtar alla rader som tillhör en viss e-postadress (skiftlägesokänsligt). */
-export async function getCrewMembersForEmail(email: string): Promise<CrewMember[]> {
-  const all = await getAllCrewMembers();
+export async function getCrewMembersForEmail(
+  spreadsheetId: string,
+  email: string
+): Promise<CrewMember[]> {
+  const all = await getAllCrewMembers(spreadsheetId);
   const target = email.trim().toLowerCase();
   return all.filter((m) => m.epost.trim().toLowerCase() === target);
 }
 
 /** Läser projektinställningar. Etiketter i kolumn B, värden i kolumn C (gulmarkerade
  * inmatningsfält). Kolumn D innehåller bara grå exempel-/formathjälptext, inga värden. */
-export async function getProjectSettings(): Promise<ProjectSettings> {
-  const doc = await getDoc();
+export async function getProjectSettings(spreadsheetId: string): Promise<ProjectSettings> {
+  const doc = await getDoc(spreadsheetId);
   const sheet = doc.sheetsByTitle[SHEET_PROJEKTINSTALLNINGAR];
   if (!sheet) {
     throw new Error(`Fliken "${SHEET_PROJEKTINSTALLNINGAR}" saknas i Sheets`);
@@ -197,8 +209,8 @@ function scenarioColumn(sheet: GoogleSpreadsheetWorksheet, col: number): Waterfa
 }
 
 /** Läser vattenfallssimuleringen för scenario A/B/C (kolumn D/E/F). */
-export async function getWaterfall(): Promise<WaterfallData> {
-  const doc = await getDoc();
+export async function getWaterfall(spreadsheetId: string): Promise<WaterfallData> {
+  const doc = await getDoc(spreadsheetId);
   const sheet = doc.sheetsByTitle[SHEET_WATERFALL];
   if (!sheet) {
     throw new Error(`Fliken "${SHEET_WATERFALL}" saknas i Sheets`);
@@ -213,11 +225,40 @@ export async function getWaterfall(): Promise<WaterfallData> {
   };
 }
 
-/** Kontrollerar om en e-postadress har producent-åtkomst (env PRODUCER_EMAILS). */
-export function isProducerEmail(email: string): boolean {
-  const list = (process.env.PRODUCER_EMAILS || "")
-    .split(",")
-    .map((e) => e.trim().toLowerCase())
-    .filter(Boolean);
-  return list.includes(email.trim().toLowerCase());
+/**
+ * Kontrollerar att servicekontot når kalkylbladet och att de flikar portalen
+ * behöver finns. Kastar ett fel med ett begripligt meddelande annars.
+ */
+export async function validateSpreadsheet(spreadsheetId: string): Promise<{ titel: string }> {
+  forgetDoc(spreadsheetId);
+
+  let doc: GoogleSpreadsheet;
+  try {
+    doc = await getDoc(spreadsheetId);
+  } catch (err) {
+    forgetDoc(spreadsheetId);
+    const e = err as { response?: { status?: number }; status?: number; message?: string };
+    const status = e.response?.status ?? e.status;
+    if (status === 403) {
+      throw new Error(
+        `Servicekontot saknar åtkomst. Dela kalkylbladet med ${getServiceAccountEmail()} (Viewer räcker) och försök igen.`
+      );
+    }
+    if (status === 404) {
+      throw new Error("Hittar inget kalkylblad med det ID:t. Kontrollera länken.");
+    }
+    throw err;
+  }
+
+  const missing = [SHEET_EGENINSATS, SHEET_PROJEKTINSTALLNINGAR, SHEET_WATERFALL].filter(
+    (title) => !doc.sheetsByTitle[title]
+  );
+  if (missing.length > 0) {
+    forgetDoc(spreadsheetId);
+    throw new Error(
+      `Kalkylbladet saknar flikarna: ${missing.join(", ")}. Det måste vara en kopia av film.coop-mallen.`
+    );
+  }
+
+  return { titel: doc.title };
 }
