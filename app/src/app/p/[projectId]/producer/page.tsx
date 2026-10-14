@@ -377,7 +377,7 @@ export default function ProducerPage() {
 
             <div className="section-header">Finansiering</div>
             <MoneySlider
-              label="Stöd (SFI, kommun m.fl.)"
+              label="Stöd (utan anspråk på ägande)"
               tooltip={WATERFALL_TOOLTIP.stod}
               value={stod}
               max={budgetMax}
