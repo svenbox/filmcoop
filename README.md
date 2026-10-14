@@ -8,6 +8,11 @@ på när i produktionen man går in, vilken funktion man har, och hur mycket man
 faktiskt bidrar med. Uppskjutna arvoden konverteras till dokumenterade
 ägarenheter som ger rätt till en andel av filmens intäkter.
 
+Rättigheterna till filmen ligger i produktionsbolaget, så att filmen kan säljas
+och representeras. Alla som bidrar överlåter sina rättigheter dit och får en
+avtalad andel av intäkterna i gengäld, inte delägande i upphovsrätten. Se
+[ramverket §4e](docs/ramverk.md).
+
 → [filmcoop.nu](https://filmcoop.nu) — läs mer och se hur det
 fungerar
 

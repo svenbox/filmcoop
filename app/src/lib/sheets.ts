@@ -26,6 +26,8 @@ export interface CrewMember {
   poang: number;
   anteckningar: string;
   epost: string;
+  /** Signerat avtal (rättighetsöverlåtelse + Participation Agreement). null = kolumnen "Avtal" saknas i bladet. */
+  avtal: "ja" | "nej" | null;
 }
 
 export interface ProjectSettings {
@@ -122,7 +124,9 @@ function parseNum(value: unknown): number {
   return Number.isNaN(n) ? 0 : n;
 }
 
-function rowToCrewMember(r: GoogleSpreadsheetRow): CrewMember {
+const AVTAL_SIGNERAT = ["ja", "signerat", "klart", "ok", "x", "✓"];
+
+function rowToCrewMember(r: GoogleSpreadsheetRow, harAvtalskolumn: boolean): CrewMember {
   return {
     radnummer: parseNum(r.get("#")),
     namn: r.get("Namn") || "",
@@ -138,6 +142,11 @@ function rowToCrewMember(r: GoogleSpreadsheetRow): CrewMember {
     poang: parseNum(r.get("Poäng\n(beräknat)")),
     anteckningar: r.get("Anteckningar") || "",
     epost: r.get("E-post") || "",
+    avtal: harAvtalskolumn
+      ? AVTAL_SIGNERAT.includes(String(r.get("Avtal") ?? "").trim().toLowerCase())
+        ? "ja"
+        : "nej"
+      : null,
   };
 }
 
@@ -154,9 +163,12 @@ export async function getAllCrewMembers(spreadsheetId: string): Promise<CrewMemb
 
   await sheet.loadHeaderRow(EGENINSATS_HEADER_ROW);
   const rows = await sheet.getRows();
+  const harAvtalskolumn = sheet.headerValues.some(
+    (h) => String(h).trim().toLowerCase() === "avtal"
+  );
 
   return rows
-    .map(rowToCrewMember)
+    .map((r) => rowToCrewMember(r, harAvtalskolumn))
     .filter((m) => m.namn.trim() !== "");
 }
 

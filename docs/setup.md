@@ -16,6 +16,8 @@ Komplett instruktion för att sätta upp film.coop (filmcoop.nu) på din server.
 4. Lägg till en kolumn `E-post` i fliken **Egeninsats & Poäng**
 5. Fyll i teamets data (namn, roll, klass, fas, dagar, arvoden, e-post)
 
+Valfritt: lägg till kolumnen `Avtal` (JA/NEJ) sist bland rubrikerna i **Egeninsats & Poäng**. Portalen visar då vem som skrivit under rättighetsöverlåtelse och Participation Agreement, och varnar producenten för dem som saknar avtal. Skriptet nedan lägger till kolumnen åt dig.
+
 Har du en äldre kopia av mallen kan du synka dess vattenfall med portalens modell genom att köra [`tools/uppdatera-vattenfall.gs`](../tools/uppdatera-vattenfall.gs) en gång (instruktioner i filens huvud). Då visar kalkylbladet och portalen samma siffror för samma scenario.
 
 ## Steg 2 — Google Cloud

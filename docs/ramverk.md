@@ -109,6 +109,41 @@ Dagar × faspoäng × multiplikator fungerar dåligt för det här, eftersom en 
 
 ---
 
+## 4e. Rättigheter och juridisk struktur
+
+Produktionsbolaget måste äga rättigheterna till filmen för att kunna representera den: sälja, licensiera och teckna avtal med distributörer och finansiärer. Därför skiljer systemet strikt på två saker:
+
+| | Vad det är | Vem har det |
+|---|---|---|
+| Rättigheter | Rätten att utnyttja och sälja filmen | Produktionsbolaget, ensamt |
+| Ägarandel (ägarenheter) | En avtalad rätt till en andel av intäkterna | Alla som bidrar, enligt Participation Agreement |
+
+Ägarenheterna är alltså en fordran på filmens intäkter enligt utbetalningsordningen, inte delägande i upphovsrätten. Hade alla suttit med i rättighetsägandet skulle varje försäljning kräva allas medgivande, vilket inget distributionsavtal eller ingen finansiär accepterar. Ideella rättigheter (namngivning och skydd mot kränkande ändringar) stannar hos upphovspersonerna, se 4c.
+
+**Rättighetskedjan (chain of title).** Varje bidragsgivare överlåter eller licensierar sin del till produktionsbolaget i sitt avtal:
+
+| Bidragsgivare | Det som överlåts eller licensieras |
+|---|---|
+| Manusförfattare / rättighetsinnehavare | Filmrättigheter till manus och förlaga, som option eller överlåtelse |
+| Regissör | Rätten till regissörens bidrag till filmverket |
+| Skådespelare | Utövande konstnärers rättigheter för filmens utnyttjande, inom kollektivavtalets ramar (4b) |
+| Kompositör | Musikrättigheter, som licens |
+| Övrig crew | Bidrag till filmverket |
+
+**Skyddet för deltagarna.** Eftersom deltagarna har en fordran på bolaget, och inte äger rättigheterna, behöver de skyddas:
+- Ett eget bolag per film (eller annan juridisk person per film) som äger rättigheterna och inget annat, så att deltagarna inte påverkas av andra skulder.
+- Utbetalningsordningen och avdragen fastställs skriftligt i Recoupment Schedule (se 7), med revisionsrätt för deltagarna.
+- Intäkterna går via ett separat konto som betalar ut enligt utbetalningsordningen.
+- Återgång: blir filmen aldrig gjord, eller inte såld inom en överenskommen tid, återgår rättigheterna till den som överlåtit dem.
+
+**Uppskjuten ersättning för rättigheter.** När rättighetsersättningen skjuts upp (till exempel filmrättigheter till ett originalmanus) måste överlåtelsen eller optionen ändå vara påskriven innan finansieringen, så att rättigheterna finns i produktionsbolaget från början. Ersättningen är en uppskjuten skuld som återbetalas före vinst, och rättigheterna återgår om den aldrig betalas.
+
+**Dokument per person:** rättighetsöverlåtelse eller option, och Participation Agreement som reglerar ägarandelen. Portalen visar vem som skrivit under (kolumnen "Avtal" i kalkylbladet).
+
+> Det här är en beskrivning av strukturen, inte juridisk rådgivning. Avtalen ska upprättas eller granskas av en jurist med erfarenhet av film och upphovsrätt.
+
+---
+
 ## 5. Beräkningsformel
 
 ```

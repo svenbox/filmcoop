@@ -6,6 +6,8 @@ export interface TeamSummary {
   epost: string;
   /** Falskt om e-post saknas eller delas av flera namn (platshållare, t.ex. tbd@tbd.se). */
   bokad: boolean;
+  /** Signerat avtal: "ja" om alla personens rader är signerade, null om bladet saknar kolumnen. */
+  avtal: "ja" | "nej" | null;
   namn: string;
   roller: string;
   klass: string;
@@ -51,6 +53,11 @@ export function groupByPerson(rows: CrewMember[]): TeamSummary[] {
       key,
       epost,
       bokad: epost !== "" && !delade.has(epost),
+      avtal: personRows.every((r) => r.avtal === null)
+        ? null
+        : personRows.every((r) => r.avtal === "ja")
+          ? "ja"
+          : "nej",
       namn: personRows[0]?.namn || epost,
       roller: Array.from(new Set(personRows.map((r) => r.roll).filter(Boolean))).join(" / "),
       klass: personRows[0]?.klass || "",

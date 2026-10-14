@@ -66,6 +66,11 @@ export default function CrewPage() {
   const minDagar = rows.reduce((sum, r) => sum + r.dagar, 0);
   const minDeferred = rows.reduce((sum, r) => sum + r.deferredFee, 0);
   const minAndel = totalPoang > 0 ? minPoang / totalPoang : 0;
+  const minAvtal: "ja" | "nej" | null = rows.every((r) => r.avtal === null)
+    ? null
+    : rows.every((r) => r.avtal === "ja")
+      ? "ja"
+      : "nej";
   const minNamn = rows[0]?.namn || "";
   const minaRoller = Array.from(new Set(rows.map((r) => r.roll).filter(Boolean))).join(" / ");
   const fasGrupper = groupByFas(rows);
@@ -147,6 +152,27 @@ export default function CrewPage() {
                 <div className="value">{project.producent || "—"}</div>
               </div>
             </div>
+
+            {minAvtal !== null && (
+              <div className="card">
+                <div className="section-header">Ditt avtal</div>
+                <div className="wf-row">
+                  <span>
+                    Rättighetsöverlåtelse och Participation Agreement
+                    <Tooltip text="Produktionsbolaget äger rättigheterna till filmen så att den kan säljas och representeras. Din ägarandel är en avtalad rätt till andel av intäkterna och regleras i Participation Agreement." />
+                  </span>
+                  <span className="wf-value">
+                    {minAvtal === "ja" ? "✓ Signerat" : "Inte signerat än"}
+                  </span>
+                </div>
+                {minAvtal === "nej" && (
+                  <div className="wf-footnote">
+                    Kontakta producenten för att få avtalet. Din ägarandel är dokumenterad i
+                    portalen, men det är avtalet som gör den bindande.
+                  </div>
+                )}
+              </div>
+            )}
 
             <EkonomiKort params={params} />
 

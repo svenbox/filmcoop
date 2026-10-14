@@ -16,6 +16,9 @@
  *   - Övrig egeninsats (totalbudget minus kontant minus uppskjutna löner)
  *     återbetalas före vinst, på samma sätt som de uppskjutna lönerna.
  *   - Hjälpberäkningen läggs på rad 40–54 i Waterfall Simulering.
+ *   - Kolumnen "Avtal" (JA/NEJ) läggs till sist i Egeninsats & Poäng. JA betyder att
+ *     personen skrivit under rättighetsöverlåtelse och Participation Agreement.
+ *     Portalen visar avtalsstatus per person och varnar för dem som saknar avtal.
  *
  * Skriptet markerar också tydligt var du får skriva och var du inte ska det:
  *   - GUL cell med blå text = inmatning, fyll i själv.
@@ -177,6 +180,7 @@ function markeraInmatning() {
     färgaZon_(eg.getRange("J5:M" + sista), "formel");
     if (summering > 0) färgaZon_(eg.getRange("J" + summering + ":M" + summering), "formel");
     skydda_(eg, "J5:M" + sista);
+    läggTillAvtalskolumn_(eg, sista);
     skrivFörklaring_(eg, "B3", true);
   }
 
@@ -203,6 +207,31 @@ function markeraInmatning() {
         .setFontStyle("italic");
     }
   }
+}
+
+// Lägger kolumnen "Avtal" (JA/NEJ) sist bland rubrikerna, om den inte redan finns.
+function läggTillAvtalskolumn_(blad, sistaRad) {
+  const rubriker = blad.getRange("A4:Z4").getValues()[0].map((h) => String(h).trim());
+  let kolumn = rubriker.findIndex((h) => h.toLowerCase() === "avtal") + 1;
+  if (kolumn === 0) {
+    const sistaMedInnehåll = rubriker.reduce((sist, h, i) => (h !== "" ? i + 1 : sist), 0);
+    kolumn = sistaMedInnehåll + 1;
+    const rubrik = blad.getRange(4, kolumn);
+    blad.getRange(4, kolumn - 1).copyTo(rubrik, SpreadsheetApp.CopyPasteType.PASTE_FORMAT, false);
+    rubrik.setValue("Avtal");
+  }
+  blad
+    .getRange(4, kolumn)
+    .setNote(
+      "JA när personen skrivit under rättighetsöverlåtelse och Participation Agreement. " +
+        "Visas i portalen."
+    );
+  if (sistaRad < 5) return;
+  const data = blad.getRange(5, kolumn, sistaRad - 4, 1);
+  data.setDataValidation(
+    SpreadsheetApp.newDataValidation().requireValueInList(["JA", "NEJ"], true).setAllowInvalid(false).build()
+  );
+  färgaZon_(data, "inmatning");
 }
 
 function färgaZon_(intervall, typ) {

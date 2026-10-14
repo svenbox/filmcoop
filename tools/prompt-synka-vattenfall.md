@@ -5,6 +5,7 @@ film.coop-portalen (filmcoop.nu) har en vattenfallsmodell som kalkylbladets flik
 
 1. Skriver om Waterfall Simulering så att den räknar som portalen (kontantinsatsen är en vanlig finansiär utan premie, stöd tar ingen andel av nettot, finansiärernas andel är insats ÷ total kostnad, övrig egeninsats återbetalas, samproducentens villkor hämtas från tabellen Finansiärer).
 2. Färgmarkerar bladet: GUL cell med blå text = fyll i, GRÅ cell = formel eller länk som man inte ska ändra manuellt. Formelblock får dessutom ett varningsskydd (man kan fortfarande ändra, men får en varning först).
+3. Lägger till kolumnen "Avtal" (JA/NEJ-rullista) sist bland rubrikerna i Egeninsats & Poäng. Portalen använder den för att visa vem som skrivit under rättighetsöverlåtelse och Participation Agreement. Den ska lämnas tom: jag fyller i den själv.
 
 Kalkylbladet: [KLISTRA IN LÄNK TILL EPER-BLADET HÄR]
 
@@ -34,6 +35,7 @@ Du måste kunna redigera kalkylbladet som mig, antingen i min inloggade webbläs
    - Rad 15–17 är oförändrade, och värdena i Projektinställningar!C42 (50 %) och C43 (15 %) är oförändrade (bara etiketterna ändras).
    - Färger: Waterfall Simulering D7:F8 och D35:E37 är gula med blå text. D9:F12, D15:F24 och D41:F54 är grå. I Egeninsats & Poäng är kolumnerna J:M grå och till exempel Dagar och Roll gula, utom celler som är formler (grå).
    - Vid manuell ändring i en grå formelcell visas en varning.
+   - Egeninsats & Poäng har en ny rubrik "Avtal" sist bland rubrikerna på rad 4 (troligen kolumn R), med JA/NEJ-rullista på datarader. Cellerna ska vara tomma. Fyll inte i några värden.
 7. Rapportera: vad du gjorde, namnet på säkerhetskopian, och alla avvikelser mot tabellen ovan (med cellreferens och faktiskt värde).
 
 ## Regler
@@ -63,6 +65,9 @@ Du måste kunna redigera kalkylbladet som mig, antingen i min inloggade webbläs
  *   - Övrig egeninsats (totalbudget minus kontant minus uppskjutna löner)
  *     återbetalas före vinst, på samma sätt som de uppskjutna lönerna.
  *   - Hjälpberäkningen läggs på rad 40–54 i Waterfall Simulering.
+ *   - Kolumnen "Avtal" (JA/NEJ) läggs till sist i Egeninsats & Poäng. JA betyder att
+ *     personen skrivit under rättighetsöverlåtelse och Participation Agreement.
+ *     Portalen visar avtalsstatus per person och varnar för dem som saknar avtal.
  *
  * Skriptet markerar också tydligt var du får skriva och var du inte ska det:
  *   - GUL cell med blå text = inmatning, fyll i själv.
@@ -224,6 +229,7 @@ function markeraInmatning() {
     färgaZon_(eg.getRange("J5:M" + sista), "formel");
     if (summering > 0) färgaZon_(eg.getRange("J" + summering + ":M" + summering), "formel");
     skydda_(eg, "J5:M" + sista);
+    läggTillAvtalskolumn_(eg, sista);
     skrivFörklaring_(eg, "B3", true);
   }
 
@@ -250,6 +256,31 @@ function markeraInmatning() {
         .setFontStyle("italic");
     }
   }
+}
+
+// Lägger kolumnen "Avtal" (JA/NEJ) sist bland rubrikerna, om den inte redan finns.
+function läggTillAvtalskolumn_(blad, sistaRad) {
+  const rubriker = blad.getRange("A4:Z4").getValues()[0].map((h) => String(h).trim());
+  let kolumn = rubriker.findIndex((h) => h.toLowerCase() === "avtal") + 1;
+  if (kolumn === 0) {
+    const sistaMedInnehåll = rubriker.reduce((sist, h, i) => (h !== "" ? i + 1 : sist), 0);
+    kolumn = sistaMedInnehåll + 1;
+    const rubrik = blad.getRange(4, kolumn);
+    blad.getRange(4, kolumn - 1).copyTo(rubrik, SpreadsheetApp.CopyPasteType.PASTE_FORMAT, false);
+    rubrik.setValue("Avtal");
+  }
+  blad
+    .getRange(4, kolumn)
+    .setNote(
+      "JA när personen skrivit under rättighetsöverlåtelse och Participation Agreement. " +
+        "Visas i portalen."
+    );
+  if (sistaRad < 5) return;
+  const data = blad.getRange(5, kolumn, sistaRad - 4, 1);
+  data.setDataValidation(
+    SpreadsheetApp.newDataValidation().requireValueInList(["JA", "NEJ"], true).setAllowInvalid(false).build()
+  );
+  färgaZon_(data, "inmatning");
 }
 
 function färgaZon_(intervall, typ) {

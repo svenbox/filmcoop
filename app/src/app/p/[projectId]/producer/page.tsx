@@ -67,6 +67,8 @@ export default function ProducerPage() {
   const team = groupByPerson(rows);
   const delade = sharedEmails(rows);
   const obokade = team.filter((m) => !m.bokad);
+  const harAvtalskolumn = team.some((m) => m.avtal !== null);
+  const utanAvtal = team.filter((m) => m.avtal === "nej");
   const saknadeLock = [
     ["Lock 1", project.lock1],
     ["Lock 2", project.lock2],
@@ -185,7 +187,10 @@ export default function ProducerPage() {
 
             <div className="card">
               <div className="section-header">Att göra</div>
-              {obokade.length === 0 && saknadeLock.length === 0 ? (
+              {obokade.length === 0 &&
+              saknadeLock.length === 0 &&
+              utanAvtal.length === 0 &&
+              harAvtalskolumn ? (
                 <p className="muted">Inget att göra just nu.</p>
               ) : (
                 <ul className="todo-list">
@@ -195,6 +200,21 @@ export default function ProducerPage() {
                         .map((m) => m.namn)
                         .join(", ")}). De syns i listorna och räknas med i andelarna, men kan
                       inte logga in förrän deras egen e-postadress lagts in i kalkylbladet.
+                    </li>
+                  )}
+                  {!harAvtalskolumn && (
+                    <li>
+                      <strong>Avtalsstatus följs inte än.</strong> Lägg till kolumnen "Avtal"
+                      (JA/NEJ) i Egeninsats & Poäng för att se vem som skrivit under
+                      rättighetsöverlåtelse och Participation Agreement.
+                    </li>
+                  )}
+                  {utanAvtal.length > 0 && (
+                    <li>
+                      <strong>{utanAvtal.length} personer saknar signerat avtal</strong> (
+                      {utanAvtal.map((m) => m.namn).join(", ")}). Produktionsbolaget måste
+                      äga rättigheterna för att kunna representera filmen, och
+                      ägarandelen regleras i Participation Agreement.
                     </li>
                   )}
                   {saknadeLock.length > 0 && (
@@ -289,6 +309,12 @@ export default function ProducerPage() {
                   <th>Ägarenheter</th>
                   <th>Andel</th>
                   <th>Uppskjutet arvode</th>
+                  {harAvtalskolumn && (
+                    <th>
+                      Avtal
+                      <Tooltip text="Signerat avtal: rättighetsöverlåtelse till produktionsbolaget och Participation Agreement som reglerar ägarandelen. Styrs av kolumnen Avtal i kalkylbladet." />
+                    </th>
+                  )}
                 </tr>
               </thead>
               <tbody>
@@ -316,6 +342,15 @@ export default function ProducerPage() {
                       </div>
                     </td>
                     <td>{formatSek(m.deferredFee)}</td>
+                    {harAvtalskolumn && (
+                      <td>
+                        {m.avtal === "ja" ? (
+                          "✓ Signerat"
+                        ) : (
+                          <span className="muted">Saknas</span>
+                        )}
+                      </td>
+                    )}
                   </tr>
                 ))}
               </tbody>
@@ -331,6 +366,11 @@ export default function ProducerPage() {
                   <td>
                     <strong>{formatSek(team.reduce((sum, m) => sum + m.deferredFee, 0))}</strong>
                   </td>
+                  {harAvtalskolumn && (
+                    <td>
+                      {team.filter((m) => m.avtal === "ja").length} av {team.length}
+                    </td>
+                  )}
                 </tr>
               </tfoot>
             </table>
