@@ -235,6 +235,8 @@ export interface ModelParams {
   totalBudget: number;
   /** Budgetens kontantbehov (hårda pengar) — summan av kontantinsatserna i kalkylbladet. */
   kontantinsats: number;
+  /** Del av totalbudgeten som betalas kontant (Projektinställningar C12), för visning. */
+  kontantBudget: number;
   distributionsavgift: number;
   deferredPool: number;
   stod: Financier;
@@ -276,6 +278,7 @@ export async function getModelParams(spreadsheetId: string): Promise<ModelParams
   return {
     totalBudget: iv("C11"),
     kontantinsats: iv("C51", wv("D9")),
+    kontantBudget: iv("C12"),
     distributionsavgift: wv("D8", 0.25),
     deferredPool: wv("D12"),
     stod: fin(35, 0),

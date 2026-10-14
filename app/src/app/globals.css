@@ -281,6 +281,22 @@ a {
   white-space: nowrap;
 }
 
+/* Fasta kolumnbredder (via <colgroup>) så att kolumnerna ligger rakt under
+   varandra i alla fas-tabeller på sidan. */
+.data-table.fixed {
+  table-layout: fixed;
+  min-width: 860px;
+}
+
+.data-table.fixed th {
+  white-space: normal;
+}
+
+.data-table.fixed td {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .data-table th {
   text-align: left;
   font-size: 11px;

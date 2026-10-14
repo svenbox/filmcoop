@@ -117,6 +117,10 @@ export default function ProducerPage() {
   const totalPoang = rows.reduce((sum, r) => sum + r.poang, 0);
   const totalDeferred = rows.reduce((sum, r) => sum + r.deferredFee, 0);
   const wf = computeWaterfall(params, brutto, { stod, samproducent, mg, kontant });
+  const ovrigEgeninsats = Math.max(
+    0,
+    params.totalBudget - params.kontantBudget - params.deferredPool
+  );
   const budgetMax = roundUp(Math.max(params.totalBudget, 500_000), FIN_STEP);
   const bruttoMax = roundUp(Math.max(2_000_000, wf.breakEven * 2), 250_000);
   const team = groupByPerson(rows);
@@ -224,7 +228,18 @@ export default function ProducerPage() {
                   {g.fas} — {g.label.toUpperCase() || "OKÄND FAS"}
                 </div>
                 <div className="table-scroll">
-                  <table className="data-table">
+                  <table className="data-table fixed">
+                    <colgroup>
+                      <col style={{ width: "14%" }} />
+                      <col style={{ width: "19%" }} />
+                      <col style={{ width: "6%" }} />
+                      <col style={{ width: "6%" }} />
+                      <col style={{ width: "10%" }} />
+                      <col style={{ width: "9%" }} />
+                      <col style={{ width: "10%" }} />
+                      <col style={{ width: "9%" }} />
+                      <col style={{ width: "17%" }} />
+                    </colgroup>
                     <thead>
                       <tr>
                         <th>Namn</th>
@@ -330,6 +345,40 @@ export default function ProducerPage() {
               onChange={setBrutto}
             />
 
+            {params.totalBudget > 0 && (
+              <div className="card">
+                <div className="section-header">Filmens totala kostnad</div>
+                <div className="wf-row total">
+                  <span>
+                    Total kostnad (budget inkl. uppskjutet)
+                    <Tooltip text={WATERFALL_TOOLTIP.totalKostnad} />
+                  </span>
+                  <span className="wf-value">{formatSek(params.totalBudget)}</span>
+                </div>
+                {params.kontantBudget > 0 && (
+                  <div className="wf-row">
+                    <span>Betalas kontant under produktionen</span>
+                    <span className="wf-value">{formatSek(params.kontantBudget)}</span>
+                  </div>
+                )}
+                <div className="wf-row">
+                  <span>Uppskjutna löner (återbetalas före vinst)</span>
+                  <span className="wf-value">{formatSek(params.deferredPool)}</span>
+                </div>
+                {ovrigEgeninsats > 1 && (
+                  <div className="wf-row">
+                    <span>Övrig egeninsats (återbetalas inte i modellen)</span>
+                    <span className="wf-value">{formatSek(ovrigEgeninsats)}</span>
+                  </div>
+                )}
+                <div className="wf-footnote">
+                  Finansiärernas andel av nettot räknas mot den här totalen, inte bara mot de
+                  uppskjutna lönerna: en insats på 100 000 kr av {formatSek(params.totalBudget)}{" "}
+                  ger {formatPercent(100_000 / params.totalBudget)} av nettot.
+                </div>
+              </div>
+            )}
+
             <div className="section-header">Finansiering</div>
             <MoneySlider
               label="Stöd (SFI, kommun m.fl.)"
@@ -340,7 +389,7 @@ export default function ProducerPage() {
               onChange={setStod}
             />
             <MoneySlider
-              label="Samproducent / regional filmfond"
+              label="Samproducenter"
               tooltip={WATERFALL_TOOLTIP.samproducent}
               value={samproducent}
               max={budgetMax}
@@ -348,7 +397,7 @@ export default function ProducerPage() {
               onChange={setSamproducent}
             />
             <MoneySlider
-              label="Kontantinsats producent + regissör"
+              label="Kontantinsats"
               tooltip={WATERFALL_TOOLTIP.kontant}
               value={kontant}
               max={budgetMax}
@@ -400,6 +449,43 @@ export default function ProducerPage() {
               </div>
             )}
 
+            {wf.finansiarsAndel > 0 && (
+              <div className="card">
+                <div className="section-header">Så fördelas nettot</div>
+                {wf.andelSamproducent > 0 && (
+                  <div className="wf-row">
+                    <span>Samproducenter</span>
+                    <span className="wf-value">{formatPercent(wf.andelSamproducent)}</span>
+                  </div>
+                )}
+                {wf.andelKontant > 0 && (
+                  <div className="wf-row">
+                    <span>Kontantinsats</span>
+                    <span className="wf-value">{formatPercent(wf.andelKontant)}</span>
+                  </div>
+                )}
+                {wf.andelStod > 0 && (
+                  <div className="wf-row">
+                    <span>Stöd (fast andel)</span>
+                    <span className="wf-value">{formatPercent(wf.andelStod)}</span>
+                  </div>
+                )}
+                {wf.andelMg > 0 && (
+                  <div className="wf-row">
+                    <span>Distributör (fast andel)</span>
+                    <span className="wf-value">{formatPercent(wf.andelMg)}</span>
+                  </div>
+                )}
+                <div className="wf-row total">
+                  <span>Teamet (ägarenheter)</span>
+                  <span className="wf-value">{formatPercent(1 - wf.finansiarsAndel)}</span>
+                </div>
+                <div className="wf-footnote">
+                  Insats ÷ filmens totala kostnad ({formatSek(params.totalBudget)}).
+                </div>
+              </div>
+            )}
+
             <div className="card">
               <div className="wf-row">
                 <span>
@@ -440,7 +526,7 @@ export default function ProducerPage() {
               </div>
               {wf.recoupmentKontant > 0 && (
                 <div className="wf-footnote">
-                  varav kontantinsats från producent och regissör: {formatSek(wf.recoupmentKontant)}
+                  varav kontantinsats: {formatSek(wf.recoupmentKontant)}
                 </div>
               )}
               {wf.recoupmentSamproducent > 0 && (
@@ -495,8 +581,7 @@ export default function ProducerPage() {
               )}
               {wf.finansiarspoolKontant > 0 && (
                 <div className="wf-footnote">
-                  varav kontantinsats från producent och regissör:{" "}
-                  {formatSek(wf.finansiarspoolKontant)}
+                  varav kontantinsats: {formatSek(wf.finansiarspoolKontant)}
                 </div>
               )}
               <div className="wf-row">

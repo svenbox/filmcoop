@@ -20,7 +20,7 @@ export const WATERFALL_TOOLTIP: Record<string, string> = {
     "Avgiften en distributör tar för att sälja och marknadsföra filmen. Varierar med affärens storlek, vanligtvis 20–30% av bruttointäkten.",
   nettoEfterDistribution: "Vad som återstår när distributören fått sin avgift.",
   finansiarsRecoupment:
-    "Återbetalning av finansiärernas insatser — även den kontantinsats producent och regissör satt in — med avtalad multiplikator. Betalas proportionellt mot varandra, före uppskjutna arvoden.",
+    "Återbetalning av finansiärernas insatser — inklusive kontantinsatsen — med avtalad multiplikator. Betalas proportionellt mot varandra, före uppskjutna arvoden.",
   nettoEfterFinansiar:
     "Vad som återstår när externa finansiärer fått tillbaka sitt kapital plus avkastning.",
   deferredFeePool:
@@ -34,13 +34,15 @@ export const WATERFALL_TOOLTIP: Record<string, string> = {
   stod:
     "Stöd som inte betalas tillbaka ur filmens intäkter, t.ex. produktionsstöd från Filminstitutet eller kommunalt stöd. Bidrar först till att täcka budgetens kontantbehov och sedan till att betala arvoden direkt.",
   samproducent:
-    "Samproducent eller regional filmfond som går in med pengar mot att få tillbaka dem (med multiplikator) och en andel av nettovinsten i proportion till sin del av budgeten.",
+    "Samproducenter, t.ex. regionala filmfonder, som går in med pengar mot att få tillbaka dem (med multiplikator) och en andel av nettovinsten i proportion till sin del av filmens totala kostnad.",
   mg:
     "Minimigaranti från en distributör: ett förskott som betalas ut före inspelning. Distributören behåller intäkterna tills förskottet är återvunnet.",
   mgAtervinning:
     "Distributören behåller intäkter efter sin avgift tills minimigarantin (gånger multiplikatorn) är återvunnen.",
   kontant:
-    "Kontantinsats från producent och regissör. Räknas som vilken annan finansiär som helst: återbetalas med samproducentens villkor och tar del av nettot i proportion till sin del av budgeten.",
+    "Pengar som läggs in i produktionen. Räknas som vilken annan finansiär som helst: återbetalas med samproducentens villkor och tar del av nettot i proportion till sin del av filmens totala kostnad.",
+  totalKostnad:
+    "Filmens hela kostnad enligt budgeten: det som betalas kontant under produktionen plus det som skjuts upp (egeninsats). Finansiärernas andel av nettot räknas mot den här summan, inte bara mot de uppskjutna lönerna.",
   taeckerBehov:
     "Budgetens kontantbehov, de hårda pengar som måste finnas innan inspelning. Alla finansiärer, inklusive kontantinsatsen, bidrar till att täcka det.",
   betalarArvoden:

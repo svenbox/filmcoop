@@ -33,6 +33,11 @@ export interface ModelResult {
   deferredBetalt: number;
   nettoEfterDeferred: number;
   finansiarsAndel: number;
+  /** Delandelar av nettot (före ev. begränsning till 100 %), per finansiär. */
+  andelSamproducent: number;
+  andelKontant: number;
+  andelStod: number;
+  andelMg: number;
   crewPool: number;
   finansiarspool: number;
   breakEven: number;
@@ -97,9 +102,9 @@ export function computeWaterfall(
 
   const samAndel = params.totalBudget > 0 ? samproducent / params.totalBudget : 0;
   const kontantAndel = params.totalBudget > 0 ? kontant / params.totalBudget : 0;
-  const ovrigAndel =
-    (stod > 0 ? params.stod.andelAvNetto : 0) + (mg > 0 ? params.distributor.andelAvNetto : 0);
-  const rawAndel = samAndel + kontantAndel + ovrigAndel;
+  const andelStod = stod > 0 ? params.stod.andelAvNetto : 0;
+  const andelMg = mg > 0 ? params.distributor.andelAvNetto : 0;
+  const rawAndel = samAndel + kontantAndel + andelStod + andelMg;
   const finansiarsAndel = clamp01(rawAndel);
   const finansiarspool = nettoEfterDeferred * finansiarsAndel;
   const finansiarspoolKontant = rawAndel > 0 ? finansiarspool * (kontantAndel / rawAndel) : 0;
@@ -129,6 +134,10 @@ export function computeWaterfall(
     deferredBetalt: -deferredBetalt || 0,
     nettoEfterDeferred,
     finansiarsAndel,
+    andelSamproducent: samAndel,
+    andelKontant: kontantAndel,
+    andelStod,
+    andelMg,
     crewPool,
     finansiarspool,
     breakEven,

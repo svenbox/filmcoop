@@ -189,7 +189,15 @@ export default function CrewPage() {
                   {g.fas} — {g.label.toUpperCase() || "OKÄND FAS"}
                 </div>
                 <div className="table-scroll">
-                  <table className="data-table">
+                  <table className="data-table fixed">
+                    <colgroup>
+                      <col style={{ width: "30%" }} />
+                      <col style={{ width: "10%" }} />
+                      <col style={{ width: "10%" }} />
+                      <col style={{ width: "18%" }} />
+                      <col style={{ width: "18%" }} />
+                      <col style={{ width: "14%" }} />
+                    </colgroup>
                     <thead>
                       <tr>
                         <th>Roll</th>
