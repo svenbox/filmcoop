@@ -141,7 +141,10 @@ function rowToCrewMember(r: GoogleSpreadsheetRow): CrewMember {
   };
 }
 
-/** Hämtar samtliga giltiga rader (med e-post) från huvudregistret. */
+/**
+ * Hämtar samtliga rader med namn från huvudregistret. E-post krävs inte: de som
+ * inte är bokade än saknar adress, men ska ändå synas och räknas med i totalen.
+ */
 export async function getAllCrewMembers(spreadsheetId: string): Promise<CrewMember[]> {
   const doc = await getDoc(spreadsheetId);
   const sheet = doc.sheetsByTitle[SHEET_EGENINSATS];
@@ -154,7 +157,7 @@ export async function getAllCrewMembers(spreadsheetId: string): Promise<CrewMemb
 
   return rows
     .map(rowToCrewMember)
-    .filter((m) => m.epost.trim() !== "");
+    .filter((m) => m.namn.trim() !== "");
 }
 
 /** Hämtar alla rader som tillhör en viss e-postadress (skiftlägesokänsligt). */

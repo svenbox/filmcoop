@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
 import type { CrewMember, ModelParams, ProjectSettings, WaterfallData } from "@/lib/sheets";
-import { groupByPerson } from "@/lib/team";
+import { groupByPerson, sharedEmails } from "@/lib/team";
 import { groupByFas } from "@/lib/fas";
 import { formatPercent, formatSek } from "@/lib/format";
 import { WATERFALL_TOOLTIP } from "@/lib/scenarios";
@@ -120,6 +120,7 @@ export default function ProducerPage() {
   const budgetMax = roundUp(Math.max(params.totalBudget, 500_000), FIN_STEP);
   const bruttoMax = roundUp(Math.max(2_000_000, wf.breakEven * 2), 250_000);
   const team = groupByPerson(rows);
+  const delade = sharedEmails(rows);
   const fasGrupper = groupByFas(rows);
 
   return (
@@ -262,7 +263,11 @@ export default function ProducerPage() {
                           <td>{formatSek(r.marknPrisPerDag)}</td>
                           <td>{formatSek(r.deferredFee)}</td>
                           <td>{r.poang.toFixed(1)}</td>
-                          <td>{r.epost}</td>
+                          <td>{r.epost && !delade.has(r.epost.trim().toLowerCase()) ? (
+                              r.epost
+                            ) : (
+                              <span className="muted">Ej bokad än</span>
+                            )}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -289,9 +294,12 @@ export default function ProducerPage() {
               </thead>
               <tbody>
                 {team.map((m, i) => (
-                  <tr key={m.epost}>
+                  <tr key={m.key}>
                     <td>{i + 1}</td>
-                    <td>{m.namn}</td>
+                    <td>
+                      {m.namn}
+                      {!m.bokad && <span className="muted"> · ej bokad än</span>}
+                    </td>
                     <td>{m.roller}</td>
                     <td>
                       <span className="klass-badge">{m.klass}</span>
