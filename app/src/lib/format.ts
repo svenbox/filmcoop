@@ -3,5 +3,8 @@ export function formatSek(n: number): string {
 }
 
 export function formatPercent(n: number): string {
-  return (n * 100).toFixed(1) + "%";
+  return (
+    (n * 100).toLocaleString("sv-SE", { minimumFractionDigits: 1, maximumFractionDigits: 1 }) +
+    "\u00A0%"
+  );
 }

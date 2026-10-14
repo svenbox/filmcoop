@@ -40,6 +40,14 @@ export interface ModelResult {
   crewPool: number;
   finansiarspool: number;
   breakEven: number;
+  /** Vad finansiärerna (samproducenter, stöd, kontantinsats) ska ha tillbaka, inkl. multiplikator. */
+  finansiarerSkyldigt: number;
+  /** Distributörens minimigaranti × multiplikator, som den återvinner först. */
+  mgSkyldigt: number;
+  /** Bruttointäkt där distributör och finansiärer fått allt tillbaka. */
+  finansiarerAterbetaldaVid: number;
+  /** Andel (0–1) av uppskjutna arvoden och övrig egeninsats som betalas vid den här intäkten. */
+  skuldAndelBetald: number;
 }
 
 function clamp01(n: number): number {
@@ -110,8 +118,10 @@ export function computeWaterfall(
 
   // Den bruttointäkt där alla återbetalningar och uppskjutna arvoden är täckta.
   const kvar = 1 - params.distributionsavgift;
-  const breakEven =
-    kvar > 0 ? (mg * params.distributor.multiplikator + due + kvarDeferredPool) / kvar : 0;
+  const mgSkyldigt = mg * params.distributor.multiplikator;
+  const breakEven = kvar > 0 ? (mgSkyldigt + due + kvarDeferredPool) / kvar : 0;
+  const finansiarerAterbetaldaVid = kvar > 0 ? (mgSkyldigt + due) / kvar : 0;
+  const skuldAndelBetald = skuld > 0 ? (betalarArvodenKontant + deferredBetalt) / skuld : 1;
 
   return {
     bruttointakt: brutto,
@@ -138,5 +148,9 @@ export function computeWaterfall(
     crewPool,
     finansiarspool,
     breakEven,
+    finansiarerSkyldigt: due,
+    mgSkyldigt,
+    finansiarerAterbetaldaVid,
+    skuldAndelBetald,
   };
 }

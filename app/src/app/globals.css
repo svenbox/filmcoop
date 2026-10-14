@@ -799,3 +799,170 @@ select {
   font-size: 13px;
   color: var(--text-2);
 }
+
+/* --- producentvyn: utbetalningsordning --- */
+.milestones .section-intro {
+  margin: 4px 0 12px;
+  color: var(--text-2);
+  font-size: 13px;
+}
+
+.milestone-list {
+  list-style: none;
+  counter-reset: steg;
+  margin: 0;
+  padding: 0;
+}
+
+.milestone-list li {
+  counter-increment: steg;
+  position: relative;
+  padding: 10px 0 10px 38px;
+  border-top: 1px solid var(--border-2);
+}
+
+.milestone-list li::before {
+  content: counter(steg);
+  position: absolute;
+  left: 0;
+  top: 10px;
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.milestone-list li strong {
+  display: block;
+  color: var(--text);
+}
+
+.milestone-list li span {
+  color: var(--text-2);
+  font-size: 13px;
+}
+
+.slider-hint {
+  font-size: 12px;
+  color: var(--text-3);
+  margin: -2px 0 6px;
+}
+
+.slider-wrap {
+  position: relative;
+  padding-top: 18px;
+}
+
+.slider-marker {
+  position: absolute;
+  top: 0;
+  width: 0;
+  border-left: 2px solid var(--red);
+  height: 28px;
+  pointer-events: none;
+}
+
+.slider-marker-label {
+  position: absolute;
+  top: -2px;
+  left: 4px;
+  font-size: 10px;
+  color: var(--red);
+  white-space: nowrap;
+  background: var(--bg);
+  padding: 0 3px;
+}
+
+.preset-row {
+  margin-bottom: 10px;
+}
+
+.outcome-text {
+  font-size: 14px;
+  margin-bottom: 12px;
+  max-width: none;
+}
+
+.stacked-bar {
+  display: flex;
+  height: 22px;
+  border-radius: 6px;
+  overflow: hidden;
+  background: var(--bg-sect);
+}
+
+.bar-seg.seg-distributor,
+.legend-dot.seg-distributor { background: #9aa0a6; }
+.bar-seg.seg-finansiar,
+.legend-dot.seg-finansiar { background: #5b8def; }
+.bar-seg.seg-skuld,
+.legend-dot.seg-skuld { background: #e0a030; }
+.bar-seg.seg-team,
+.legend-dot.seg-team { background: #3aa66b; }
+.bar-seg.seg-finvinst,
+.legend-dot.seg-finvinst { background: #8e6fd1; }
+
+.bar-legend {
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+  font-size: 13px;
+}
+
+.bar-legend li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 3px 0;
+}
+
+.legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  flex: none;
+}
+
+.legend-value {
+  margin-left: auto;
+  color: var(--text-2);
+}
+
+.person-pick {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--text-2);
+  margin-bottom: 10px;
+}
+
+.section-header.sub {
+  margin-top: 14px;
+}
+
+.todo-list {
+  margin: 0;
+  padding-left: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 13px;
+}
+
+details.utrakning {
+  margin: 16px 0;
+}
+
+details.utrakning summary {
+  cursor: pointer;
+  color: var(--text-2);
+  font-size: 13px;
+  padding: 8px 0;
+}

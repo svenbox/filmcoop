@@ -13,6 +13,15 @@ export const GRUPP_TOOLTIP: Record<string, string> = {
   C: "Crew — gör produktionen möjlig i praktiken. Gäller även statister och enstaka replikroller. Multiplikator 1,0×.",
 };
 
+export const LOCK_TOOLTIP: Record<"lock1" | "lock2" | "lock3", string> = {
+  lock1:
+    "Lock 1, Green Light: strax innan inspelning. Ägarenheter från utveckling och förproduktion fastställs och kan inte ändras i efterhand.",
+  lock2:
+    "Lock 2, Wrap: sista inspelningsdagen. Ägarenheter från inspelningen fastställs.",
+  lock3:
+    "Lock 3, Leverans: vid godkänd leverans eller signerat distributionsavtal. Registret blir slutgiltigt och alla får ett skriftligt utdrag.",
+};
+
 export const WATERFALL_TOOLTIP: Record<string, string> = {
   bruttointakt:
     "Alla intäkter filmen genererar — försäljning av visningsrätter, streamingavtal, festivalpriser, biljettintäkter från festivalvisningar, med mera. Innan några avdrag.",
@@ -42,7 +51,7 @@ export const WATERFALL_TOOLTIP: Record<string, string> = {
   kontant:
     "Pengar som läggs in i produktionen. Räknas som vilken annan finansiär som helst: återbetalas med samproducentens villkor och tar del av nettot i proportion till sin del av filmens totala kostnad.",
   totalKostnad:
-    "Filmens hela kostnad enligt budgeten: det som betalas kontant under produktionen plus det som skjuts upp (egeninsats). Finansiärernas andel av nettot räknas mot den här summan, inte bara mot de uppskjutna lönerna.",
+    "Filmens hela kostnad enligt budgeten: det som betalas kontant under produktionen plus det som skjuts upp (egeninsats). Finansiärernas andel av nettot räknas mot den här summan, inte bara mot de uppskjutna arvodena.",
   taeckerBehov:
     "Budgetens kontantbehov, de hårda pengar som måste finnas innan inspelning. Alla finansiärer, inklusive kontantinsatsen, bidrar till att täcka det.",
   betalarArvoden:

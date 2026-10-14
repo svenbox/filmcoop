@@ -7,10 +7,10 @@ import type { CrewMember, ModelParams, ProjectSettings, WaterfallData } from "@/
 import { groupByPerson, sharedEmails } from "@/lib/team";
 import { groupByFas } from "@/lib/fas";
 import { formatPercent, formatSek } from "@/lib/format";
-import { WATERFALL_TOOLTIP } from "@/lib/scenarios";
-import { computeWaterfall } from "@/lib/waterfallModel";
 import { NavPills } from "../../../components/NavPills";
 import { Tooltip } from "../../../components/Tooltip";
+import { GRUPP_HEADER_TOOLTIP, LOCK_TOOLTIP } from "@/lib/scenarios";
+import { WaterfallTab } from "./WaterfallTab";
 
 interface ProducerResponse {
   project: ProjectSettings;
@@ -21,59 +21,12 @@ interface ProducerResponse {
 
 type Tab = "oversikt" | "crew" | "team" | "waterfall";
 
-const BRUTTO_STEP = 25_000;
-const FIN_STEP = 25_000;
-
-function roundUp(n: number, step: number): number {
-  return Math.ceil(n / step) * step;
-}
-
-interface SliderProps {
-  label: string;
-  tooltip: string;
-  value: number;
-  max: number;
-  step: number;
-  onChange: (v: number) => void;
-}
-
-function MoneySlider({ label, tooltip, value, max, step, onChange }: SliderProps) {
-  return (
-    <div className="brutto-slider">
-      <div className="label-row">
-        <span className="label">
-          {label}
-          <Tooltip text={tooltip} />
-        </span>
-        <span className="value">{formatSek(value)}</span>
-      </div>
-      <input
-        type="range"
-        min={0}
-        max={max}
-        step={step}
-        value={Math.min(value, max)}
-        onChange={(e) => onChange(Number(e.target.value))}
-      />
-      <div className="range-ends">
-        <span>0 kr</span>
-        <span>{formatSek(max)}</span>
-      </div>
-    </div>
-  );
-}
-
 export default function ProducerPage() {
   const { projectId } = useParams<{ projectId: string }>();
   const { status } = useSession();
   const [data, setData] = useState<ProducerResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [tab, setTab] = useState<Tab>("oversikt");
-  const [brutto, setBrutto] = useState<number>(1_000_000);
-  const [stod, setStod] = useState<number>(0);
-  const [samproducent, setSamproducent] = useState<number>(0);
-  const [mg, setMg] = useState<number>(0);
-  const [kontant, setKontant] = useState<number>(0);
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -86,12 +39,6 @@ export default function ProducerPage() {
           if (d.error) setError(d.error);
           else {
             setData(d);
-            if (d.params) {
-              setStod(d.params.stod.belopp);
-              setSamproducent(d.params.samproducent.belopp);
-              setMg(d.params.distributor.belopp);
-              setKontant(d.params.kontantinsats);
-            }
           }
         })
         .catch(() => setError("Kunde inte hämta data"));
@@ -116,11 +63,16 @@ export default function ProducerPage() {
   const totalDagar = rows.reduce((sum, r) => sum + r.dagar, 0);
   const totalPoang = rows.reduce((sum, r) => sum + r.poang, 0);
   const totalDeferred = rows.reduce((sum, r) => sum + r.deferredFee, 0);
-  const wf = computeWaterfall(params, brutto, { stod, samproducent, mg, kontant });
-  const budgetMax = roundUp(Math.max(params.totalBudget, 500_000), FIN_STEP);
-  const bruttoMax = roundUp(Math.max(2_000_000, wf.breakEven * 2), 250_000);
   const team = groupByPerson(rows);
   const delade = sharedEmails(rows);
+  const obokade = team.filter((m) => !m.bokad);
+  const saknadeLock = [
+    ["Lock 1", project.lock1],
+    ["Lock 2", project.lock2],
+    ["Lock 3", project.lock3],
+  ]
+    .filter(([, datum]) => !datum)
+    .map(([namn]) => namn);
   const fasGrupper = groupByFas(rows);
 
   return (
@@ -152,14 +104,15 @@ export default function ProducerPage() {
           className={`tab-btn ${tab === "crew" ? "active" : ""}`}
           onClick={() => setTab("crew")}
         >
-          Crew
+          Rader per fas
           <span className="badge-count">{rows.length}</span>
         </button>
         <button
           className={`tab-btn ${tab === "team" ? "active" : ""}`}
           onClick={() => setTab("team")}
         >
-          Team
+          Personer och andelar
+          <span className="badge-count">{team.length}</span>
         </button>
         <button
           className={`tab-btn ${tab === "waterfall" ? "active" : ""}`}
@@ -174,19 +127,22 @@ export default function ProducerPage() {
           <>
             <div className="stat-grid">
               <div className="stat-box">
-                <div className="label">Antal crew</div>
-                <div className="value">{rows.length}</div>
+                <div className="label">Antal personer</div>
+                <div className="value">{team.length}</div>
+                {obokade.length > 0 && (
+                  <div className="muted">varav {obokade.length} inte bokade än</div>
+                )}
               </div>
               <div className="stat-box">
                 <div className="label">Totalt antal dagar</div>
                 <div className="value">{totalDagar}</div>
               </div>
               <div className="stat-box">
-                <div className="label">Total poäng</div>
+                <div className="label">Totalt antal ägarenheter</div>
                 <div className="value">{totalPoang.toFixed(1)}</div>
               </div>
               <div className="stat-box">
-                <div className="label">Total deferred fee</div>
+                <div className="label">Uppskjutna arvoden</div>
                 <div className="value">{formatSek(totalDeferred)}</div>
               </div>
             </div>
@@ -201,18 +157,58 @@ export default function ProducerPage() {
                 <span>Producent</span>
                 <span className="wf-value">{project.producent || "—"}</span>
               </div>
+              {params.totalBudget > 0 && (
+                <div className="wf-row">
+                  <span>Filmens totala kostnad</span>
+                  <span className="wf-value">{formatSek(params.totalBudget)}</span>
+                </div>
+              )}
               <div className="wf-row">
-                <span>Green Light (Lock 1)</span>
+                <span>
+                  Green Light (Lock 1)
+                  <Tooltip text={LOCK_TOOLTIP.lock1} />
+                </span>
                 <span className="wf-value">{project.lock1 || "—"}</span>
               </div>
               <div className="wf-row">
-                <span>Wrap (Lock 2)</span>
+                <span>
+                  Wrap (Lock 2)
+                  <Tooltip text={LOCK_TOOLTIP.lock2} />
+                </span>
                 <span className="wf-value">{project.lock2 || "—"}</span>
               </div>
               <div className="wf-row">
-                <span>Leverans (Lock 3)</span>
+                <span>
+                  Leverans (Lock 3)
+                  <Tooltip text={LOCK_TOOLTIP.lock3} />
+                </span>
                 <span className="wf-value">{project.lock3 || "—"}</span>
               </div>
+            </div>
+
+            <div className="card">
+              <div className="section-header">Att göra</div>
+              {obokade.length === 0 && saknadeLock.length === 0 ? (
+                <p className="muted">Inget att göra just nu.</p>
+              ) : (
+                <ul className="todo-list">
+                  {obokade.length > 0 && (
+                    <li>
+                      <strong>{obokade.length} personer är inte bokade än</strong> ({obokade
+                        .map((m) => m.namn)
+                        .join(", ")}). De syns i listorna och räknas med i andelarna, men kan
+                      inte logga in förrän deras egen e-postadress lagts in i kalkylbladet.
+                    </li>
+                  )}
+                  {saknadeLock.length > 0 && (
+                    <li>
+                      <strong>Datum saknas för {saknadeLock.join(", ")}.</strong> Lock-punkterna
+                      fastställer ägarandelarna vid tre tidpunkter. Utan datum är inget låst och
+                      andelarna kan fortfarande ändras.
+                    </li>
+                  )}
+                </ul>
+              )}
             </div>
           </>
         )}
@@ -241,7 +237,10 @@ export default function ProducerPage() {
                       <tr>
                         <th>Namn</th>
                         <th>Roll</th>
-                        <th>Grupp</th>
+                        <th>
+                          Grupp
+                          <Tooltip text={GRUPP_HEADER_TOOLTIP} />
+                        </th>
                         <th>Dagar</th>
                         <th>Utbetalt dagarvode</th>
                         <th>Markn.pris/dag</th>
@@ -286,7 +285,10 @@ export default function ProducerPage() {
                   <th>#</th>
                   <th>Namn</th>
                   <th>Roll</th>
-                  <th>Grupp</th>
+                  <th>
+                    Grupp
+                    <Tooltip text={GRUPP_HEADER_TOOLTIP} />
+                  </th>
                   <th>Ägarenheter</th>
                   <th>Andel</th>
                   <th>Uppskjutet arvode</th>
@@ -339,267 +341,7 @@ export default function ProducerPage() {
         )}
 
         {tab === "waterfall" && (
-          <>
-            <MoneySlider
-              label="Bruttointäkt"
-              tooltip={WATERFALL_TOOLTIP.bruttointakt}
-              value={brutto}
-              max={bruttoMax}
-              step={BRUTTO_STEP}
-              onChange={setBrutto}
-            />
-
-            {params.totalBudget > 0 && (
-              <div className="card">
-                <div className="section-header">Filmens totala kostnad</div>
-                <div className="wf-row total">
-                  <span>
-                    Total kostnad (budget inkl. uppskjutet)
-                    <Tooltip text={WATERFALL_TOOLTIP.totalKostnad} />
-                  </span>
-                  <span className="wf-value">{formatSek(params.totalBudget)}</span>
-                </div>
-                {params.kontantBudget > 0 && (
-                  <div className="wf-row">
-                    <span>Betalas kontant under produktionen</span>
-                    <span className="wf-value">{formatSek(params.kontantBudget)}</span>
-                  </div>
-                )}
-                <div className="wf-row">
-                  <span>Uppskjutna löner (återbetalas före vinst)</span>
-                  <span className="wf-value">{formatSek(params.deferredPool)}</span>
-                </div>
-                {params.ovrigEgeninsats > 1 && (
-                  <div className="wf-row">
-                    <span>Övrig egeninsats (återbetalas före vinst)</span>
-                    <span className="wf-value">{formatSek(params.ovrigEgeninsats)}</span>
-                  </div>
-                )}
-                <div className="wf-footnote">
-                  Finansiärernas andel av nettot räknas mot den här totalen, inte bara mot de
-                  uppskjutna lönerna: en insats på 100 000 kr av {formatSek(params.totalBudget)}{" "}
-                  ger {formatPercent(100_000 / params.totalBudget)} av nettot.
-                </div>
-              </div>
-            )}
-
-            <div className="section-header">Finansiering</div>
-            <MoneySlider
-              label="Stöd (utan anspråk på ägande)"
-              tooltip={WATERFALL_TOOLTIP.stod}
-              value={stod}
-              max={budgetMax}
-              step={FIN_STEP}
-              onChange={setStod}
-            />
-            <MoneySlider
-              label="Samproducenter"
-              tooltip={WATERFALL_TOOLTIP.samproducent}
-              value={samproducent}
-              max={budgetMax}
-              step={FIN_STEP}
-              onChange={setSamproducent}
-            />
-            <MoneySlider
-              label="Kontantinsats"
-              tooltip={WATERFALL_TOOLTIP.kontant}
-              value={kontant}
-              max={budgetMax}
-              step={FIN_STEP}
-              onChange={setKontant}
-            />
-            <MoneySlider
-              label="Distributör (minimigaranti)"
-              tooltip={WATERFALL_TOOLTIP.mg}
-              value={mg}
-              max={budgetMax}
-              step={FIN_STEP}
-              onChange={setMg}
-            />
-
-            <p className="wf-estimate-note">
-              Beräknat direkt från kalkylbladets parametrar (distributionsavgift,
-              kontantbehov och uppskjutna arvoden). Kontantinsatsen räknas som en
-              finansiär bland de andra, med samproducentens villkor. Startvärdena för
-              finansieringen hämtas från tabellen Finansiärer i Waterfall Simulering.
-            </p>
-
-            {stod + samproducent + mg + kontant > 0 && (
-              <div className="card">
-                <div className="section-header">Så används finansieringen</div>
-                <div className="wf-row">
-                  <span>
-                    Täcker budgetens kontantbehov
-                    <Tooltip text={WATERFALL_TOOLTIP.taeckerBehov} />
-                  </span>
-                  <span className="wf-value">{formatSek(wf.taeckerBehov)}</span>
-                </div>
-                {wf.saknasKontant > 0 && (
-                  <div className="wf-footnote">
-                    kontantbehov som inte täcks: {formatSek(wf.saknasKontant)}
-                  </div>
-                )}
-                <div className="wf-row">
-                  <span>
-                    Arvoden som betalas kontant i stället för att skjutas upp
-                    <Tooltip text={WATERFALL_TOOLTIP.betalarArvoden} />
-                  </span>
-                  <span className="wf-value">{formatSek(wf.betalarArvodenKontant)}</span>
-                </div>
-                <div className="wf-row">
-                  <span>Kvar att skjuta upp</span>
-                  <span className="wf-value">{formatSek(wf.kvarDeferredPool)}</span>
-                </div>
-              </div>
-            )}
-
-            {wf.finansiarsAndel > 0 && (
-              <div className="card">
-                <div className="section-header">Så fördelas nettot</div>
-                {wf.andelSamproducent > 0 && (
-                  <div className="wf-row">
-                    <span>Samproducenter</span>
-                    <span className="wf-value">{formatPercent(wf.andelSamproducent)}</span>
-                  </div>
-                )}
-                {wf.andelKontant > 0 && (
-                  <div className="wf-row">
-                    <span>Kontantinsats</span>
-                    <span className="wf-value">{formatPercent(wf.andelKontant)}</span>
-                  </div>
-                )}
-                {wf.andelMg > 0 && (
-                  <div className="wf-row">
-                    <span>Distributör (fast andel)</span>
-                    <span className="wf-value">{formatPercent(wf.andelMg)}</span>
-                  </div>
-                )}
-                <div className="wf-row total">
-                  <span>Teamet (ägarenheter)</span>
-                  <span className="wf-value">{formatPercent(1 - wf.finansiarsAndel)}</span>
-                </div>
-                <div className="wf-footnote">
-                  Insats ÷ filmens totala kostnad ({formatSek(params.totalBudget)}).
-                </div>
-              </div>
-            )}
-
-            <div className="card">
-              <div className="wf-row">
-                <span>
-                  Bruttointäkt
-                  <Tooltip text={WATERFALL_TOOLTIP.bruttointakt} />
-                </span>
-                <span className="wf-value">{formatSek(wf.bruttointakt)}</span>
-              </div>
-              <div className="wf-row">
-                <span>
-                  Distributionsavgift ({formatPercent(params.distributionsavgift)})
-                  <Tooltip text={WATERFALL_TOOLTIP.distributionsavgift} />
-                </span>
-                <span className="wf-value">{formatSek(wf.distributionsavgift)}</span>
-              </div>
-              {mg > 0 && (
-                <div className="wf-row">
-                  <span>
-                    Distributörens MG återvinns
-                    <Tooltip text={WATERFALL_TOOLTIP.mgAtervinning} />
-                  </span>
-                  <span className="wf-value">{formatSek(wf.mgAtervinning)}</span>
-                </div>
-              )}
-              <div className="wf-row">
-                <span>
-                  Kvar efter distribution
-                  <Tooltip text={WATERFALL_TOOLTIP.nettoEfterDistribution} />
-                </span>
-                <span className="wf-value">{formatSek(wf.nettoEfterMg)}</span>
-              </div>
-              <div className="wf-row">
-                <span>
-                  Återbetalning till finansiärer
-                  <Tooltip text={WATERFALL_TOOLTIP.finansiarsRecoupment} />
-                </span>
-                <span className="wf-value">{formatSek(wf.recoupment)}</span>
-              </div>
-              {wf.recoupmentKontant > 0 && (
-                <div className="wf-footnote">
-                  varav kontantinsats: {formatSek(wf.recoupmentKontant)}
-                </div>
-              )}
-              {wf.recoupmentSamproducent > 0 && (
-                <div className="wf-footnote">
-                  varav samproducent: {formatSek(wf.recoupmentSamproducent)}
-                </div>
-              )}
-              {wf.recoupmentStod > 0 && (
-                <div className="wf-footnote">
-                  varav stöd: {formatSek(wf.recoupmentStod)}
-                </div>
-              )}
-              <div className="wf-row">
-                <span>
-                  Kvar efter återbetalning
-                  <Tooltip text={WATERFALL_TOOLTIP.nettoEfterFinansiar} />
-                </span>
-                <span className="wf-value">{formatSek(wf.nettoEfterRecoupment)}</span>
-              </div>
-              <div className="wf-row">
-                <span>
-                  Uppskjutna arvoden och egeninsats
-                  <Tooltip text={WATERFALL_TOOLTIP.deferredFeePool} />
-                </span>
-                <span className="wf-value">{formatSek(wf.deferredBetalt)}</span>
-              </div>
-              <div className="wf-row">
-                <span>
-                  Nettovinst
-                  <Tooltip text={WATERFALL_TOOLTIP.nettoEfterDeferred} />
-                </span>
-                <span className="wf-value">{formatSek(wf.nettoEfterDeferred)}</span>
-              </div>
-              <div className="wf-row total">
-                <span>
-                  Teamets andel ({formatPercent(1 - wf.finansiarsAndel)} av netto)
-                  <Tooltip text={WATERFALL_TOOLTIP.crewPool} />
-                </span>
-                <span className="wf-value">{formatSek(wf.crewPool)}</span>
-              </div>
-              <div className="wf-footnote">
-                ← fördelas bland {team.length} samägare efter ägarenheter
-              </div>
-              {wf.finansiarsAndel > 0 && (
-                <div className="wf-row total">
-                  <span>
-                    Finansiärernas andel ({formatPercent(wf.finansiarsAndel)} av netto)
-                    <Tooltip text={WATERFALL_TOOLTIP.finansiarspool} />
-                  </span>
-                  <span className="wf-value">{formatSek(wf.finansiarspool)}</span>
-                </div>
-              )}
-              {wf.finansiarspoolKontant > 0 && (
-                <div className="wf-footnote">
-                  varav kontantinsats: {formatSek(wf.finansiarspoolKontant)}
-                </div>
-              )}
-              <div className="wf-row">
-                <span>
-                  Break-even (allt återbetalt)
-                  <Tooltip text={WATERFALL_TOOLTIP.breakEven} />
-                </span>
-                <span className="wf-value">{formatSek(wf.breakEven)}</span>
-              </div>
-            </div>
-
-            {wf.crewPool === 0 && (
-              <div className="alert">
-                Teamets andel är 0 kr vid den här intäktsnivån. Först
-                återbetalas finansiärerna, sedan de uppskjutna
-                arvodena — ägarandelarna ger pengar först över cirka{" "}
-                {formatSek(wf.breakEven)} i bruttointäkt.
-              </div>
-            )}
-          </>
+          <WaterfallTab params={params} waterfall={data.waterfall} team={team} />
         )}
       </div>
     </>
