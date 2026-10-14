@@ -225,6 +225,66 @@ export async function getWaterfall(spreadsheetId: string): Promise<WaterfallData
   };
 }
 
+export interface Financier {
+  belopp: number;
+  multiplikator: number;
+  andelAvNetto: number;
+}
+
+export interface ModelParams {
+  totalBudget: number;
+  kontantinsats: number;
+  premieKontant: number;
+  distributionsavgift: number;
+  deferredPool: number;
+  stod: Financier;
+  samproducent: Financier;
+  distributor: Financier;
+}
+
+/**
+ * Läser parametrarna som portalens egen vattenfallsmodell behöver:
+ * Projektinställningar (budget, kontantinsats, premie) och Waterfall
+ * Simulering (distributionsavgift, deferred-pool samt finansiärstabellen
+ * B33:F37). Saknas en cell används ett neutralt standardvärde, så äldre
+ * kalkylblad utan tabellen fortfarande fungerar.
+ */
+export async function getModelParams(spreadsheetId: string): Promise<ModelParams> {
+  const doc = await getDoc(spreadsheetId);
+  const inst = doc.sheetsByTitle[SHEET_PROJEKTINSTALLNINGAR];
+  const wf = doc.sheetsByTitle[SHEET_WATERFALL];
+  if (!inst || !wf) {
+    throw new Error("Flikarna Projektinställningar eller Waterfall Simulering saknas i Sheets");
+  }
+
+  await Promise.all([inst.loadCells("C11:C51"), wf.loadCells("D7:F37")]);
+
+  const iv = (a1: string, fallback = 0) => {
+    const v = inst.getCellByA1(a1).value;
+    return v === null || v === undefined || v === "" ? fallback : parseNum(v);
+  };
+  const wv = (a1: string, fallback = 0) => {
+    const v = wf.getCellByA1(a1).value;
+    return v === null || v === undefined || v === "" ? fallback : parseNum(v);
+  };
+  const fin = (row: number, defaultMult: number): Financier => ({
+    belopp: wv(`D${row}`),
+    multiplikator: wv(`E${row}`, defaultMult),
+    andelAvNetto: wv(`F${row}`),
+  });
+
+  return {
+    totalBudget: iv("C11"),
+    kontantinsats: iv("C51", wv("D9")),
+    premieKontant: iv("C43"),
+    distributionsavgift: wv("D8", 0.25),
+    deferredPool: wv("D12"),
+    stod: fin(35, 0),
+    samproducent: fin(36, 1),
+    distributor: fin(37, 1),
+  };
+}
+
 /**
  * Kontrollerar att servicekontot når kalkylbladet och att de flikar portalen
  * behöver finns. Kastar ett fel med ett begripligt meddelande annars.

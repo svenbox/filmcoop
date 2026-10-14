@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { authorizeProject, isProducerOf } from "@/lib/access";
-import { getAllCrewMembers, getProjectSettings, getWaterfall } from "@/lib/sheets";
+import { getAllCrewMembers, getModelParams, getProjectSettings, getWaterfall } from "@/lib/sheets";
 
 export async function GET(
   _req: Request,
@@ -16,13 +16,14 @@ export async function GET(
   const id = auth.project.spreadsheetId;
 
   try {
-    const [project, rows, waterfall] = await Promise.all([
+    const [project, rows, waterfall, modelParams] = await Promise.all([
       getProjectSettings(id),
       getAllCrewMembers(id),
       getWaterfall(id),
+      getModelParams(id),
     ]);
 
-    return NextResponse.json({ project, rows, waterfall });
+    return NextResponse.json({ project, rows, waterfall, params: modelParams });
   } catch (err) {
     console.error("Kunde inte hämta producent-data från Sheets", err);
     return NextResponse.json(
