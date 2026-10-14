@@ -239,6 +239,8 @@ export interface ModelParams {
   kontantBudget: number;
   distributionsavgift: number;
   deferredPool: number;
+  /** Egeninsats i budgeten (C13) som inte är uppskjutna löner. Återbetalas på samma villkor. */
+  ovrigEgeninsats: number;
   stod: Financier;
   samproducent: Financier;
   distributor: Financier;
@@ -281,6 +283,7 @@ export async function getModelParams(spreadsheetId: string): Promise<ModelParams
     kontantBudget: iv("C12"),
     distributionsavgift: wv("D8", 0.25),
     deferredPool: wv("D12"),
+    ovrigEgeninsats: Math.max(0, iv("C13") - wv("D12")),
     stod: fin(35, 0),
     samproducent: fin(36, 1),
     distributor: fin(37, 1),

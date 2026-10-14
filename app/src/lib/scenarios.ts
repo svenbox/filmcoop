@@ -24,7 +24,7 @@ export const WATERFALL_TOOLTIP: Record<string, string> = {
   nettoEfterFinansiar:
     "Vad som återstår när externa finansiärer fått tillbaka sitt kapital plus avkastning.",
   deferredFeePool:
-    "De arvoden teamet skjutit upp under produktionen betalas tillbaka här — innan någon vinst delas ut.",
+    "De arvoden teamet skjutit upp under produktionen, plus övrig egeninsats i budgeten, betalas tillbaka här — innan någon vinst delas ut.",
   nettoEfterDeferred:
     "Filmens faktiska nettovinst — det som finns kvar att dela mellan team och investerare.",
   crewPool:

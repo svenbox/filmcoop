@@ -117,10 +117,6 @@ export default function ProducerPage() {
   const totalPoang = rows.reduce((sum, r) => sum + r.poang, 0);
   const totalDeferred = rows.reduce((sum, r) => sum + r.deferredFee, 0);
   const wf = computeWaterfall(params, brutto, { stod, samproducent, mg, kontant });
-  const ovrigEgeninsats = Math.max(
-    0,
-    params.totalBudget - params.kontantBudget - params.deferredPool
-  );
   const budgetMax = roundUp(Math.max(params.totalBudget, 500_000), FIN_STEP);
   const bruttoMax = roundUp(Math.max(2_000_000, wf.breakEven * 2), 250_000);
   const team = groupByPerson(rows);
@@ -365,10 +361,10 @@ export default function ProducerPage() {
                   <span>Uppskjutna löner (återbetalas före vinst)</span>
                   <span className="wf-value">{formatSek(params.deferredPool)}</span>
                 </div>
-                {ovrigEgeninsats > 1 && (
+                {params.ovrigEgeninsats > 1 && (
                   <div className="wf-row">
-                    <span>Övrig egeninsats (återbetalas inte i modellen)</span>
-                    <span className="wf-value">{formatSek(ovrigEgeninsats)}</span>
+                    <span>Övrig egeninsats (återbetalas före vinst)</span>
+                    <span className="wf-value">{formatSek(params.ovrigEgeninsats)}</span>
                   </div>
                 )}
                 <div className="wf-footnote">
@@ -548,7 +544,7 @@ export default function ProducerPage() {
               </div>
               <div className="wf-row">
                 <span>
-                  Uppskjutna arvoden
+                  Uppskjutna arvoden och egeninsats
                   <Tooltip text={WATERFALL_TOOLTIP.deferredFeePool} />
                 </span>
                 <span className="wf-value">{formatSek(wf.deferredBetalt)}</span>
