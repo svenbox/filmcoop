@@ -236,8 +236,10 @@ export interface Financier {
 
 export interface ModelParams {
   totalBudget: number;
-  /** Budgetens kontantbehov (hårda pengar) — summan av kontantinsatserna i kalkylbladet. */
+  /** Kontantinsatsen från kalkylbladet (summan av kontantinsatserna). Startvärde för reglaget. */
   kontantinsats: number;
+  /** Budgetens kontantbehov (hårda pengar): kontantbudgeten, annars kontantinsatsen. */
+  kontantBehov: number;
   /** Del av totalbudgeten som betalas kontant (Projektinställningar C12), för visning. */
   kontantBudget: number;
   distributionsavgift: number;
@@ -283,6 +285,7 @@ export async function getModelParams(spreadsheetId: string): Promise<ModelParams
   return {
     totalBudget: iv("C11"),
     kontantinsats: iv("C51", wv("D9")),
+    kontantBehov: iv("C12") > 0 ? iv("C12") : iv("C51", wv("D9")),
     kontantBudget: iv("C12"),
     // Scenario B (mellanstort utfall). Scenario A:s kolumn kan ha 0 % för små
     // utfall utan distributör och ger då en för låg break-even.

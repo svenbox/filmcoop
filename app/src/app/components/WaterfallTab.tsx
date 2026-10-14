@@ -113,9 +113,9 @@ interface Props {
   team?: TeamSummary[];
   antalPersoner: number;
   /**
-   * Crewvyn: den inloggades egen del. När den anges visas inga kostnads- eller
-   * finansieringsdetaljer (ramverket §9: crew ser utbetalningsordningen men inte
-   * den fullständiga budgeten).
+   * Crewvyn: den inloggades egen del. Då visas inga finansieringsreglage (det är
+   * producentens verktyg för att pröva olika upplägg), men kostnad och
+   * finansieringsstatus finns på crewvyns översikt.
    */
   self?: { deferredFee: number; andel: number };
 }
@@ -239,7 +239,7 @@ export function WaterfallTab({ params, waterfall, team = [], antalPersoner, self
         <div className="section-header">Så finansieras filmen</div>
         <MoneySlider
           label="Kontantinsats"
-          hint={`Budgetens kontantbehov: ${formatSek(params.kontantinsats)}`}
+          hint={`Budgetens kontantbehov: ${formatSek(params.kontantBehov)}`}
           tooltip={WATERFALL_TOOLTIP.kontant}
           value={kontant}
           max={budgetMax}

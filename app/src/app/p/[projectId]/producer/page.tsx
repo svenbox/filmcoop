@@ -10,6 +10,7 @@ import { formatPercent, formatSek } from "@/lib/format";
 import { NavPills } from "../../../components/NavPills";
 import { Tooltip } from "../../../components/Tooltip";
 import { GRUPP_HEADER_TOOLTIP, LOCK_TOOLTIP } from "@/lib/scenarios";
+import { EkonomiKort } from "../../../components/EkonomiKort";
 import { WaterfallTab } from "../../../components/WaterfallTab";
 
 interface ProducerResponse {
@@ -157,12 +158,6 @@ export default function ProducerPage() {
                 <span>Producent</span>
                 <span className="wf-value">{project.producent || "—"}</span>
               </div>
-              {params.totalBudget > 0 && (
-                <div className="wf-row">
-                  <span>Filmens totala kostnad</span>
-                  <span className="wf-value">{formatSek(params.totalBudget)}</span>
-                </div>
-              )}
               <div className="wf-row">
                 <span>
                   Green Light (Lock 1)
@@ -185,6 +180,8 @@ export default function ProducerPage() {
                 <span className="wf-value">{project.lock3 || "—"}</span>
               </div>
             </div>
+
+            <EkonomiKort params={params} />
 
             <div className="card">
               <div className="section-header">Att göra</div>

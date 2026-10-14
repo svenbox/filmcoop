@@ -88,8 +88,8 @@ export function computeWaterfall(
   const nettoEfterMg = nettoEfterDistribution - mgAtervinning;
 
   const totalFinansiering = stod + samproducent + mg + kontant;
-  const taeckerBehov = Math.min(totalFinansiering, params.kontantinsats);
-  const saknasKontant = params.kontantinsats - taeckerBehov;
+  const taeckerBehov = Math.min(totalFinansiering, params.kontantBehov);
+  const saknasKontant = params.kontantBehov - taeckerBehov;
   // Uppskjutna löner och övrig egeninsats är samma sorts skuld: återbetalas
   // före vinst, och betalas kontant om finansieringen överstiger behovet.
   const skuld = params.deferredPool + params.ovrigEgeninsats;

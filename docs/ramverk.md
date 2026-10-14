@@ -229,7 +229,8 @@ Systemet bygger på att alla vet vad alla äger. Det är ovanligt i filmbransche
 | Totalt antal ägarenheter i projektet | ✓ | ✓ | ✓ |
 | Alla teammedlemmars ägarenheter | — | ✓ | — |
 | Utbetalningsordning och recoupment | ✓ | ✓ | ✓ |
-| Fullständig budget inkl. arvoden | — | ✓ | ✓ |
+| Total kostnad och finansieringsstatus | ✓ | ✓ | ✓ |
+| Detaljerad budget (alla poster) inkl. arvoden | — | ✓ | ✓ |
 
 Varje teammedlem får ett skriftligt utdrag vid varje lock-punkt. Utdraget visar deras ägarenheter, procentandel och vad andelen ger i tre försäljningsscenarier.
 

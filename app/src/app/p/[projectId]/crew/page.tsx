@@ -10,6 +10,7 @@ import { groupByFas } from "@/lib/fas";
 import { OnboardingModal } from "../../../components/OnboardingModal";
 import { NavPills } from "../../../components/NavPills";
 import { Tooltip } from "../../../components/Tooltip";
+import { EkonomiKort } from "../../../components/EkonomiKort";
 import { WaterfallTab } from "../../../components/WaterfallTab";
 
 interface MeResponse {
@@ -146,6 +147,8 @@ export default function CrewPage() {
                 <div className="value">{project.producent || "—"}</div>
               </div>
             </div>
+
+            <EkonomiKort params={params} />
 
             <div className="card">
               <div className="section-header">Lock-punkter</div>
