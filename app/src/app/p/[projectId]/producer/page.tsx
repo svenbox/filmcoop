@@ -10,7 +10,7 @@ import { formatPercent, formatSek } from "@/lib/format";
 import { NavPills } from "../../../components/NavPills";
 import { Tooltip } from "../../../components/Tooltip";
 import { GRUPP_HEADER_TOOLTIP, LOCK_TOOLTIP } from "@/lib/scenarios";
-import { WaterfallTab } from "./WaterfallTab";
+import { WaterfallTab } from "../../../components/WaterfallTab";
 
 interface ProducerResponse {
   project: ProjectSettings;
@@ -312,7 +312,7 @@ export default function ProducerPage() {
                         <div className="rank-bar-track">
                           <div
                             className="rank-bar-fill"
-                            style={{ width: formatPercent(m.andel) }}
+                            style={{ width: `${Math.min(100, Math.max(0, m.andel * 100))}%` }}
                           />
                         </div>
                         <span>{formatPercent(m.andel)}</span>
@@ -341,7 +341,12 @@ export default function ProducerPage() {
         )}
 
         {tab === "waterfall" && (
-          <WaterfallTab params={params} waterfall={data.waterfall} team={team} />
+          <WaterfallTab
+            params={params}
+            waterfall={data.waterfall}
+            team={team}
+            antalPersoner={team.length}
+          />
         )}
       </div>
     </>

@@ -6,7 +6,7 @@ import type { TeamSummary } from "@/lib/team";
 import { formatPercent, formatSek } from "@/lib/format";
 import { WATERFALL_TOOLTIP } from "@/lib/scenarios";
 import { computeWaterfall, type ModelResult } from "@/lib/waterfallModel";
-import { Tooltip } from "../../../components/Tooltip";
+import { Tooltip } from "./Tooltip";
 
 const BRUTTO_STEP = 25_000;
 const FIN_STEP = 25_000;
@@ -109,10 +109,19 @@ function utfallSomText(wf: ModelResult, brutto: number): string {
 interface Props {
   params: ModelParams;
   waterfall: WaterfallData;
-  team: TeamSummary[];
+  /** Producentvyn: alla personer, för väljaren "Se som". */
+  team?: TeamSummary[];
+  antalPersoner: number;
+  /**
+   * Crewvyn: den inloggades egen del. När den anges visas inga kostnads- eller
+   * finansieringsdetaljer (ramverket §9: crew ser utbetalningsordningen men inte
+   * den fullständiga budgeten).
+   */
+  self?: { deferredFee: number; andel: number };
 }
 
-export function WaterfallTab({ params, waterfall, team }: Props) {
+export function WaterfallTab({ params, waterfall, team = [], antalPersoner, self }: Props) {
+  const crewVy = self !== undefined;
   const [brutto, setBrutto] = useState<number>(1_000_000);
   const [stod, setStod] = useState<number>(params.stod.belopp);
   const [samproducent, setSamproducent] = useState<number>(params.samproducent.belopp);
@@ -131,7 +140,8 @@ export function WaterfallTab({ params, waterfall, team }: Props) {
   );
 
   const harFinansiarer = wf.finansiarerSkyldigt + wf.mgSkyldigt > 0;
-  const person = team.find((m) => m.key === personKey) ?? null;
+  const vald = team.find((m) => m.key === personKey) ?? null;
+  const person = self ?? (vald ? { deferredFee: vald.deferredFee, andel: vald.andel } : null);
   const personUppskjutet = person ? person.deferredFee * wf.skuldAndelBetald : 0;
   const personVinst = person ? person.andel * wf.crewPool : 0;
 
@@ -190,7 +200,7 @@ export function WaterfallTab({ params, waterfall, team }: Props) {
         </ol>
       </div>
 
-      {params.totalBudget > 0 && (
+      {!crewVy && params.totalBudget > 0 && (
         <div className="card">
           <div className="section-header">Vad filmen kostar</div>
           <div className="wf-row total">
@@ -224,40 +234,45 @@ export function WaterfallTab({ params, waterfall, team }: Props) {
         </div>
       )}
 
-      <div className="section-header">Så finansieras filmen</div>
-      <MoneySlider
-        label="Kontantinsats"
-        hint={`Budgetens kontantbehov: ${formatSek(params.kontantinsats)}`}
-        tooltip={WATERFALL_TOOLTIP.kontant}
-        value={kontant}
-        max={budgetMax}
-        step={FIN_STEP}
-        onChange={setKontant}
-      />
-      <MoneySlider
-        label="Samproducenter"
-        tooltip={WATERFALL_TOOLTIP.samproducent}
-        value={samproducent}
-        max={budgetMax}
-        step={FIN_STEP}
-        onChange={setSamproducent}
-      />
-      <MoneySlider
-        label="Stöd (utan anspråk på ägande)"
-        tooltip={WATERFALL_TOOLTIP.stod}
-        value={stod}
-        max={budgetMax}
-        step={FIN_STEP}
-        onChange={setStod}
-      />
-      <MoneySlider
-        label="Distributör (minimigaranti)"
-        tooltip={WATERFALL_TOOLTIP.mg}
-        value={mg}
-        max={budgetMax}
-        step={FIN_STEP}
-        onChange={setMg}
-      />
+      {!crewVy && (
+        <>
+        <div className="section-header">Så finansieras filmen</div>
+        <MoneySlider
+          label="Kontantinsats"
+          hint={`Budgetens kontantbehov: ${formatSek(params.kontantinsats)}`}
+          tooltip={WATERFALL_TOOLTIP.kontant}
+          value={kontant}
+          max={budgetMax}
+          step={FIN_STEP}
+          onChange={setKontant}
+        />
+        <MoneySlider
+          label="Samproducenter"
+          tooltip={WATERFALL_TOOLTIP.samproducent}
+          value={samproducent}
+          max={budgetMax}
+          step={FIN_STEP}
+          onChange={setSamproducent}
+        />
+        <MoneySlider
+          label="Stöd (utan anspråk på ägande)"
+          tooltip={WATERFALL_TOOLTIP.stod}
+          value={stod}
+          max={budgetMax}
+          step={FIN_STEP}
+          onChange={setStod}
+        />
+        <MoneySlider
+          label="Distributör (minimigaranti)"
+          tooltip={WATERFALL_TOOLTIP.mg}
+          value={mg}
+          max={budgetMax}
+          step={FIN_STEP}
+          onChange={setMg}
+        />
+
+        </>
+      )}
 
       <p className="wf-estimate-note">
         Antaganden: distributionsavgift {formatPercent(params.distributionsavgift)}, finansiärer
@@ -265,7 +280,7 @@ export function WaterfallTab({ params, waterfall, team }: Props) {
         kontantinsatsen). Ändras i kalkylbladet. Startvärdena kommer från tabellen Finansiärer.
       </p>
 
-      {stod + samproducent + mg + kontant > 0 && (
+      {!crewVy && stod + samproducent + mg + kontant > 0 && (
         <div className="card">
           <div className="section-header">Vad finansieringen gör</div>
           <div className="wf-row">
@@ -387,17 +402,21 @@ export function WaterfallTab({ params, waterfall, team }: Props) {
 
       {person && (
         <div className="card">
-          <div className="section-header">Vad får en enskild person?</div>
-          <label className="person-pick">
-            Se som
-            <select value={personKey} onChange={(e) => setPersonKey(e.target.value)}>
-              {team.map((m) => (
-                <option key={m.key} value={m.key}>
-                  {m.namn} ({m.roller || "—"})
-                </option>
-              ))}
-            </select>
-          </label>
+          <div className="section-header">
+            {crewVy ? "Vad får du?" : "Vad får en enskild person?"}
+          </div>
+          {!crewVy && (
+            <label className="person-pick">
+              Se som
+              <select value={personKey} onChange={(e) => setPersonKey(e.target.value)}>
+                {team.map((m) => (
+                  <option key={m.key} value={m.key}>
+                    {m.namn} ({m.roller || "—"})
+                  </option>
+                ))}
+              </select>
+            </label>
+          )}
           <div className="wf-row">
             <span>
               Uppskjutet arvode som betalas
@@ -415,11 +434,15 @@ export function WaterfallTab({ params, waterfall, team }: Props) {
             <span className="wf-value">{formatSek(personVinst)}</span>
           </div>
           <div className="wf-row total">
-            <span>Totalt vid {formatSek(brutto)} i bruttointäkt</span>
+            <span>
+              {crewVy ? "Totalt för dig" : "Totalt"} vid {formatSek(brutto)} i bruttointäkt
+            </span>
             <span className="wf-value">{formatSek(personUppskjutet + personVinst)}</span>
           </div>
           <div className="wf-footnote">
-            Kontantinsats som personen eventuellt satt in ingår inte.
+            {crewVy
+              ? "Kontantinsats du eventuellt satt in ingår inte."
+              : "Kontantinsats som personen eventuellt satt in ingår inte."}
           </div>
         </div>
       )}
@@ -504,7 +527,7 @@ export function WaterfallTab({ params, waterfall, team }: Props) {
             <span className="wf-value">{formatSek(wf.crewPool)}</span>
           </div>
           <div className="wf-footnote">
-            ← fördelas bland {team.length} personer efter ägarenheter
+            ← fördelas bland {antalPersoner} personer efter ägarenheter
           </div>
           {wf.finansiarsAndel > 0 && (
             <div className="wf-row total">

@@ -1,9 +1,3 @@
-export const SCENARIO_LABELS: Record<"A" | "B" | "C", string> = {
-  A: "Festivalpremie",
-  B: "Streamingaffär",
-  C: "Stor försäljning",
-};
-
 export const GRUPP_HEADER_TOOLTIP =
   "Gruppen avgör inte vem som är viktigast — den speglar hur unikt ersättbart ansvaret är i just den här produktionen.";
 

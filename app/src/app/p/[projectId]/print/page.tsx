@@ -3,15 +3,16 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { useSession } from "next-auth/react";
-import type { CrewMember, ProjectSettings, WaterfallData } from "@/lib/sheets";
+import type { CrewMember, ModelParams, ProjectSettings, WaterfallData } from "@/lib/sheets";
 import { formatPercent, formatSek } from "@/lib/format";
-import { SCENARIO_LABELS } from "@/lib/scenarios";
+import { computeWaterfall } from "@/lib/waterfallModel";
 import { groupByFas } from "@/lib/fas";
 
 interface PrintResponse {
   project: ProjectSettings;
   rows: CrewMember[];
   waterfall: WaterfallData;
+  params: ModelParams;
   totalPoang: number;
   samagareCount: number;
 }
@@ -62,7 +63,7 @@ export default function PrintPage() {
 
   if (!data) return null;
 
-  const { project, rows, waterfall, totalPoang, samagareCount } = data;
+  const { project, rows, waterfall, params, totalPoang, samagareCount } = data;
   const minPoang = rows.reduce((sum, r) => sum + r.poang, 0);
   const minDeferred = rows.reduce((sum, r) => sum + r.deferredFee, 0);
   const minAndel = totalPoang > 0 ? minPoang / totalPoang : 0;
@@ -70,6 +71,24 @@ export default function PrintPage() {
   const minaRoller = Array.from(new Set(rows.map((r) => r.roll).filter(Boolean))).join(" / ");
   const idag = new Date().toLocaleDateString("sv-SE");
   const fasGrupper = groupByFas(rows);
+  const scenarier = (
+    [
+      ["A", "Litet utfall"],
+      ["B", "Mellanstort utfall"],
+      ["C", "Stort utfall"],
+    ] as const
+  ).map(([nyckel, namn]) => {
+    const brutto = waterfall[nyckel].bruttointakt;
+    const wf = computeWaterfall(params, brutto, {
+      stod: params.stod.belopp,
+      samproducent: params.samproducent.belopp,
+      mg: params.distributor.belopp,
+      kontant: params.kontantinsats,
+    });
+    const uppskjutet = minDeferred * wf.skuldAndelBetald;
+    const vinst = minAndel * wf.crewPool;
+    return { nyckel, namn, brutto, uppskjutet, vinst, totalt: uppskjutet + vinst };
+  });
 
   return (
     <div className="print-page">
@@ -132,15 +151,26 @@ export default function PrintPage() {
       ))}
 
       <div className="card">
-        <div className="section-header">Utbetalningsordning — min andel per scenario</div>
+        <div className="section-header">Utbetalningsordning — vad jag får per scenario</div>
         <div className="stat-grid stat-grid-3">
-          {(["A", "B", "C"] as const).map((s) => (
-            <div key={s} className="stat-box">
-              <div className="label">{SCENARIO_LABELS[s]}</div>
-              <div className="value">{formatSek(waterfall[s].crewPool * minAndel)}</div>
+          {scenarier.map((s) => (
+            <div key={s.nyckel} className="stat-box">
+              <div className="label">
+                {s.namn} ({formatSek(s.brutto)} i bruttointäkt)
+              </div>
+              <div className="value">{formatSek(s.totalt)}</div>
+              <div className="muted">
+                varav uppskjutet arvode {formatSek(s.uppskjutet)} och vinstandel{" "}
+                {formatSek(s.vinst)}
+              </div>
             </div>
           ))}
         </div>
+        <p className="muted">
+          Uppskjutna arvoden betalas före vinst, och först när alla är betalda delas vinsten
+          efter ägarenheter. Beloppen är en beräkning vid respektive intäktsnivå, inte en
+          garanti.
+        </p>
       </div>
 
       <div className="card">

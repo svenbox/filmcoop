@@ -1,9 +1,11 @@
 import {
   getAllCrewMembers,
   getCrewMembersForEmail,
+  getModelParams,
   getProjectSettings,
   getWaterfall,
   type CrewMember,
+  type ModelParams,
   type ProjectSettings,
   type WaterfallData,
 } from "./sheets";
@@ -13,6 +15,7 @@ export interface MyEquityData {
   project: ProjectSettings;
   rows: CrewMember[];
   waterfall: WaterfallData;
+  params: ModelParams;
   totalPoang: number;
   samagareCount: number;
 }
@@ -35,14 +38,15 @@ export async function getMyEquityData(
   const rows = await getCrewMembersForEmail(spreadsheetId, email);
   if (rows.length === 0) return null;
 
-  const [project, waterfall, allRows] = await Promise.all([
+  const [project, waterfall, params, allRows] = await Promise.all([
     getProjectSettings(spreadsheetId),
     getWaterfall(spreadsheetId),
+    getModelParams(spreadsheetId),
     getAllCrewMembers(spreadsheetId),
   ]);
 
   const totalPoang = allRows.reduce((sum, r) => sum + r.poang, 0);
   const samagareCount = groupByPerson(allRows).length;
 
-  return { project, rows, waterfall, totalPoang, samagareCount };
+  return { project, rows, waterfall, params, totalPoang, samagareCount };
 }
