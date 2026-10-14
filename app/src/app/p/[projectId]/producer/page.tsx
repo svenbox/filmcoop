@@ -356,7 +356,8 @@ export default function ProducerPage() {
 
             <p className="wf-estimate-note">
               Beräknat direkt från kalkylbladets parametrar (distributionsavgift,
-              kontantinsats, premie och uppskjutna arvoden). Startvärdena för
+              kontantinsats och uppskjutna arvoden). Kontantinsatsen räknas som en
+              vanlig finansiär, med samproducentens villkor. Startvärdena för
               finansieringen hämtas från tabellen Finansiärer i Waterfall Simulering.
             </p>
 
@@ -424,7 +425,7 @@ export default function ProducerPage() {
               </div>
               {wf.recoupmentKontant > 0 && (
                 <div className="wf-footnote">
-                  varav er kontantinsats inkl. premie: {formatSek(wf.recoupmentKontant)}
+                  varav kontantinsats från producent och regissör: {formatSek(wf.recoupmentKontant)}
                 </div>
               )}
               {wf.recoupmentSamproducent > 0 && (
@@ -475,6 +476,12 @@ export default function ProducerPage() {
                     <Tooltip text={WATERFALL_TOOLTIP.finansiarspool} />
                   </span>
                   <span className="wf-value">{formatSek(wf.finansiarspool)}</span>
+                </div>
+              )}
+              {wf.finansiarspoolKontant > 0 && (
+                <div className="wf-footnote">
+                  varav kontantinsats från producent och regissör:{" "}
+                  {formatSek(wf.finansiarspoolKontant)}
                 </div>
               )}
               <div className="wf-row">

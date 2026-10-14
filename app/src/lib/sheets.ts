@@ -234,7 +234,6 @@ export interface Financier {
 export interface ModelParams {
   totalBudget: number;
   kontantinsats: number;
-  premieKontant: number;
   distributionsavgift: number;
   deferredPool: number;
   stod: Financier;
@@ -244,7 +243,7 @@ export interface ModelParams {
 
 /**
  * Läser parametrarna som portalens egen vattenfallsmodell behöver:
- * Projektinställningar (budget, kontantinsats, premie) och Waterfall
+ * Projektinställningar (budget, kontantinsats) och Waterfall
  * Simulering (distributionsavgift, deferred-pool samt finansiärstabellen
  * B33:F37). Saknas en cell används ett neutralt standardvärde, så äldre
  * kalkylblad utan tabellen fortfarande fungerar.
@@ -276,7 +275,6 @@ export async function getModelParams(spreadsheetId: string): Promise<ModelParams
   return {
     totalBudget: iv("C11"),
     kontantinsats: iv("C51", wv("D9")),
-    premieKontant: iv("C43"),
     distributionsavgift: wv("D8", 0.25),
     deferredPool: wv("D12"),
     stod: fin(35, 0),

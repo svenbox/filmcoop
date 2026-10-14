@@ -25,6 +25,8 @@ export interface ModelResult {
   recoupmentSamproducent: number;
   recoupmentKontant: number;
   recoupmentStod: number;
+  /** Kontantinsatsens del av finansiärspoolen. */
+  finansiarspoolKontant: number;
   nettoEfterRecoupment: number;
   deferredBetalt: number;
   nettoEfterDeferred: number;
@@ -49,10 +51,13 @@ function clamp01(n: number): number {
  *  3. Finansieringen (stöd + samproducent + MG) täcker först er kontantinsats,
  *     sedan betalas arvoden kontant så att mindre behöver skjutas upp.
  *  4. Återbetalning pari passu: samproducent (× mult), stöd (× mult, normalt 0)
- *     och kvarvarande kontantinsats (× 1 + premie).
+ *     och kvarvarande kontantinsats. Kontantinsatsen från producent och
+ *     regissör behandlas som en vanlig finansiär och får samproducentens
+ *     villkor — samma multiplikator och samma andel av netto per budgetkrona.
  *  5. Kvarvarande uppskjutna arvoden.
- *  6. Netto delas: samproducentens andel = belopp / total budget, plus de
- *     fasta andelar för stöd och MG som anges i kalkylbladet. Resten till teamet.
+ *  6. Netto delas: samproducentens och kontantinsatsens andelar = belopp /
+ *     total budget, plus de fasta andelar för stöd och MG som anges i
+ *     kalkylbladet. Resten till teamet.
  */
 export function computeWaterfall(
   params: ModelParams,
@@ -78,7 +83,7 @@ export function computeWaterfall(
 
   const dueSam = samproducent * params.samproducent.multiplikator;
   const dueStod = stod * params.stod.multiplikator;
-  const dueKontant = kvarKontantinsats * (1 + params.premieKontant);
+  const dueKontant = kvarKontantinsats * params.samproducent.multiplikator;
   const due = dueSam + dueStod + dueKontant;
   const recoupment = Math.min(due, nettoEfterMg);
   const ratio = due === 0 ? 0 : recoupment / due;
@@ -88,12 +93,13 @@ export function computeWaterfall(
   const nettoEfterDeferred = nettoEfterRecoupment - deferredBetalt;
 
   const samAndel = params.totalBudget > 0 ? samproducent / params.totalBudget : 0;
-  const finansiarsAndel = clamp01(
-    samAndel +
-      (stod > 0 ? params.stod.andelAvNetto : 0) +
-      (mg > 0 ? params.distributor.andelAvNetto : 0)
-  );
+  const kontantAndel = params.totalBudget > 0 ? kvarKontantinsats / params.totalBudget : 0;
+  const ovrigAndel =
+    (stod > 0 ? params.stod.andelAvNetto : 0) + (mg > 0 ? params.distributor.andelAvNetto : 0);
+  const rawAndel = samAndel + kontantAndel + ovrigAndel;
+  const finansiarsAndel = clamp01(rawAndel);
   const finansiarspool = nettoEfterDeferred * finansiarsAndel;
+  const finansiarspoolKontant = rawAndel > 0 ? finansiarspool * (kontantAndel / rawAndel) : 0;
   const crewPool = nettoEfterDeferred - finansiarspool;
 
   // Den bruttointäkt där alla återbetalningar och uppskjutna arvoden är täckta.
@@ -115,6 +121,7 @@ export function computeWaterfall(
     recoupmentSamproducent: dueSam * ratio,
     recoupmentKontant: dueKontant * ratio,
     recoupmentStod: dueStod * ratio,
+    finansiarspoolKontant,
     nettoEfterRecoupment,
     deferredBetalt: -deferredBetalt || 0,
     nettoEfterDeferred,

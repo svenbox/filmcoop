@@ -20,7 +20,7 @@ export const WATERFALL_TOOLTIP: Record<string, string> = {
     "Avgiften en distributör tar för att sälja och marknadsföra filmen. Varierar med affärens storlek, vanligtvis 20–30% av bruttointäkten.",
   nettoEfterDistribution: "Vad som återstår när distributören fått sin avgift.",
   finansiarsRecoupment:
-    "Återbetalning av er kontantinsats (med premie) och samproducenters investering (med avtalad multiplikator). Betalas proportionellt mot varandra, före uppskjutna arvoden.",
+    "Återbetalning av finansiärernas insatser — även den kontantinsats producent och regissör satt in — med avtalad multiplikator. Betalas proportionellt mot varandra, före uppskjutna arvoden.",
   nettoEfterFinansiar:
     "Vad som återstår när externa finansiärer fått tillbaka sitt kapital plus avkastning.",
   deferredFeePool:
@@ -30,7 +30,7 @@ export const WATERFALL_TOOLTIP: Record<string, string> = {
   crewPool:
     "Teamets del av nettovinsten, fördelad efter ägarenheter. Utan samproducent går hela nettot till teamet.",
   finansiarspool:
-    "Samproducentens del av nettot motsvarar dess andel av totalbudgeten, plus eventuella fasta andelar för stöd eller distributör som angetts i kalkylbladet.",
+    "Finansiärernas del av nettot. Samproducentens och kontantinsatsens andel motsvarar deras del av totalbudgeten, plus eventuella fasta andelar för stöd eller distributör som angetts i kalkylbladet.",
   stod:
     "Stöd som inte betalas tillbaka ur filmens intäkter, t.ex. produktionsstöd från Filminstitutet eller kommunalt stöd. Minskar först er kontantinsats och sedan behovet av att skjuta upp arvoden.",
   samproducent:
