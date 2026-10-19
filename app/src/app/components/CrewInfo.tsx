@@ -1,6 +1,5 @@
 "use client";
 
-import type { ReactNode } from "react";
 import type { CrewMember, FaqPost, Kontakt, ModelParams, ProjectSettings, WaterfallData } from "@/lib/sheets";
 import { slaIhopFaq } from "@/lib/faq";
 import { formatPercent, formatSek } from "@/lib/format";
@@ -82,26 +81,11 @@ interface ScenarioProps {
   waterfall: WaterfallData;
   uppskjutet: number;
   andel: number;
-  /** Finansiering att räkna med. Standard: kalkylbladets värden. */
-  finansiering?: { stod: number; samproducent: number; mg: number; kontant: number };
-  rubrik?: string;
-  kolumnTotal?: string;
-  /** Innehåll under rubriken, t.ex. en personväljare. */
-  ovanfor?: ReactNode;
 }
 
 /** Vad jag får, i kronor, vid olika intäktsnivåer. */
-export function ScenarioTabell({
-  params,
-  waterfall,
-  uppskjutet,
-  andel,
-  finansiering,
-  rubrik = "Vad får du vid olika intäkter?",
-  kolumnTotal = "Du får totalt",
-  ovanfor,
-}: ScenarioProps) {
-  const fin = finansiering ?? standardFinansiering(params);
+export function ScenarioTabell({ params, waterfall, uppskjutet, andel }: ScenarioProps) {
+  const fin = standardFinansiering(params);
   const breakEven = computeWaterfall(params, 0, fin).breakEven;
 
   const nivaer = [
@@ -122,15 +106,14 @@ export function ScenarioTabell({
 
   return (
     <div className="card">
-      <div className="section-header">{rubrik}</div>
-      {ovanfor}
+      <div className="section-header">Vad får du vid olika intäkter?</div>
       <div className="table-scroll">
         <table className="data-table">
           <thead>
             <tr>
               <th>Utfall</th>
               <th>Bruttointäkt</th>
-              <th>{kolumnTotal}</th>
+              <th>Du får totalt</th>
               <th>varav uppskjutet arvode</th>
               <th>varav vinstandel</th>
               <th>Del av ditt arvode som betalas</th>
@@ -154,7 +137,8 @@ export function ScenarioTabell({
       </div>
       <div className="wf-footnote">
         Beräkningar vid respektive intäktsnivå, inte en garanti. Under break-even betalas
-        uppskjutna arvoden i samma andel för alla. Kontantinsats som eventuellt satts in ingår inte.
+        uppskjutna arvoden i samma andel för alla. Kontantinsats du eventuellt satt in ingår inte.
+        Dra själv i reglaget under Utbetalningsordning för andra nivåer.
       </div>
     </div>
   );

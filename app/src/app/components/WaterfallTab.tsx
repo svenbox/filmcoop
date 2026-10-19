@@ -6,9 +6,9 @@ import type { TeamSummary } from "@/lib/team";
 import { formatPercent, formatSek } from "@/lib/format";
 import { WATERFALL_TOOLTIP } from "@/lib/scenarios";
 import { computeWaterfall, type ModelResult } from "@/lib/waterfallModel";
-import { ScenarioTabell } from "./CrewInfo";
 import { Tooltip } from "./Tooltip";
 
+const BRUTTO_STEP = 25_000;
 const FIN_STEP = 25_000;
 
 const PRESETS: { key: "A" | "B" | "C"; label: string }[] = [
@@ -21,6 +21,11 @@ function roundUp(n: number, step: number): number {
   return Math.ceil(n / step) * step;
 }
 
+interface Marker {
+  value: number;
+  label: string;
+}
+
 interface SliderProps {
   label: string;
   hint?: string;
@@ -28,10 +33,11 @@ interface SliderProps {
   value: number;
   max: number;
   step: number;
+  markers?: Marker[];
   onChange: (v: number) => void;
 }
 
-function MoneySlider({ label, hint, tooltip, value, max, step, onChange }: SliderProps) {
+function MoneySlider({ label, hint, tooltip, value, max, step, markers, onChange }: SliderProps) {
   return (
     <div className="brutto-slider">
       <div className="label-row">
@@ -51,12 +57,52 @@ function MoneySlider({ label, hint, tooltip, value, max, step, onChange }: Slide
           value={Math.min(value, max)}
           onChange={(e) => onChange(Number(e.target.value))}
         />
+        {markers
+          ?.filter((m) => m.value > 0 && m.value <= max)
+          .map((m) => (
+            <span
+              key={m.label}
+              className="slider-marker"
+              style={{ left: `${(m.value / max) * 100}%` }}
+              title={`${m.label}: ${formatSek(m.value)}`}
+            >
+              <span className="slider-marker-label">{m.label}</span>
+            </span>
+          ))}
       </div>
       <div className="range-ends">
         <span>0 kr</span>
         <span>{formatSek(max)}</span>
       </div>
     </div>
+  );
+}
+
+/** En mening på vanlig svenska om vad som händer vid vald intäkt. */
+function utfallSomText(wf: ModelResult, brutto: number): string {
+  if (brutto <= 0) return "Dra i reglaget för att se vad som händer vid olika intäkter.";
+
+  const avDistributor = -wf.distributionsavgift - wf.mgAtervinning;
+  const delar: string[] = [];
+  if (avDistributor > 0) delar.push(`${formatSek(avDistributor)} till distributören`);
+  if (-wf.recoupment > 0) delar.push(`${formatSek(-wf.recoupment)} tillbaka till finansiärerna`);
+
+  const inledning = `Vid ${formatSek(brutto)} i bruttointäkt`;
+  const forst =
+    delar.length > 0 ? `${inledning} går ${delar.join(" och ")}.` : `${inledning}:`;
+
+  if (wf.skuldAndelBetald < 0.9999) {
+    return (
+      `${forst} De uppskjutna arvodena och övrig egeninsats betalas till ` +
+      `${formatPercent(wf.skuldAndelBetald)}, och teamet får ingen vinstandel än. ` +
+      `Det krävs ${formatSek(wf.breakEven)} för att allt ska vara betalt.`
+    );
+  }
+
+  return (
+    `${forst} Alla uppskjutna arvoden och övrig egeninsats är betalda. ` +
+    `Det som blir över, ${formatSek(wf.nettoEfterDeferred)}, delas mellan teamet ` +
+    `(${formatSek(wf.crewPool)}) och finansiärerna (${formatSek(wf.finansiarspool)}).`
   );
 }
 
@@ -76,60 +122,36 @@ interface Props {
 
 export function WaterfallTab({ params, waterfall, team = [], antalPersoner, self }: Props) {
   const crewVy = self !== undefined;
+  const [brutto, setBrutto] = useState<number>(1_000_000);
   const [stod, setStod] = useState<number>(params.stod.belopp);
   const [samproducent, setSamproducent] = useState<number>(params.samproducent.belopp);
   const [mg, setMg] = useState<number>(params.distributor.belopp);
   const [kontant, setKontant] = useState<number>(params.kontantinsats);
   const [personKey, setPersonKey] = useState<string>(team[0]?.key ?? "");
 
-  const finansiering = { stod, samproducent, mg, kontant };
-  // Värden som inte beror på intäkten (milstolpar, break-even, andelar).
-  const wf = computeWaterfall(params, 0, finansiering);
+  const wf = computeWaterfall(params, brutto, { stod, samproducent, mg, kontant });
+  const presetVarden = PRESETS.map((p) => ({ ...p, value: waterfall[p.key].bruttointakt })).filter(
+    (p) => p.value > 0
+  );
   const budgetMax = roundUp(Math.max(params.totalBudget, 500_000), FIN_STEP);
-  const harFinansiarer = wf.finansiarerSkyldigt + wf.mgSkyldigt > 0;
+  const bruttoMax = roundUp(
+    Math.max(2_000_000, wf.breakEven * 2, ...presetVarden.map((p) => p.value)),
+    250_000
+  );
 
+  const harFinansiarer = wf.finansiarerSkyldigt + wf.mgSkyldigt > 0;
   const vald = team.find((m) => m.key === personKey) ?? null;
   const person = self ?? (vald ? { deferredFee: vald.deferredFee, andel: vald.andel } : null);
+  const personUppskjutet = person ? person.deferredFee * wf.skuldAndelBetald : 0;
+  const personVinst = person ? person.andel * wf.crewPool : 0;
 
-  // Fasta intäktsnivåer: bladets tre scenarier och break-even. Finansieringsreglagen styr alla.
-  const scenarier = PRESETS.map((p) => ({ namn: p.label, brutto: waterfall[p.key].bruttointakt }))
-    .filter((n) => n.brutto > 0);
-  const nivaer = [
-    ...(scenarier.length > 0
-      ? scenarier
-      : [
-          { namn: "Litet utfall", brutto: 500_000 },
-          { namn: "Mellanstort utfall", brutto: 1_000_000 },
-          { namn: "Stort utfall", brutto: 2_000_000 },
-        ]),
-    { namn: "Break-even", brutto: wf.breakEven },
-  ]
-    .filter((n) => n.brutto > 0)
-    .sort((a, b) => a.brutto - b.brutto)
-    .map((n) => {
-      const r = computeWaterfall(params, n.brutto, finansiering);
-      const segment = [
-        { namn: "Distributören", varde: -r.distributionsavgift - r.mgAtervinning, klass: "seg-distributor" },
-        { namn: "Tillbaka till finansiärerna", varde: -r.recoupment, klass: "seg-finansiar" },
-        { namn: "Uppskjutna arvoden och egeninsats", varde: -r.deferredBetalt, klass: "seg-skuld" },
-        { namn: "Vinst till teamet", varde: r.crewPool, klass: "seg-team" },
-        { namn: "Vinst till finansiärerna", varde: r.finansiarspool, klass: "seg-finvinst" },
-      ].filter((x) => x.varde > 0);
-      const text =
-        r.nettoEfterDeferred > 0
-          ? `Vinst att dela ${formatSek(r.nettoEfterDeferred)}: teamet ${formatSek(r.crewPool)}` +
-            (r.finansiarspool > 0 ? `, finansiärerna ${formatSek(r.finansiarspool)}` : "")
-          : `Ingen vinst att dela än. ${formatPercent(r.skuldAndelBetald)} av de uppskjutna arvodena betalas.`;
-      return { ...n, r, segment, text };
-    });
-
-  const legend = [
-    { namn: "Distributören", klass: "seg-distributor" },
-    { namn: "Tillbaka till finansiärerna", klass: "seg-finansiar" },
-    { namn: "Uppskjutna arvoden och egeninsats", klass: "seg-skuld" },
-    { namn: "Vinst till teamet", klass: "seg-team" },
-    ...(wf.finansiarsAndel > 0 ? [{ namn: "Vinst till finansiärerna", klass: "seg-finvinst" }] : []),
-  ];
+  const stapel = [
+    { namn: "Distributören", varde: -wf.distributionsavgift - wf.mgAtervinning, klass: "seg-distributor" },
+    { namn: "Tillbaka till finansiärerna", varde: -wf.recoupment, klass: "seg-finansiar" },
+    { namn: "Uppskjutna arvoden och egeninsats", varde: -wf.deferredBetalt, klass: "seg-skuld" },
+    { namn: "Vinst till teamet", varde: wf.crewPool, klass: "seg-team" },
+    { namn: "Vinst till finansiärerna", varde: wf.finansiarspool, klass: "seg-finvinst" },
+  ].filter((s) => s.varde > 0);
 
   return (
     <>
@@ -326,118 +348,215 @@ export function WaterfallTab({ params, waterfall, team = [], antalPersoner, self
         </div>
       )}
 
-      <div className="section-header">
-        Vad händer vid olika intäkter?
-        <Tooltip text="Varje stapel visar hur en bruttointäkt fördelas, från de bladets tre scenarier och break-even. Finansieringsreglagen ovan påverkar alla staplarna." />
-      </div>
-      <div className="card levels">
-        {nivaer.map((n) => (
-          <div className="level" key={n.namn}>
-            <div className="level-head">
-              <strong>{n.namn}</strong>
-              <span>{formatSek(n.brutto)} i bruttointäkt</span>
-            </div>
-            <div className="stacked-bar" role="img" aria-label={`Fördelning av ${formatSek(n.brutto)}`}>
-              {n.segment.map((x) => (
+      <div className="section-header">Utforska: vad händer vid olika intäkter?</div>
+      {presetVarden.length > 0 && (
+        <div className="preset-row pill-bar">
+          {presetVarden.map((p) => (
+            <button
+              key={p.key}
+              className={`pill ${brutto === p.value ? "primary" : ""}`}
+              onClick={() => setBrutto(p.value)}
+            >
+              {p.label} · {formatSek(p.value)}
+            </button>
+          ))}
+        </div>
+      )}
+      <MoneySlider
+        label="Bruttointäkt"
+        hint="Allt filmen tar in från försäljning, visningar och stöd som ska betalas tillbaka, innan några avdrag."
+        tooltip={WATERFALL_TOOLTIP.bruttointakt}
+        value={brutto}
+        max={bruttoMax}
+        step={BRUTTO_STEP}
+        markers={[
+          ...(harFinansiarer
+            ? [{ value: wf.finansiarerAterbetaldaVid, label: "Finansiärer klara" }]
+            : []),
+          { value: wf.breakEven, label: "Break-even" },
+        ]}
+        onChange={setBrutto}
+      />
+
+      <div className="card outcome">
+        <p className="outcome-text">{utfallSomText(wf, brutto)}</p>
+
+        {brutto > 0 && stapel.length > 0 && (
+          <>
+            <div className="stacked-bar" role="img" aria-label="Fördelning av bruttointäkten">
+              {stapel.map((s) => (
                 <div
-                  key={x.namn}
-                  className={`bar-seg ${x.klass}`}
-                  style={{ width: `${(x.varde / n.brutto) * 100}%` }}
-                  title={`${x.namn}: ${formatSek(x.varde)} (${formatPercent(x.varde / n.brutto)})`}
+                  key={s.namn}
+                  className={`bar-seg ${s.klass}`}
+                  style={{ width: `${(s.varde / brutto) * 100}%` }}
+                  title={`${s.namn}: ${formatSek(s.varde)}`}
                 />
               ))}
             </div>
-            <div className="level-foot">{n.text}</div>
-          </div>
-        ))}
-        <ul className="bar-legend inline">
-          {legend.map((l) => (
-            <li key={l.namn}>
-              <span className={`legend-dot ${l.klass}`} />
-              {l.namn}
-            </li>
-          ))}
-        </ul>
+            <ul className="bar-legend">
+              {stapel.map((s) => (
+                <li key={s.namn}>
+                  <span className={`legend-dot ${s.klass}`} />
+                  {s.namn}
+                  <span className="legend-value">
+                    {formatSek(s.varde)} ({formatPercent(s.varde / brutto)})
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </>
+        )}
       </div>
 
       {person && (
-        <ScenarioTabell
-          params={params}
-          waterfall={waterfall}
-          uppskjutet={person.deferredFee}
-          andel={person.andel}
-          finansiering={finansiering}
-          rubrik={crewVy ? "Vad får du vid olika intäkter?" : "Vad får en enskild person?"}
-          kolumnTotal={crewVy ? "Du får totalt" : "Personen får totalt"}
-          ovanfor={
-            !crewVy ? (
-              <label className="person-pick">
-                Se som
-                <select value={personKey} onChange={(e) => setPersonKey(e.target.value)}>
-                  {team.map((m) => (
-                    <option key={m.key} value={m.key}>
-                      {m.namn} ({m.roller || "—"})
-                    </option>
-                  ))}
-                </select>
-              </label>
-            ) : undefined
-          }
-        />
+        <div className="card">
+          <div className="section-header">
+            {crewVy ? "Vad får du?" : "Vad får en enskild person?"}
+          </div>
+          {!crewVy && (
+            <label className="person-pick">
+              Se som
+              <select value={personKey} onChange={(e) => setPersonKey(e.target.value)}>
+                {team.map((m) => (
+                  <option key={m.key} value={m.key}>
+                    {m.namn} ({m.roller || "—"})
+                  </option>
+                ))}
+              </select>
+            </label>
+          )}
+          <div className="wf-row">
+            <span>
+              Uppskjutet arvode som betalas
+              <Tooltip text="Personens uppskjutna arvode betalas i samma ordning som alla andras: de får samma andel av sitt arvode betald som hela poolen. Vid för låg intäkt betalas bara en del." />
+            </span>
+            <span className="wf-value">
+              {formatSek(personUppskjutet)} av {formatSek(person.deferredFee)}
+            </span>
+          </div>
+          <div className="wf-row">
+            <span>
+              Andel av vinsten ({formatPercent(person.andel)} av teamets del)
+              <Tooltip text="Personens ägarenheter delat med alla ägarenheter. Vinsten delas först när alla uppskjutna arvoden är betalda." />
+            </span>
+            <span className="wf-value">{formatSek(personVinst)}</span>
+          </div>
+          <div className="wf-row total">
+            <span>
+              {crewVy ? "Totalt för dig" : "Totalt"} vid {formatSek(brutto)} i bruttointäkt
+            </span>
+            <span className="wf-value">{formatSek(personUppskjutet + personVinst)}</span>
+          </div>
+          <div className="wf-footnote">
+            {crewVy
+              ? "Kontantinsats du eventuellt satt in ingår inte."
+              : "Kontantinsats som personen eventuellt satt in ingår inte."}
+          </div>
+        </div>
       )}
 
       <details className="utrakning">
         <summary>Visa hela uträkningen</summary>
         <div className="card">
-          <div className="table-scroll">
-            <table className="data-table">
-              <thead>
-                <tr>
-                  <th></th>
-                  {nivaer.map((n) => (
-                    <th key={n.namn}>{n.namn}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {(
-                  [
-                    ["Bruttointäkt", WATERFALL_TOOLTIP.bruttointakt, (r: ModelResult) => r.bruttointakt],
-                    [
-                      `Distributionsavgift (${formatPercent(params.distributionsavgift)})`,
-                      WATERFALL_TOOLTIP.distributionsavgift,
-                      (r: ModelResult) => r.distributionsavgift,
-                    ],
-                    ...(mg > 0
-                      ? [["Minimigaranti återvinns", WATERFALL_TOOLTIP.mgAtervinning, (r: ModelResult) => r.mgAtervinning] as const]
-                      : []),
-                    ["Kvar efter distributören", WATERFALL_TOOLTIP.nettoEfterDistribution, (r: ModelResult) => r.nettoEfterMg],
-                    ["Återbetalning till finansiärer", WATERFALL_TOOLTIP.finansiarsRecoupment, (r: ModelResult) => r.recoupment],
-                    ["Kvar efter återbetalning", WATERFALL_TOOLTIP.nettoEfterFinansiar, (r: ModelResult) => r.nettoEfterRecoupment],
-                    ["Uppskjutna arvoden och egeninsats", WATERFALL_TOOLTIP.deferredFeePool, (r: ModelResult) => r.deferredBetalt],
-                    ["Vinst att dela", WATERFALL_TOOLTIP.nettoEfterDeferred, (r: ModelResult) => r.nettoEfterDeferred],
-                    [`Teamets andel (${formatPercent(1 - wf.finansiarsAndel)})`, WATERFALL_TOOLTIP.crewPool, (r: ModelResult) => r.crewPool],
-                    ...(wf.finansiarsAndel > 0
-                      ? [[`Finansiärernas andel (${formatPercent(wf.finansiarsAndel)})`, WATERFALL_TOOLTIP.finansiarspool, (r: ModelResult) => r.finansiarspool] as const]
-                      : []),
-                  ] as const
-                ).map(([etikett, tooltip, varde]) => (
-                  <tr key={etikett}>
-                    <td>
-                      {etikett}
-                      <Tooltip text={tooltip} />
-                    </td>
-                    {nivaer.map((n) => (
-                      <td key={n.namn}>{formatSek(varde(n.r))}</td>
-                    ))}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div className="wf-row">
+            <span>
+              Bruttointäkt
+              <Tooltip text={WATERFALL_TOOLTIP.bruttointakt} />
+            </span>
+            <span className="wf-value">{formatSek(wf.bruttointakt)}</span>
+          </div>
+          <div className="wf-row">
+            <span>
+              Distributionsavgift ({formatPercent(params.distributionsavgift)})
+              <Tooltip text={WATERFALL_TOOLTIP.distributionsavgift} />
+            </span>
+            <span className="wf-value">{formatSek(wf.distributionsavgift)}</span>
+          </div>
+          {mg > 0 && (
+            <div className="wf-row">
+              <span>
+                Distributörens minimigaranti återvinns
+                <Tooltip text={WATERFALL_TOOLTIP.mgAtervinning} />
+              </span>
+              <span className="wf-value">{formatSek(wf.mgAtervinning)}</span>
+            </div>
+          )}
+          <div className="wf-row">
+            <span>
+              Kvar efter distributören
+              <Tooltip text={WATERFALL_TOOLTIP.nettoEfterDistribution} />
+            </span>
+            <span className="wf-value">{formatSek(wf.nettoEfterMg)}</span>
+          </div>
+          <div className="wf-row">
+            <span>
+              Återbetalning till finansiärer
+              <Tooltip text={WATERFALL_TOOLTIP.finansiarsRecoupment} />
+            </span>
+            <span className="wf-value">{formatSek(wf.recoupment)}</span>
+          </div>
+          {wf.recoupmentKontant > 0 && (
+            <div className="wf-footnote">varav kontantinsats: {formatSek(wf.recoupmentKontant)}</div>
+          )}
+          {wf.recoupmentSamproducent > 0 && (
+            <div className="wf-footnote">
+              varav samproducenter: {formatSek(wf.recoupmentSamproducent)}
+            </div>
+          )}
+          {wf.recoupmentStod > 0 && (
+            <div className="wf-footnote">varav stöd: {formatSek(wf.recoupmentStod)}</div>
+          )}
+          <div className="wf-row">
+            <span>
+              Kvar efter återbetalning
+              <Tooltip text={WATERFALL_TOOLTIP.nettoEfterFinansiar} />
+            </span>
+            <span className="wf-value">{formatSek(wf.nettoEfterRecoupment)}</span>
+          </div>
+          <div className="wf-row">
+            <span>
+              Uppskjutna arvoden och egeninsats
+              <Tooltip text={WATERFALL_TOOLTIP.deferredFeePool} />
+            </span>
+            <span className="wf-value">{formatSek(wf.deferredBetalt)}</span>
+          </div>
+          <div className="wf-row">
+            <span>
+              Vinst att dela
+              <Tooltip text={WATERFALL_TOOLTIP.nettoEfterDeferred} />
+            </span>
+            <span className="wf-value">{formatSek(wf.nettoEfterDeferred)}</span>
+          </div>
+          <div className="wf-row total">
+            <span>
+              Teamets andel ({formatPercent(1 - wf.finansiarsAndel)})
+              <Tooltip text={WATERFALL_TOOLTIP.crewPool} />
+            </span>
+            <span className="wf-value">{formatSek(wf.crewPool)}</span>
           </div>
           <div className="wf-footnote">
-            Break-even (allt återbetalt) vid {formatSek(wf.breakEven)} i bruttointäkt. Vinsten delas
-            bland {antalPersoner} personer efter ägarenheter.
+            ← fördelas bland {antalPersoner} personer efter ägarenheter
+          </div>
+          {wf.finansiarsAndel > 0 && (
+            <div className="wf-row total">
+              <span>
+                Finansiärernas andel ({formatPercent(wf.finansiarsAndel)})
+                <Tooltip text={WATERFALL_TOOLTIP.finansiarspool} />
+              </span>
+              <span className="wf-value">{formatSek(wf.finansiarspool)}</span>
+            </div>
+          )}
+          {wf.finansiarspoolKontant > 0 && (
+            <div className="wf-footnote">
+              varav kontantinsats: {formatSek(wf.finansiarspoolKontant)}
+            </div>
+          )}
+          <div className="wf-row">
+            <span>
+              Break-even (allt återbetalt)
+              <Tooltip text={WATERFALL_TOOLTIP.breakEven} />
+            </span>
+            <span className="wf-value">{formatSek(wf.breakEven)}</span>
           </div>
         </div>
       </details>
