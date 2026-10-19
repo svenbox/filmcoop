@@ -801,51 +801,57 @@ select {
 }
 
 /* --- producentvyn: utbetalningsordning --- */
-.milestones .section-intro {
-  margin: 4px 0 12px;
-  color: var(--text-2);
-  font-size: 13px;
-}
-
-.milestone-list {
+.milestone-grid {
   list-style: none;
-  counter-reset: steg;
   margin: 0;
   padding: 0;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px 16px;
 }
 
-.milestone-list li {
-  counter-increment: steg;
-  position: relative;
-  padding: 10px 0 10px 38px;
-  border-top: 1px solid var(--border-2);
+.milestone-grid li {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  font-size: 12px;
+  line-height: 1.35;
 }
 
-.milestone-list li::before {
-  content: counter(steg);
-  position: absolute;
-  left: 0;
-  top: 10px;
-  width: 24px;
-  height: 24px;
+.ms-nr {
+  flex: none;
+  width: 20px;
+  height: 20px;
   border-radius: 999px;
   background: var(--accent);
   color: #ffffff;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.milestone-list li strong {
+.milestone-grid strong {
   display: block;
   color: var(--text);
+  font-size: 13px;
 }
 
-.milestone-list li span {
+.milestone-grid li div > span {
   color: var(--text-2);
-  font-size: 13px;
+}
+
+@media (max-width: 900px) {
+  .milestone-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 520px) {
+  .milestone-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
 .slider-hint {

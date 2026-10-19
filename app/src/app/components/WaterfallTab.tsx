@@ -156,53 +156,56 @@ export function WaterfallTab({ params, waterfall, team = [], antalPersoner, self
   return (
     <>
       <div className="card milestones">
-        <div className="section-header">Så går pengarna — i vilken ordning</div>
-        <p className="section-intro">
-          Det här gäller oavsett hur mycket filmen drar in. Intäkten betalas ut uppifrån och ned,
-          och först när ett steg är klart går pengarna vidare till nästa. Beloppen anger
-          bruttointäkt, alltså allt filmen tar in innan några avdrag.
-        </p>
-        <ol className="milestone-list">
+        <div className="section-header">
+          Så går pengarna
+          <Tooltip text="Intäkten betalas ut uppifrån och ned, och först när ett steg är klart går pengarna vidare till nästa. Beloppen anger bruttointäkt, alltså allt filmen tar in innan några avdrag. Det gäller oavsett hur mycket filmen drar in." />
+        </div>
+        <ol className="milestone-grid">
           <li>
-            <strong>Distributören tar sin avgift</strong>
-            <span>
-              {formatPercent(params.distributionsavgift)} av varje intäkt
-              {wf.mgSkyldigt > 0 &&
-                `, och återvinner först sin minimigaranti (${formatSek(wf.mgSkyldigt)})`}
-              .
-            </span>
+            <span className="ms-nr">1</span>
+            <div>
+              <strong>Distributören</strong>
+              <span>
+                {formatPercent(params.distributionsavgift)} av intäkten
+                {wf.mgSkyldigt > 0 && ` + minimigaranti ${formatSek(wf.mgSkyldigt)}`}
+              </span>
+            </div>
           </li>
           <li>
-            <strong>Finansiärerna får tillbaka sin insats</strong>
-            <span>
-              {harFinansiarer
-                ? `${formatSek(wf.finansiarerSkyldigt)} med avtalad återbetalning. Klart vid ${formatSek(wf.finansiarerAterbetaldaVid)} i bruttointäkt.`
-                : "Ingen finansiering med återbetalning är inlagd."}
-            </span>
+            <span className="ms-nr">2</span>
+            <div>
+              <strong>
+                Finansiärerna
+                <Tooltip text="Finansiärerna står före de uppskjutna arvodena eftersom de lägger in pengar som måste finnas för att filmen ska kunna göras, och tar den kontanta risken. Det gäller även den som lagt in kontanter i produktionen." />
+              </strong>
+              <span>
+                {harFinansiarer
+                  ? `${formatSek(wf.finansiarerSkyldigt)} tillbaka, klart vid ${formatSek(wf.finansiarerAterbetaldaVid)}`
+                  : "Ingen återbetalning inlagd"}
+              </span>
+            </div>
           </li>
           <li>
-            <strong>Uppskjutna arvoden och övrig egeninsats betalas</strong>
-            <span>
-              {formatSek(wf.kvarDeferredPool)} ska betalas ur intäkterna. Klart vid{" "}
-              {formatSek(wf.breakEven)} i bruttointäkt (break-even).
-            </span>
+            <span className="ms-nr">3</span>
+            <div>
+              <strong>Uppskjutna arvoden</strong>
+              <span>
+                {formatSek(wf.kvarDeferredPool)}, klart vid {formatSek(wf.breakEven)} (break-even)
+              </span>
+            </div>
           </li>
           <li>
-            <strong>Därefter delas vinsten</strong>
-            <span>
-              Teamet får {formatPercent(1 - wf.finansiarsAndel)} efter ägarenheter
-              {wf.finansiarsAndel > 0
-                ? ` och finansiärerna ${formatPercent(wf.finansiarsAndel)}`
-                : ""}
-              . Före break-even får teamet ingen vinstandel.
-            </span>
+            <span className="ms-nr">4</span>
+            <div>
+              <strong>Vinstdelning</strong>
+              <span>
+                Teamet {formatPercent(1 - wf.finansiarsAndel)}
+                {wf.finansiarsAndel > 0 && `, finansiärer ${formatPercent(wf.finansiarsAndel)}`},
+                först efter break-even
+              </span>
+            </div>
           </li>
         </ol>
-        <p className="section-intro">
-          Finansiärerna står före de uppskjutna arvodena eftersom de lägger in pengar som måste finnas
-          för att filmen ska kunna göras, och tar den kontanta risken. Det gäller även den som lagt
-          in kontanter i produktionen. Därefter betalas de uppskjutna arvodena, före någon vinst.
-        </p>
       </div>
 
       {!crewVy && params.totalBudget > 0 && (
