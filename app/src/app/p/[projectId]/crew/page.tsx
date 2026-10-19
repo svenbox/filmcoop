@@ -274,7 +274,6 @@ export default function CrewPage() {
         {tab === "waterfall" && (
           <WaterfallTab
             params={params}
-            waterfall={waterfall}
             antalPersoner={samagareCount}
             self={{ deferredFee: minDeferred, andel: minAndel }}
           />

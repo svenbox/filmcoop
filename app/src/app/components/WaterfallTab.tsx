@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { ModelParams, WaterfallData } from "@/lib/sheets";
+import type { ModelParams } from "@/lib/sheets";
 import type { TeamSummary } from "@/lib/team";
 import { formatPercent, formatSek } from "@/lib/format";
 import { WATERFALL_TOOLTIP } from "@/lib/scenarios";
@@ -10,12 +10,6 @@ import { Tooltip } from "./Tooltip";
 
 const BRUTTO_STEP = 25_000;
 const FIN_STEP = 25_000;
-
-const PRESETS: { key: "A" | "B" | "C"; label: string }[] = [
-  { key: "A", label: "Litet utfall" },
-  { key: "B", label: "Mellanstort utfall" },
-  { key: "C", label: "Stort utfall" },
-];
 
 function roundUp(n: number, step: number): number {
   return Math.ceil(n / step) * step;
@@ -108,7 +102,6 @@ function utfallSomText(wf: ModelResult, brutto: number): string {
 
 interface Props {
   params: ModelParams;
-  waterfall: WaterfallData;
   /** Producentvyn: alla personer, för väljaren "Se som". */
   team?: TeamSummary[];
   antalPersoner: number;
@@ -120,7 +113,7 @@ interface Props {
   self?: { deferredFee: number; andel: number };
 }
 
-export function WaterfallTab({ params, waterfall, team = [], antalPersoner, self }: Props) {
+export function WaterfallTab({ params, team = [], antalPersoner, self }: Props) {
   const crewVy = self !== undefined;
   const [brutto, setBrutto] = useState<number>(1_000_000);
   const [stod, setStod] = useState<number>(params.stod.belopp);
@@ -130,14 +123,8 @@ export function WaterfallTab({ params, waterfall, team = [], antalPersoner, self
   const [personKey, setPersonKey] = useState<string>(team[0]?.key ?? "");
 
   const wf = computeWaterfall(params, brutto, { stod, samproducent, mg, kontant });
-  const presetVarden = PRESETS.map((p) => ({ ...p, value: waterfall[p.key].bruttointakt })).filter(
-    (p) => p.value > 0
-  );
   const budgetMax = roundUp(Math.max(params.totalBudget, 500_000), FIN_STEP);
-  const bruttoMax = roundUp(
-    Math.max(2_000_000, wf.breakEven * 2, ...presetVarden.map((p) => p.value)),
-    250_000
-  );
+  const bruttoMax = roundUp(Math.max(2_000_000, wf.breakEven * 2), 250_000);
 
   const harFinansiarer = wf.finansiarerSkyldigt + wf.mgSkyldigt > 0;
   const vald = team.find((m) => m.key === personKey) ?? null;
@@ -348,37 +335,24 @@ export function WaterfallTab({ params, waterfall, team = [], antalPersoner, self
         </div>
       )}
 
-      <div className="section-header">Utforska: vad händer vid olika intäkter?</div>
-      {presetVarden.length > 0 && (
-        <div className="preset-row pill-bar">
-          {presetVarden.map((p) => (
-            <button
-              key={p.key}
-              className={`pill ${brutto === p.value ? "primary" : ""}`}
-              onClick={() => setBrutto(p.value)}
-            >
-              {p.label} · {formatSek(p.value)}
-            </button>
-          ))}
-        </div>
-      )}
-      <MoneySlider
-        label="Bruttointäkt"
-        hint="Allt filmen tar in från försäljning, visningar och stöd som ska betalas tillbaka, innan några avdrag."
-        tooltip={WATERFALL_TOOLTIP.bruttointakt}
-        value={brutto}
-        max={bruttoMax}
-        step={BRUTTO_STEP}
-        markers={[
-          ...(harFinansiarer
-            ? [{ value: wf.finansiarerAterbetaldaVid, label: "Finansiärer klara" }]
-            : []),
-          { value: wf.breakEven, label: "Break-even" },
-        ]}
-        onChange={setBrutto}
-      />
-
       <div className="card outcome">
+        <div className="section-header">Vad händer vid olika intäkter?</div>
+        <MoneySlider
+          label="Bruttointäkt"
+          hint="Allt filmen tar in från försäljning, visningar och stöd som ska betalas tillbaka, innan några avdrag."
+          tooltip={WATERFALL_TOOLTIP.bruttointakt}
+          value={brutto}
+          max={bruttoMax}
+          step={BRUTTO_STEP}
+          markers={[
+            ...(harFinansiarer
+              ? [{ value: wf.finansiarerAterbetaldaVid, label: "Finansiärer klara" }]
+              : []),
+            { value: wf.breakEven, label: "Break-even" },
+          ]}
+          onChange={setBrutto}
+        />
+
         <p className="outcome-text">{utfallSomText(wf, brutto)}</p>
 
         {brutto > 0 && stapel.length > 0 && (

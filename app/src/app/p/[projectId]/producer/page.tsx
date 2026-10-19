@@ -391,7 +391,6 @@ export default function ProducerPage() {
         {tab === "waterfall" && (
           <WaterfallTab
             params={params}
-            waterfall={data.waterfall}
             team={team}
             antalPersoner={team.length}
           />
