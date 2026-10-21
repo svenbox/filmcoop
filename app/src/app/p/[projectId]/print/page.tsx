@@ -7,7 +7,7 @@ import type { CrewMember, ModelParams, ProjectSettings, WaterfallData } from "@/
 import { formatPercent, formatSek } from "@/lib/format";
 import { computeWaterfall } from "@/lib/waterfallModel";
 import { groupByFas } from "@/lib/fas";
-import type { PersonDelar, PoolInstallning } from "@/lib/pooler";
+import type { PersonDelar, PoolInstallning, Skiva } from "@/lib/pooler";
 
 interface PrintResponse {
   project: ProjectSettings;
@@ -19,6 +19,7 @@ interface PrintResponse {
   minAndel: number;
   minDelar: PersonDelar;
   pooler: PoolInstallning;
+  tunnaSkivor: Skiva[];
 }
 
 export default function PrintPage() {
@@ -67,7 +68,7 @@ export default function PrintPage() {
 
   if (!data) return null;
 
-  const { project, rows, waterfall, params, samagareCount, minAndel, minDelar, pooler } = data;
+  const { project, rows, waterfall, params, samagareCount, minAndel, minDelar, pooler, tunnaSkivor } = data;
   const minPoang = rows.reduce((sum, r) => sum + r.poang, 0);
   const minDeferred = rows.reduce((sum, r) => sum + r.deferredFee, 0);
   const minNamn = rows[0]?.namn || "";
@@ -114,6 +115,9 @@ export default function PrintPage() {
         <div className="stat-box">
           <div className="label">Ägarandel</div>
           <div className="value">{formatPercent(minAndel)}</div>
+          {tunnaSkivor.some((sk) => minDelar.skivor[sk] > 0) && (
+            <div className="muted">preliminär: budgeten är inte komplett än</div>
+          )}
         </div>
         <div className="stat-box">
           <div className="label">Ägarenheter</div>

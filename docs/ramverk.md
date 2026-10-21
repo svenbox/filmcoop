@@ -55,7 +55,7 @@ Skillnaden mellan marknadsmässigt arvode och det reducerade arvode som betalas 
 | F7 | Promotion / Lansering | 8 | 1,0× | 8,0 |
 | F8 | Övrigt | 8 | 1,0× | 8,0 |
 
-F3, F5 och F8 är valfria faser som aktiveras vid behov — pilot-inspelning, serieproduktion i block, eller projektspecifika behov. Faspoängtabellen fastställs av producenten vid projektstart och kan inte ändras retroaktivt.
+F3, F5 och F8 är valfria faser som aktiveras vid behov — pilot-inspelning, serieproduktion i block, eller projektspecifika behov. **Pilotinspelning bokas på F3**, inte på F4, och hör därmed till Lock 1 och skiva 1 (se avsnitt 5b och 6). Faspoängtabellen fastställs av producenten vid projektstart och kan inte ändras retroaktivt.
 
 ---
 
@@ -195,6 +195,8 @@ Din andel        = Andelarna i skivorna + din tilldelning ur initiativtagarnas p
 
 **Risken balanseras av skivornas storlek.** Faspoängen (avsnitt 3) bestämmer fördelningen *inom* en skiva. Skivornas storlek bestämmer hur mycket varje fasgrupp som helhet är värd. Därför är det skivorna som ger tidiga bidragsgivare deras riskpremie mellan faserna.
 
+**Tunna skivor.** Skivornas storlek är fast, men hur mycket arbete som är planerat i dem varierar. Är budgeten inte komplett, till exempel om post och promotion ännu saknas, delas en hel skiva på mycket få enheter och varje enhet blir värd flera gånger mer än i de andra skivorna. En skiva räknas som **tunn** när värdet per enhet är mer än dubbelt så högt som snittet för de skivor som har enheter. Andelarna i en tunn skiva är **preliminära** och portalen och kalkylbladet markerar det. Fyll i de planerade dagarna för skivans faser så jämnar värdena ut sig. Vid Lock 1 bör ingen skiva som ska användas vara tunn.
+
 **Produktionsbolagets pool** tillhör bolaget, som äger rättigheterna och bär ansvaret för att representera projektet (avsnitt 4e). Den ersätter inte producentens egna ägarenheter för utfört arbete.
 
 **Procenten gäller teamets del**, alltså efter finansiärernas andel. Finansiärerna påverkas inte av hur teamets del delas.
@@ -207,7 +209,7 @@ Din andel        = Andelarna i skivorna + din tilldelning ur initiativtagarnas p
 
 **Lock 1 — Green Light**  
 *Omedelbart innan inspelning påbörjas.*  
-Poäng från F1, F2 och F3 (pilot/testinspelning) fastslås och kan inte ändras retroaktivt. Utan detta lock kan en ny teammedlem i teorin kräva development-poäng efter att produktionsbeslutet redan är fattat. Faspoängtabellen för resterande faser fastslås också här — den gäller för hela resten av projektet.
+Poäng från F1, F2 och F3 (pilot/testinspelning, inklusive själva pilotinspelningen) fastslås och kan inte ändras retroaktivt. Utan detta lock kan en ny teammedlem i teorin kräva development-poäng efter att produktionsbeslutet redan är fattat. Faspoängtabellen för resterande faser fastslås också här — den gäller för hela resten av projektet.
 
 **Lock 2 — Wrap**  
 *Sista inspelningsdagen (senast 5 arbetsdagar därefter).*  

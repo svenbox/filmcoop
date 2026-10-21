@@ -222,6 +222,7 @@ function uppdateraVattenfall() {
   skapaFragorOchSvar_();
   skapaPooler_();
   uppdateraPoolerEnheter_();
+  uppdateraPoolerVarden_();
   uppdateraEquityDashboard_();
   uppdateraTexter_();
   markeraInmatning();
@@ -335,6 +336,27 @@ function uppdateraPoolerEnheter_() {
     pooler.getRange(s.enheter.replace(/\$/g, "")).setNumberFormat("#,##0.0");
     färgaZon_(pooler.getRange(s.enheter.replace(/\$/g, "")), "formel");
   });
+}
+
+// Värde per 100 enheter och flagga för tunn skiva (samma tröskel som portalen: mer än 2 gånger snittet).
+function uppdateraPoolerVarden_() {
+  const pooler = SpreadsheetApp.getActive().getSheetByName("Pooler");
+  if (!pooler) return;
+  pooler.getRange("E3:F3").setValues([["Värde per 100 enheter", "Status"]]).setFontWeight("bold");
+  const snitt = "(SUMIF($D$6:$D$8,\">0\",$C$6:$C$8)/SUM($D$6:$D$8))*100";
+  [6, 7, 8].forEach((rad) => {
+    pooler.getRange("E" + rad).setFormula("=IF(D" + rad + ">0,C" + rad + "/D" + rad + "*100,0)");
+    pooler
+      .getRange("F" + rad)
+      .setFormula(
+        "=IF(D" + rad + "<=0,\"Reserverad\",IF(AND(COUNTIF($D$6:$D$8,\">0\")>=2,E" + rad + ">2*" + snitt +
+          "),\"Tunn skiva: få enheter, budgeten kanske inte är komplett\",\"\"))"
+      );
+  });
+  pooler.getRange("E6:E8").setNumberFormat("0.0%");
+  färgaZon_(pooler.getRange("E6:F8"), "formel");
+  pooler.setColumnWidth(5, 160);
+  pooler.setColumnWidth(6, 360);
 }
 
 // Skriver om Equity Dashboard så att ägarandelen är andelen av teamets del enligt

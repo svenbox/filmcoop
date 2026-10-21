@@ -243,10 +243,12 @@ export function PoolKort({
   pooler,
   delar,
   andel,
+  tunna = [],
 }: {
   pooler: PoolInstallning;
   delar: PersonDelar;
   andel: number;
+  tunna?: Skiva[];
 }) {
   const rader: { namn: string; not: string; del: number; min: number }[] = [
     {
@@ -263,7 +265,9 @@ export function PoolKort({
     },
     ...([1, 2, 3] as Skiva[]).map((s) => ({
       namn: SKIVA_ETIKETT[s],
-      not: "Delas efter ägarenheter, fast efter låsningen",
+      not: tunna.includes(s)
+        ? "Preliminär: få enheter planerade i skivan än"
+        : "Delas efter ägarenheter, fast efter låsningen",
       del: pooler.skivor[s],
       min: delar.skivor[s],
     })),

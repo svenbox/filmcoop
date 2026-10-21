@@ -78,6 +78,11 @@ a {
   display: none !important;
 }
 
+.badge-warn {
+  color: #b45309;
+  font-weight: 600;
+}
+
 .muted {
   color: var(--text-3);
 }

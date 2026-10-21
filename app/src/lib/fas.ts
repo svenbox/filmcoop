@@ -8,6 +8,7 @@ export const FAS_LABELS: Record<string, string> = {
   F5: "Inspelning Fas 2",
   F6: "Post-produktion",
   F7: "Lansering",
+  F8: "Övrigt",
 };
 
 const FAS_ORDER = Object.keys(FAS_LABELS);

@@ -16,6 +16,8 @@ export interface TeamSummary {
   poang: number;
   deferredFee: number;
   andel: number;
+  /** Har enheter i en tunn skiva, så andelen är preliminär (se lib/pooler.ts). */
+  preliminar: boolean;
 }
 
 /** E-postadresser som används av fler än ett namn, alltså platshållare för
@@ -69,6 +71,7 @@ export function groupByPerson(
       poang,
       deferredFee: personRows.reduce((sum, r) => sum + r.deferredFee, 0),
       andel: fordelning.perPerson.get(key) ?? 0,
+      preliminar: fordelning.skivor.some((sk) => sk.tunn && (fordelning.delar.get(key)?.skivor[sk.skiva] ?? 0) > 0),
     };
   });
 

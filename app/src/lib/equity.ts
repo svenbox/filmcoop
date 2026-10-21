@@ -15,7 +15,7 @@ import {
   type WaterfallData,
 } from "./sheets";
 import { groupByPerson } from "./team";
-import { beraknaFordelning, personNyckel, type PersonDelar, type PoolInstallning } from "./pooler";
+import { beraknaFordelning, personNyckel, type PersonDelar, type PoolInstallning, type Skiva } from "./pooler";
 
 export interface MyEquityData {
   project: ProjectSettings;
@@ -32,6 +32,8 @@ export interface MyEquityData {
   minDelar: PersonDelar;
   pooler: PoolInstallning;
   poolerVarning: string | null;
+  /** Skivor med få enheter: andelar i dem är preliminära tills budgeten är komplett. */
+  tunnaSkivor: Skiva[];
 }
 
 /**
@@ -92,5 +94,6 @@ export async function getMyEquityData(
     minDelar,
     pooler: pooler.installning,
     poolerVarning: pooler.varning,
+    tunnaSkivor: fordelning.skivor.filter((sk) => sk.tunn).map((sk) => sk.skiva),
   };
 }

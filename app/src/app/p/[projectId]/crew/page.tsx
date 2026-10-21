@@ -13,7 +13,7 @@ import { Tooltip } from "../../../components/Tooltip";
 import { EkonomiKort } from "../../../components/EkonomiKort";
 import { FaqKort, MinInsatsKort, PoolKort, ScenarioTabell, TidslinjeKort } from "../../../components/CrewInfo";
 import { WaterfallTab } from "../../../components/WaterfallTab";
-import type { PersonDelar, PoolInstallning } from "@/lib/pooler";
+import type { PersonDelar, PoolInstallning, Skiva } from "@/lib/pooler";
 
 interface MeResponse {
   project: ProjectSettings;
@@ -28,6 +28,7 @@ interface MeResponse {
   minDelar: PersonDelar;
   pooler: PoolInstallning;
   poolerVarning: string | null;
+  tunnaSkivor: Skiva[];
 }
 
 type Tab = "oversikt" | "rader" | "waterfall";
@@ -69,7 +70,7 @@ export default function CrewPage() {
 
   if (!data) return null;
 
-  const { project, rows, waterfall, params, kontakt, faq, samagareCount, minAndel, minDelar, pooler } = data;
+  const { project, rows, waterfall, params, kontakt, faq, samagareCount, minAndel, minDelar, pooler, tunnaSkivor } = data;
   const minPoang = rows.reduce((sum, r) => sum + r.poang, 0);
   const minDagar = rows.reduce((sum, r) => sum + r.dagar, 0);
   const minDeferred = rows.reduce((sum, r) => sum + r.deferredFee, 0);
@@ -78,6 +79,7 @@ export default function CrewPage() {
     : rows.every((r) => r.avtal === "ja")
       ? "ja"
       : "nej";
+  const preliminar = tunnaSkivor.some((sk) => minDelar.skivor[sk] > 0);
   const minNamn = rows[0]?.namn || "";
   const minaRoller = Array.from(new Set(rows.map((r) => r.roll).filter(Boolean))).join(" / ");
   const fasGrupper = groupByFas(rows);
@@ -144,7 +146,9 @@ export default function CrewPage() {
                   <Tooltip text="Din procentandel av teamets del av vinsten. Beräknas per skiva: dina ägarenheter delat med skivans enheter, gånger skivans storlek, plus eventuell tilldelning ur initiativtagarnas pool." />
                 </div>
                 <div className="value">{formatPercent(minAndel)}</div>
-                <div className="muted">preliminär tills dina faser låses</div>
+                <div className="muted">
+                  {preliminar ? "preliminär: budgeten är inte komplett än" : "preliminär tills dina faser låses"}
+                </div>
               </div>
               <div className="stat-box">
                 <div className="label">
@@ -163,7 +167,7 @@ export default function CrewPage() {
               </div>
             </div>
 
-            <PoolKort pooler={pooler} delar={minDelar} andel={minAndel} />
+            <PoolKort pooler={pooler} delar={minDelar} andel={minAndel} tunna={tunnaSkivor} />
 
             <ScenarioTabell
               params={params}

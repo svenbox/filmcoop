@@ -72,6 +72,7 @@ export default function ProducerPage() {
   const fordelning = beraknaFordelning(rows, pooler);
   const team = groupByPerson(rows, pooler, fordelning);
   const initiativOfordelat = fordelning.initiativOfordelat > 0.00001;
+  const tunnaSkivor = fordelning.skivor.filter((sk) => sk.tunn);
   const delade = sharedEmails(rows);
   const obokade = team.filter((m) => !m.bokad);
   const harAvtalskolumn = team.some((m) => m.avtal !== null);
@@ -200,6 +201,7 @@ export default function ProducerPage() {
               utanAvtal.length === 0 &&
               obesvaradeFragor === 0 &&
               !initiativOfordelat &&
+              tunnaSkivor.length === 0 &&
               pooler.varning === null &&
               harAvtalskolumn ? (
                 <p className="muted">Inget att göra just nu.</p>
@@ -218,6 +220,17 @@ export default function ProducerPage() {
                       <strong>Poolerna stämmer inte.</strong> {pooler.varning}
                     </li>
                   )}
+                  {tunnaSkivor.map((sk) => (
+                    <li key={sk.skiva}>
+                      <strong>
+                        Skiva {sk.skiva} ({sk.etikett}) har bara {sk.enheter.toFixed(1)} enheter.
+                      </strong>{" "}
+                      Varje enhet där är värd {sk.relativtVarde.toFixed(1).replace(".", ",")} gånger
+                      snittet, så andelarna i skivan är preliminära. Det beror oftast på att
+                      budgeten inte är komplett (t.ex. post eller promotion saknas). Fyll i de
+                      planerade dagarna för skivans faser så jämnar det ut sig.
+                    </li>
+                  ))}
                   {initiativOfordelat && (
                     <li>
                       <strong>
@@ -368,8 +381,13 @@ export default function ProducerPage() {
                     {sk.reserverad ? (
                       <span className="muted"> · reserverad, inga enheter än</span>
                     ) : (
-                      <span className="muted"> · {sk.enheter.toFixed(1)} enheter</span>
+                      <span className="muted">
+                        {" "}
+                        · {sk.enheter.toFixed(1)} enheter ·{" "}
+                        {formatPercent(sk.vardePer100)} per 100 enheter
+                      </span>
                     )}
+                    {sk.tunn && <span className="badge-warn"> · tunn skiva, preliminär</span>}
                   </span>
                   <span className="wf-value">{formatPercent(sk.andel)}</span>
                 </div>
@@ -418,7 +436,18 @@ export default function ProducerPage() {
                             style={{ width: `${Math.min(100, Math.max(0, m.andel * 100))}%` }}
                           />
                         </div>
-                        <span>{formatPercent(m.andel)}</span>
+                        <span>
+                          {formatPercent(m.andel)}
+                          {m.preliminar && (
+                            <span
+                              className="muted"
+                              title="Har enheter i en skiva med få enheter. Andelen är preliminär tills budgeten är komplett."
+                            >
+                              {" "}
+                              prel.
+                            </span>
+                          )}
+                        </span>
                       </div>
                     </td>
                     <td>{formatSek(m.deferredFee)}</td>

@@ -81,6 +81,12 @@ export interface SkivaSumma {
   enheter: number;
   /** Ingen har enheter i skivan än: andelen är reserverad och ingen får den. */
   reserverad: boolean;
+  /** Skivans andel av teamets del per 100 enheter. */
+  vardePer100: number;
+  /** Värdet per enhet är mer än TUNN_GRANS gånger snittet för skivor med enheter. */
+  tunn: boolean;
+  /** Värdet per enhet i förhållande till snittet (1 = som snittet). */
+  relativtVarde: number;
 }
 
 export interface Fordelning {
@@ -94,6 +100,13 @@ export interface Fordelning {
   initiativTotal: number;
   initiativOfordelat: number;
 }
+
+/**
+ * En skiva är "tunn" när varje enhet i den är värd mer än så här många gånger snittet för
+ * skivor som har enheter. Det händer när budgeten inte är komplett (t.ex. post eller
+ * promotion saknas), och andelarna i skivan är då preliminära.
+ */
+export const TUNN_GRANS = 2;
 
 const tom = (): PersonDelar => ({ skivor: { 1: 0, 2: 0, 3: 0 }, initiativ: 0 });
 
@@ -148,16 +161,29 @@ export function beraknaFordelning(rows: CrewMember[], pooler: PoolerData): Forde
     perPerson.set(nyckel, d.skivor[1] + d.skivor[2] + d.skivor[3] + d.initiativ);
   }
 
+  const aktiva = ([1, 2, 3] as Skiva[]).filter((s) => enheterPerSkiva[s] > 0);
+  const aktivEnheter = aktiva.reduce((sum, s) => sum + enheterPerSkiva[s], 0);
+  const aktivAndel = aktiva.reduce((sum, s) => sum + installning.skivor[s], 0);
+  const snittPerEnhet = aktivEnheter > 0 ? aktivAndel / aktivEnheter : 0;
+
   return {
     perPerson,
     delar,
-    skivor: ([1, 2, 3] as Skiva[]).map((s) => ({
-      skiva: s,
-      etikett: SKIVA_ETIKETT[s],
-      andel: installning.skivor[s],
-      enheter: enheterPerSkiva[s],
-      reserverad: enheterPerSkiva[s] <= 0,
-    })),
+    skivor: ([1, 2, 3] as Skiva[]).map((s) => {
+      const enheter = enheterPerSkiva[s];
+      const perEnhet = enheter > 0 ? installning.skivor[s] / enheter : 0;
+      const relativtVarde = snittPerEnhet > 0 ? perEnhet / snittPerEnhet : 0;
+      return {
+        skiva: s,
+        etikett: SKIVA_ETIKETT[s],
+        andel: installning.skivor[s],
+        enheter,
+        reserverad: enheter <= 0,
+        vardePer100: perEnhet * 100,
+        tunn: aktiva.length >= 2 && relativtVarde > TUNN_GRANS,
+        relativtVarde,
+      };
+    }),
     produktionsbolag: installning.produktionsbolag,
     initiativ,
     initiativTotal: installning.initiativ,
