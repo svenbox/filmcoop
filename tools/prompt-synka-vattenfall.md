@@ -8,6 +8,7 @@ film.coop-portalen (filmcoop.nu) har en vattenfallsmodell som kalkylbladets flik
 3. Lägger till kolumnen "Avtal" (JA/NEJ-rullista) sist bland rubrikerna i Egeninsats & Poäng. Portalen använder den för att visa vem som skrivit under rättighetsöverlåtelse och Participation Agreement. Den ska lämnas tom: jag fyller i den själv.
 4. Skapar fliken "Frågor och svar" med de frågor en medverkande brukar ställa (betalning, sociala avgifter, försäkring, kollektivavtal, avhopp, rättigheter). Svaren i kolumn B ska lämnas tomma: jag skriver dem själv, och de visas för crew i portalen.
 5. Skapar fliken "Pooler" med teamets fem delar (produktionsbolaget 5 %, initiativtagarna 10 %, skivorna 25 / 40 / 20 %) och en tabell där jag själv fördelar initiativtagarnas pool. Tabellen ska lämnas tom.
+6. Skriver om Equity Dashboard så att ägarandelen (kolumn F) är andelen av teamets del enligt poolmodellen (skivornas andelar i H:J plus initiativandel i K). Personutdrag läser kolumn F och följer med. Rättar också texterna om faser och lock-punkter i Instruktioner och om poolen i Personutdrag.
 
 Kalkylbladet: [KLISTRA IN LÄNK TILL EPER-BLADET HÄR]
 
@@ -39,7 +40,9 @@ Du måste kunna redigera kalkylbladet som mig, antingen i min inloggade webbläs
    - Vid manuell ändring i en grå formelcell visas en varning.
    - Egeninsats & Poäng har en ny rubrik "Avtal" sist bland rubrikerna på rad 4 (troligen kolumn R), med JA/NEJ-rullista på datarader. Cellerna ska vara tomma. Fyll inte i några värden.
    - En ny flik "Frågor och svar" finns, med sju frågor i kolumn A och tomma gula svarsceller i kolumn B. Skriv inga svar.
-   - En ny flik "Pooler" finns: B4:C8 har 5 %, 10 %, 25 %, 40 % och 20 % (C9 = 100 %), och tilldelningstabellen B13:D32 är tom och gul. Fyll inte i något.
+   - En ny flik "Pooler" finns: B4:C8 har 5 %, 10 %, 25 %, 40 % och 20 % (C9 = 100 %), och tilldelningstabellen B13:D32 är tom och gul. Fyll inte i något. D6:D8 har formler för ägarenheter per skiva.
+   - Equity Dashboard: F7 är =SUM(H7:K7), kolumnerna H:K har rubrikerna Skiva 1, Skiva 2, Skiva 3 och Initiativ, raden under TOTALT visar Produktionsbolagets pool (5 %) och raden därunder det som är reserverat eller ofördelat. Summan F(TOTALT) + 5 % + sista raden = 100 %.
+   - Instruktioner nämner F1–F3, F4–F5 och F6–F8 under Lock 1–3.
 7. Rapportera: vad du gjorde, namnet på säkerhetskopian, och alla avvikelser mot tabellen ovan (med cellreferens och faktiskt värde).
 
 ## Regler
@@ -75,6 +78,11 @@ Du måste kunna redigera kalkylbladet som mig, antingen i min inloggade webbläs
  *   - Fliken "Pooler" skapas (om den saknas): teamets del delas i produktionsbolagets pool
  *     (5 %), initiativtagarnas pool (10 %) och tre skivor (25 / 40 / 20 %), och här fördelar
  *     producenten initiativtagarnas pool. Portalen läser fliken.
+ *   - Equity Dashboard räknar ägarandelen (kolumn F) som andel av teamets del enligt
+ *     poolmodellen: skivornas andelar (H:J) plus tilldelning ur initiativtagarnas pool (K).
+ *     Personutdrag läser kolumn F och följer med. Rad under TOTALT visar produktionsbolagets
+ *     pool och det som är reserverat eller ofördelat. Instruktioner och Personutdrag får
+ *     rättade texter om faser, lock-punkter och poolen.
  *   - Kolumnen "Avtal" (JA/NEJ) läggs till sist i Egeninsats & Poäng. JA betyder att
  *     personen skrivit under rättighetsöverlåtelse och Participation Agreement.
  *     Portalen visar avtalsstatus per person och varnar för dem som saknar avtal.
@@ -213,6 +221,9 @@ function uppdateraVattenfall() {
 
   skapaFragorOchSvar_();
   skapaPooler_();
+  uppdateraPoolerEnheter_();
+  uppdateraEquityDashboard_();
+  uppdateraTexter_();
   markeraInmatning();
 
   SpreadsheetApp.getUi().alert(
@@ -281,6 +292,128 @@ function skapaPooler_() {
   blad.setColumnWidth(2, 460);
   blad.setColumnWidth(3, 190);
   blad.setColumnWidth(4, 420);
+}
+
+// Poolmodellen i formler. Fasgrupperna följer lock-punkterna (ramverket avsnitt 5b).
+const SKIVOR = [
+  { kol: "H", pooler: "$C$6", enheter: "$D$6", faser: ["F1", "F2", "F3"], rubrik: "Skiva 1 (%)" },
+  { kol: "I", pooler: "$C$7", enheter: "$D$7", faser: ["F4", "F5"], rubrik: "Skiva 2 (%)" },
+  { kol: "J", pooler: "$C$8", enheter: "$D$8", faser: ["F6", "F7", "F8"], rubrik: "Skiva 3 (%)" },
+];
+const EG = "'Egeninsats & Poäng'!";
+
+// Summan av ägarenheter i en grupp av faser, för en person om namnCell anges.
+function enhetsSumma_(faser, namnCell) {
+  return faser
+    .map((f) =>
+      namnCell
+        ? "SUMIFS(" + EG + "$M:$M," + EG + "$C:$C," + namnCell + "," + EG + '$F:$F,"' + f + '")'
+        : "SUMIFS(" + EG + "$M:$M," + EG + '$F:$F,"' + f + '")'
+    )
+    .join("+");
+}
+
+// Formler för en rad i Equity Dashboard: skivornas andelar, initiativandel och summan.
+function dashboardFormler_(rad) {
+  const f = {};
+  SKIVOR.forEach((s) => {
+    f[s.kol] =
+      "=IFERROR(Pooler!" + s.pooler + "*(" + enhetsSumma_(s.faser, "$B" + rad) + ")/Pooler!" + s.enheter + ",0)";
+  });
+  f.K = "=IFERROR(Pooler!$C$5*SUMIF(Pooler!$B$13:$B$32,$B" + rad + ",Pooler!$C$13:$C$32),0)";
+  f.F = "=SUM(H" + rad + ":K" + rad + ")";
+  return f;
+}
+
+// Skriver ägarenheterna per skiva (som beräknas) i fliken Pooler, kolumn D.
+function uppdateraPoolerEnheter_() {
+  const pooler = SpreadsheetApp.getActive().getSheetByName("Pooler");
+  if (!pooler) return;
+  pooler.getRange("D3").setValue("Enheter i skivan (beräknas)").setFontWeight("bold");
+  SKIVOR.forEach((s) => {
+    pooler.getRange(s.enheter.replace(/\$/g, "")).setFormula("=" + enhetsSumma_(s.faser, null));
+    pooler.getRange(s.enheter.replace(/\$/g, "")).setNumberFormat("#,##0.0");
+    färgaZon_(pooler.getRange(s.enheter.replace(/\$/g, "")), "formel");
+  });
+}
+
+// Skriver om Equity Dashboard så att ägarandelen är andelen av teamets del enligt
+// poolmodellen. Kolumn F (som Personutdrag läser) blir summan av H:K. Rad 23 och 24
+// visar produktionsbolagets pool samt det som är reserverat eller ofördelat.
+function uppdateraEquityDashboard_() {
+  const ss = SpreadsheetApp.getActive();
+  const dash = ss.getSheetByName("Equity Dashboard");
+  if (!dash || !ss.getSheetByName("Pooler")) return;
+
+  const kolB = dash.getRange("B1:B60").getValues();
+  const totalRad = kolB.findIndex((r, i) => i >= 6 && String(r[0]).trim().toUpperCase() === "TOTALT") + 1;
+  if (totalRad < 8) throw new Error('Hittar inte raden "TOTALT" i Equity Dashboard.');
+  const forsta = 7;
+  const sista = totalRad - 1;
+
+  const ovan = dash.getRange("B" + (totalRad + 1) + ":L" + (totalRad + 2)).getValues();
+  // Raderna får bara vara tomma eller ha skriptets egna etiketter (så att skriptet kan köras om).
+  const upptagen = ovan.some(
+    (rad) =>
+      !/^(Produktionsbolagets pool|Reserverat)/.test(String(rad[0]).trim()) &&
+      rad.some((v) => String(v).trim() !== "")
+  );
+  if (upptagen) throw new Error("Raderna under TOTALT i Equity Dashboard är inte tomma. Rensa dem först.");
+
+  dash.getRange("B5").setValue("ÄGARANDELAR PER PERSON (andel av teamets del)");
+  dash.getRange("F6").copyTo(dash.getRange("H6:K6"), SpreadsheetApp.CopyPasteType.PASTE_FORMAT, false);
+  dash.getRange("H6:K6").setValues([["Skiva 1 (%)", "Skiva 2 (%)", "Skiva 3 (%)", "Initiativ (%)"]]);
+  dash.getRange("F6").setValue("Ägarandel (%)");
+
+  for (let rad = forsta; rad <= sista; rad++) {
+    const f = dashboardFormler_(rad);
+    ["H", "I", "J", "K", "F"].forEach((kol) => dash.getRange(kol + rad).setFormula(f[kol]));
+  }
+  ["H", "I", "J", "K"].forEach((kol) =>
+    dash.getRange(kol + totalRad).setFormula("=SUM(" + kol + forsta + ":" + kol + sista + ")")
+  );
+  dash.getRange("B" + (totalRad + 1)).setValue("Produktionsbolagets pool");
+  dash.getRange("F" + (totalRad + 1)).setFormula("=Pooler!$C$4");
+  dash.getRange("B" + (totalRad + 2)).setValue("Reserverat, ofördelat eller utan matchande namn");
+  dash.getRange("F" + (totalRad + 2)).setFormula("=1-F" + totalRad + "-F" + (totalRad + 1));
+  dash.getRange("F" + forsta + ":F" + (totalRad + 2)).setNumberFormat("0.0%");
+  dash.getRange("H" + forsta + ":K" + totalRad).setNumberFormat("0.0%");
+  färgaZon_(dash.getRange("H" + forsta + ":K" + totalRad), "formel");
+  färgaZon_(dash.getRange("F" + (totalRad + 1) + ":F" + (totalRad + 2)), "formel");
+}
+
+// Rättar texter som beskriver den gamla fasindelningen och poolen.
+function uppdateraTexter_() {
+  const ss = SpreadsheetApp.getActive();
+
+  const instr = ss.getSheetByName("Instruktioner");
+  if (instr) {
+    const nya = {
+      "Lock 1": "Fastställ poäng för F1, F2 och F3 (pilot). Markera datum i Projektinställningar.",
+      "Lock 2": "Fastställ poäng för F4 och F5 (inspelning). Uppdatera om ny finansiär tillkommit.",
+      "Lock 3":
+        "Fastställ poäng för F6, F7 (bokade promotiondagar) och F8. Slutgiltigt register. Arbete efter ett lock ger bara enheter genom en daterad ändring i registret.",
+    };
+    const kolB = instr.getRange("B1:B60").getValues();
+    kolB.forEach((r, i) => {
+      const nyckel = String(r[0]).slice(0, 6);
+      if (nya[nyckel]) instr.getRange("C" + (i + 1)).setValue(nya[nyckel]);
+    });
+  }
+
+  const utdrag = ss.getSheetByName("Personutdrag");
+  if (utdrag) {
+    const kolB = utdrag.getRange("B1:B400").getValues();
+    kolB.forEach((r, i) => {
+      if (String(r[0]).indexOf("Din ägarandel (%) multipliceras med Crew-poolen") === 0) {
+        utdrag
+          .getRange("B" + (i + 1))
+          .setValue(
+            "Din ägarandel (%) multipliceras med teamets del av nettot (efter distribution, finansiärer och uppskjutna arvoden). Teamets del delas i produktionsbolagets pool, initiativtagarnas pool och tre skivor efter lock-punkt."
+          );
+      }
+    });
+  }
 }
 
 /** Färgar inmatning respektive formler och lägger varningsskydd på formelblock. */
