@@ -193,6 +193,25 @@ const FORMLER = [
   [54, "=MIN(1,MAX(0,IF('Projektinställningar'!$C$11>0,({c}42+{c}44)/'Projektinställningar'!$C$11,0)+IF({c}43>0,$F$37,0)))"],
 ];
 
+// Apps Script tar emot formler exakt som de står, och bladets lokal avgör argumentavgränsaren:
+// semikolon i t.ex. svenska, tyska och franska blad, komma i engelska. Skriptet skriver formlerna
+// med komma och byter till semikolon här när bladets lokal har decimalkomma.
+function lokalFormel_(formel) {
+  const lokal = SpreadsheetApp.getActive().getSpreadsheetLocale().replace("_", "-");
+  let decimalkomma = /^(sv|de|fr|es|it|nl|da|nb|no|fi|pt|ru|pl|cs|tr|hu|sk|sl|hr|ro|bg|uk|el)/i.test(lokal);
+  try {
+    decimalkomma = decimalkomma || (1.5).toLocaleString(lokal).indexOf(",") !== -1;
+  } catch (e) {}
+  if (!decimalkomma) return formel;
+  let ut = "";
+  let iText = false;
+  for (const tecken of formel) {
+    if (tecken === '"') iText = !iText;
+    ut += tecken === "," && !iText ? ";" : tecken;
+  }
+  return ut;
+}
+
 function uppdateraVattenfall() {
   const ss = SpreadsheetApp.getActive();
   const wf = ss.getSheetByName("Waterfall Simulering");
@@ -206,7 +225,7 @@ function uppdateraVattenfall() {
 
   FORMLER.forEach(([rad, formel]) => {
     KOLUMNER.forEach((c) => {
-      wf.getRange(c + rad).setFormula(formel.split("{c}").join(c));
+      wf.getRange(c + rad).setFormula(lokalFormel_(formel.split("{c}").join(c)));
     });
   });
 
@@ -332,7 +351,7 @@ function uppdateraPoolerEnheter_() {
   if (!pooler) return;
   pooler.getRange("D3").setValue("Enheter i skivan (beräknas)").setFontWeight("bold");
   SKIVOR.forEach((s) => {
-    pooler.getRange(s.enheter.replace(/\$/g, "")).setFormula("=" + enhetsSumma_(s.faser, null));
+    pooler.getRange(s.enheter.replace(/\$/g, "")).setFormula(lokalFormel_("=" + enhetsSumma_(s.faser, null)));
     pooler.getRange(s.enheter.replace(/\$/g, "")).setNumberFormat("#,##0.0");
     färgaZon_(pooler.getRange(s.enheter.replace(/\$/g, "")), "formel");
   });
@@ -345,12 +364,14 @@ function uppdateraPoolerVarden_() {
   pooler.getRange("E3:F3").setValues([["Värde per 100 enheter", "Status"]]).setFontWeight("bold");
   const snitt = "(SUMIF($D$6:$D$8,\">0\",$C$6:$C$8)/SUM($D$6:$D$8))*100";
   [6, 7, 8].forEach((rad) => {
-    pooler.getRange("E" + rad).setFormula("=IF(D" + rad + ">0,C" + rad + "/D" + rad + "*100,0)");
+    pooler.getRange("E" + rad).setFormula(lokalFormel_("=IF(D" + rad + ">0,C" + rad + "/D" + rad + "*100,0)"));
     pooler
       .getRange("F" + rad)
       .setFormula(
-        "=IF(D" + rad + "<=0,\"Reserverad\",IF(AND(COUNTIF($D$6:$D$8,\">0\")>=2,E" + rad + ">2*" + snitt +
-          "),\"Tunn skiva: få enheter, budgeten kanske inte är komplett\",\"\"))"
+        lokalFormel_(
+          "=IF(D" + rad + "<=0,\"Reserverad\",IF(AND(COUNTIF($D$6:$D$8,\">0\")>=2,E" + rad + ">2*" + snitt +
+            "),\"Tunn skiva: få enheter, budgeten kanske inte är komplett\",\"\"))"
+        )
       );
   });
   pooler.getRange("E6:E8").setNumberFormat("0.0%");
@@ -389,7 +410,7 @@ function uppdateraEquityDashboard_() {
 
   for (let rad = forsta; rad <= sista; rad++) {
     const f = dashboardFormler_(rad);
-    ["H", "I", "J", "K", "F"].forEach((kol) => dash.getRange(kol + rad).setFormula(f[kol]));
+    ["H", "I", "J", "K", "F"].forEach((kol) => dash.getRange(kol + rad).setFormula(lokalFormel_(f[kol])));
   }
   ["H", "I", "J", "K"].forEach((kol) =>
     dash.getRange(kol + totalRad).setFormula("=SUM(" + kol + forsta + ":" + kol + sista + ")")
