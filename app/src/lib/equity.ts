@@ -4,6 +4,7 @@ import {
   getFaq,
   getProducentKontakt,
   getModelParams,
+  getPooler,
   getProjectSettings,
   getWaterfall,
   type CrewMember,
@@ -14,6 +15,7 @@ import {
   type WaterfallData,
 } from "./sheets";
 import { groupByPerson } from "./team";
+import { beraknaFordelning, personNyckel, type PersonDelar, type PoolInstallning } from "./pooler";
 
 export interface MyEquityData {
   project: ProjectSettings;
@@ -24,6 +26,12 @@ export interface MyEquityData {
   faq: FaqPost[];
   totalPoang: number;
   samagareCount: number;
+  /** Den egna andelen av teamets del enligt poolmodellen. */
+  minAndel: number;
+  /** Den egna andelen uppdelad per pool/skiva. */
+  minDelar: PersonDelar;
+  pooler: PoolInstallning;
+  poolerVarning: string | null;
 }
 
 /**
@@ -44,7 +52,7 @@ export async function getMyEquityData(
   const rows = await getCrewMembersForEmail(spreadsheetId, email);
   if (rows.length === 0) return null;
 
-  const [project, waterfall, params, allRows, kontakt, faq] = await Promise.all([
+  const [project, waterfall, params, allRows, kontakt, faq, pooler] = await Promise.all([
     getProjectSettings(spreadsheetId),
     getWaterfall(spreadsheetId),
     getModelParams(spreadsheetId),
@@ -52,10 +60,37 @@ export async function getMyEquityData(
     // Kontakt och frågor är tillägg: ett fel där ska inte stoppa hela sidan.
     getProducentKontakt(spreadsheetId).catch(() => null),
     getFaq(spreadsheetId).catch(() => [] as FaqPost[]),
+    getPooler(spreadsheetId),
   ]);
 
   const totalPoang = allRows.reduce((sum, r) => sum + r.poang, 0);
   const samagareCount = groupByPerson(allRows).length;
 
-  return { project, rows, waterfall, params, kontakt, faq, totalPoang, samagareCount };
+  // Bara den egna andelen skickas vidare, inte hela teamets (se kommentaren ovan).
+  const fordelning = beraknaFordelning(allRows, pooler);
+  const minaNycklar = Array.from(new Set(rows.map((r) => personNyckel(r.namn, r.epost))));
+  const minDelar: PersonDelar = { skivor: { 1: 0, 2: 0, 3: 0 }, initiativ: 0 };
+  let minAndel = 0;
+  for (const nyckel of minaNycklar) {
+    minAndel += fordelning.perPerson.get(nyckel) ?? 0;
+    const d = fordelning.delar.get(nyckel);
+    if (!d) continue;
+    for (const s of [1, 2, 3] as const) minDelar.skivor[s] += d.skivor[s];
+    minDelar.initiativ += d.initiativ;
+  }
+
+  return {
+    project,
+    rows,
+    waterfall,
+    params,
+    kontakt,
+    faq,
+    totalPoang,
+    samagareCount,
+    minAndel,
+    minDelar,
+    pooler: pooler.installning,
+    poolerVarning: pooler.varning,
+  };
 }

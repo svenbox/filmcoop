@@ -4,6 +4,7 @@ import type { CrewMember, FaqPost, Kontakt, ModelParams, ProjectSettings, Waterf
 import { slaIhopFaq } from "@/lib/faq";
 import { formatPercent, formatSek } from "@/lib/format";
 import { computeWaterfall } from "@/lib/waterfallModel";
+import { SKIVA_ETIKETT, type PersonDelar, type PoolInstallning, type Skiva } from "@/lib/pooler";
 import { Tooltip } from "./Tooltip";
 
 function standardFinansiering(params: ModelParams) {
@@ -56,7 +57,7 @@ export function MinInsatsKort({ rows, andel, params }: MinInsatsProps) {
       <div className="wf-row">
         <span>
           Din andel av vinsten
-          <Tooltip text="Dina ägarenheter delat med alla ägarenheter. Vinsten delas först när alla uppskjutna arvoden är betalda." />
+          <Tooltip text="Din del av teamets del av vinsten: dina ägarenheter delat med enheterna i respektive skiva, plus eventuell tilldelning ur initiativtagarnas pool. Vinsten delas först när alla uppskjutna arvoden är betalda." />
         </span>
         <span className="wf-value">{formatPercent(andel)}</span>
       </div>
@@ -233,6 +234,77 @@ export function FaqKort({ faq, kontakt, producent }: FaqProps) {
           "Fråga producenten."
         )}
       </div>
+    </div>
+  );
+}
+
+/** Hur teamets del av vinsten är uppdelad i pooler och skivor, och vad som är ditt. */
+export function PoolKort({
+  pooler,
+  delar,
+  andel,
+}: {
+  pooler: PoolInstallning;
+  delar: PersonDelar;
+  andel: number;
+}) {
+  const rader: { namn: string; not: string; del: number; min: number }[] = [
+    {
+      namn: "Produktionsbolaget",
+      not: "Fast, bestäms från start",
+      del: pooler.produktionsbolag,
+      min: 0,
+    },
+    {
+      namn: "Initiativtagarna",
+      not: "Fördelas av producenten efter development",
+      del: pooler.initiativ,
+      min: delar.initiativ,
+    },
+    ...([1, 2, 3] as Skiva[]).map((s) => ({
+      namn: SKIVA_ETIKETT[s],
+      not: "Delas efter ägarenheter, fast efter låsningen",
+      del: pooler.skivor[s],
+      min: delar.skivor[s],
+    })),
+  ];
+
+  return (
+    <div className="card">
+      <div className="section-header">
+        Så delas teamets del
+        <Tooltip text="Teamets del av vinsten delas i fem delar. Varje del har en fast storlek som inte krymper när senare faser tillkommer. Din andel inom en skiva fastställs vid dess lock." />
+      </div>
+      <table className="data-table">
+        <thead>
+          <tr>
+            <th>Del</th>
+            <th>Storlek</th>
+            <th>Din del</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rader.map((r) => (
+            <tr key={r.namn}>
+              <td>
+                {r.namn}
+                <div className="muted">{r.not}</div>
+              </td>
+              <td>{formatPercent(r.del)}</td>
+              <td>{r.min > 0 ? formatPercent(r.min) : "—"}</td>
+            </tr>
+          ))}
+          <tr>
+            <td>
+              <strong>Din andel av teamets del</strong>
+            </td>
+            <td>{formatPercent(1)}</td>
+            <td>
+              <strong>{formatPercent(andel)}</strong>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   );
 }

@@ -18,6 +18,8 @@ Komplett instruktion för att sätta upp film.coop (filmcoop.nu) på din server.
 
 Valfritt: fliken `Frågor och svar` (kolumn A = fråga, B = svar) visas för crew som vanliga frågor på översikten, med obesvarade frågor markerade. Skriptet nedan skapar fliken med sju vanliga frågor. Producentens kontaktuppgifter hämtas från fliken `Teamlista` (raden med position Producent, om "Visa på webb" är JA), och datum för utveckling, inspelning och leverans från Projektinställningar C8:C10.
 
+Valfritt: fliken `Pooler` anger hur teamets del delas (produktionsbolagets pool, initiativtagarnas pool och tre skivor; se ramverket avsnitt 5b) och var producenten fördelar initiativtagarnas pool (B13:C32: namn och andel av poolen). Saknas fliken används 5 / 10 / 25 / 40 / 20 %. Summan av de fem andelarna ska vara 100 %, annars varnar portalen och använder standardvärdena. Skriptet nedan skapar fliken.
+
 Valfritt: lägg till kolumnen `Avtal` (JA/NEJ) sist bland rubrikerna i **Egeninsats & Poäng**. Portalen visar då vem som skrivit under rättighetsöverlåtelse och Participation Agreement, och varnar producenten för dem som saknar avtal. Skriptet nedan lägger till kolumnen åt dig.
 
 Har du en äldre kopia av mallen kan du synka dess vattenfall med portalens modell genom att köra [`tools/uppdatera-vattenfall.gs`](../tools/uppdatera-vattenfall.gs) en gång (instruktioner i filens huvud). Då visar kalkylbladet och portalen samma siffror för samma scenario.

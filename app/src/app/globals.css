@@ -381,6 +381,11 @@ a {
   font-weight: 600;
 }
 
+.wf-row.sub {
+  padding-left: 16px;
+  font-size: 13px;
+}
+
 .wf-row.total {
   border-top: 1px solid var(--border);
   border-bottom: none;

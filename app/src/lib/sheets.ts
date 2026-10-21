@@ -4,10 +4,12 @@ import {
   GoogleSpreadsheetWorksheet,
 } from "google-spreadsheet";
 import { JWT } from "google-auth-library";
+import { STANDARD_POOLER_DATA, type PoolerData } from "./pooler";
 
 const SHEET_EGENINSATS = "Egeninsats & Poäng";
 const SHEET_PROJEKTINSTALLNINGAR = "Projektinställningar";
 const SHEET_WATERFALL = "Waterfall Simulering";
+const SHEET_POOLER = "Pooler";
 
 const EGENINSATS_HEADER_ROW = 4;
 
@@ -258,6 +260,56 @@ export async function getFaq(spreadsheetId: string): Promise<FaqPost[]> {
     poster.push({ fraga, svar: String(sheet.getCellByA1(`B${rad}`).formattedValue ?? "").trim() });
   }
   return poster;
+}
+
+/** Procent som 0–1. Matas ett heltal som 5 eller 25 (utan %-format) tolkas det som procent. */
+function parseProcent(v: unknown): number {
+  const n = parseNum(v);
+  return n > 1 ? n / 100 : n;
+}
+
+/**
+ * Läser fliken "Pooler": inställningarna för teamets fem delar (B4:C8) och
+ * producentens tilldelning av initiativtagarnas pool (B13:C32). Saknas fliken,
+ * eller summerar inställningarna inte till 100 %, används standardvärdena.
+ */
+export async function getPooler(spreadsheetId: string): Promise<PoolerData> {
+  const doc = await getDoc(spreadsheetId);
+  const sheet = doc.sheetsByTitle[SHEET_POOLER];
+  if (!sheet) return STANDARD_POOLER_DATA;
+
+  await sheet.loadCells("B4:C8");
+  await sheet.loadCells("B13:C32");
+  const procent = (a1: string) => parseProcent(sheet.getCellByA1(a1).value);
+
+  const installning = {
+    produktionsbolag: procent("C4"),
+    initiativ: procent("C5"),
+    skivor: { 1: procent("C6"), 2: procent("C7"), 3: procent("C8") },
+  };
+  const summa =
+    installning.produktionsbolag +
+    installning.initiativ +
+    installning.skivor[1] +
+    installning.skivor[2] +
+    installning.skivor[3];
+
+  const initiativ: PoolerData["initiativ"] = [];
+  for (let rad = 13; rad <= 32; rad++) {
+    const namn = String(sheet.getCellByA1(`B${rad}`).formattedValue ?? "").trim();
+    const andel = procent(`C${rad}`);
+    if (namn && andel > 0) initiativ.push({ namn, andel });
+  }
+
+  if (Math.abs(summa - 1) > 0.0001) {
+    return {
+      ...STANDARD_POOLER_DATA,
+      initiativ,
+      finns: true,
+      varning: `Poolerna på fliken "${SHEET_POOLER}" summerar till ${Math.round(summa * 1000) / 10} %, inte 100 %. Standardfördelningen används tills det rättas.`,
+    };
+  }
+  return { installning, initiativ, finns: true, varning: null };
 }
 
 function scenarioColumn(sheet: GoogleSpreadsheetWorksheet, col: number): WaterfallScenario {

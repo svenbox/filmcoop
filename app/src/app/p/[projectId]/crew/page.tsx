@@ -11,8 +11,9 @@ import { OnboardingModal } from "../../../components/OnboardingModal";
 import { NavPills } from "../../../components/NavPills";
 import { Tooltip } from "../../../components/Tooltip";
 import { EkonomiKort } from "../../../components/EkonomiKort";
-import { FaqKort, MinInsatsKort, ScenarioTabell, TidslinjeKort } from "../../../components/CrewInfo";
+import { FaqKort, MinInsatsKort, PoolKort, ScenarioTabell, TidslinjeKort } from "../../../components/CrewInfo";
 import { WaterfallTab } from "../../../components/WaterfallTab";
+import type { PersonDelar, PoolInstallning } from "@/lib/pooler";
 
 interface MeResponse {
   project: ProjectSettings;
@@ -23,6 +24,10 @@ interface MeResponse {
   faq: FaqPost[];
   totalPoang: number;
   samagareCount: number;
+  minAndel: number;
+  minDelar: PersonDelar;
+  pooler: PoolInstallning;
+  poolerVarning: string | null;
 }
 
 type Tab = "oversikt" | "rader" | "waterfall";
@@ -64,11 +69,10 @@ export default function CrewPage() {
 
   if (!data) return null;
 
-  const { project, rows, waterfall, params, kontakt, faq, totalPoang, samagareCount } = data;
+  const { project, rows, waterfall, params, kontakt, faq, samagareCount, minAndel, minDelar, pooler } = data;
   const minPoang = rows.reduce((sum, r) => sum + r.poang, 0);
   const minDagar = rows.reduce((sum, r) => sum + r.dagar, 0);
   const minDeferred = rows.reduce((sum, r) => sum + r.deferredFee, 0);
-  const minAndel = totalPoang > 0 ? minPoang / totalPoang : 0;
   const minAvtal: "ja" | "nej" | null = rows.every((r) => r.avtal === null)
     ? null
     : rows.every((r) => r.avtal === "ja")
@@ -137,10 +141,10 @@ export default function CrewPage() {
               <div className="stat-box">
                 <div className="label">
                   Din ägarandel
-                  <Tooltip text="Din procentandel av den pool som fördelas bland alla i teamet. Baseras på dina ägarenheter delat med teamets totala ägarenheter." />
+                  <Tooltip text="Din procentandel av teamets del av vinsten. Beräknas per skiva: dina ägarenheter delat med skivans enheter, gånger skivans storlek, plus eventuell tilldelning ur initiativtagarnas pool." />
                 </div>
                 <div className="value">{formatPercent(minAndel)}</div>
-                <div className="muted">preliminär tills andelarna låses</div>
+                <div className="muted">preliminär tills dina faser låses</div>
               </div>
               <div className="stat-box">
                 <div className="label">
@@ -158,6 +162,8 @@ export default function CrewPage() {
                 <div className="value">{project.producent || "—"}</div>
               </div>
             </div>
+
+            <PoolKort pooler={pooler} delar={minDelar} andel={minAndel} />
 
             <ScenarioTabell
               params={params}

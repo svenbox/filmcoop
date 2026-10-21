@@ -4,6 +4,7 @@ import {
   getAllCrewMembers,
   getFaq,
   getModelParams,
+  getPooler,
   getProjectSettings,
   getWaterfall,
   type FaqPost,
@@ -23,15 +24,16 @@ export async function GET(
   const id = auth.project.spreadsheetId;
 
   try {
-    const [project, rows, waterfall, modelParams, faq] = await Promise.all([
+    const [project, rows, waterfall, modelParams, faq, pooler] = await Promise.all([
       getProjectSettings(id),
       getAllCrewMembers(id),
       getWaterfall(id),
       getModelParams(id),
       getFaq(id).catch(() => [] as FaqPost[]),
+      getPooler(id),
     ]);
 
-    return NextResponse.json({ project, rows, waterfall, params: modelParams, faq });
+    return NextResponse.json({ project, rows, waterfall, params: modelParams, faq, pooler });
   } catch (err) {
     console.error("Kunde inte hämta producent-data från Sheets", err);
     return NextResponse.json(

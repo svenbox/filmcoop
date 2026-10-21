@@ -26,7 +26,7 @@ Systemet bygger på tre grundprinciper:
 
 Ägarenheter är den grundläggande valutan i systemet. De representerar en relativ andel i filmens ekonomiska resultat — inte i produktionsbolaget som sådant.
 
-Ägarenheter är **relativa**: om teamet har 8 000 enheter totalt och du har 800 äger du 10% av teamets pool. Det absoluta antalet enheter spelar ingen roll — bara förhållandet dem emellan.
+Ägarenheter är **relativa**: de mäter din del av en av teamets **skivor** (se avsnitt 5b). Om skivan för inspelningen har 3 000 enheter totalt och du har 300 äger du 10% av den skivan. Det absoluta antalet enheter spelar ingen roll — bara förhållandet inom skivan.
 
 ### Ägarenheter är royalty, inte ett engångsbelopp
 
@@ -105,7 +105,7 @@ Manusförfattande (§4, Avdelningsansvarig) värderar **utfört skrivarbete** �
 
 Dagar × faspoäng × multiplikator fungerar dåligt för det här, eftersom en idés värde inte är proportionellt mot tid — en avgörande idé kan uppstå på en eftermiddag.
 
-**Lösning:** originalidé/grundkoncept hanteras utanför formeln, som en fast engångstilldelning av ägarenheter som producenten beslutar vid Lock 1, dokumenterad separat i registret. Tilldelningen läggs till *utöver* eventuella ägarenheter personen senare tjänar in genom faktiskt arbete — om idéns upphovsperson också skriver manuset får de båda delarna, de ersätter inte varandra. Samma princip gäller den som äger underliggande rättigheter (t.ex. "life rights") till en verklig historia.
+**Lösning:** originalidé och grundkoncept hanteras utanför formeln, genom **initiativtagarnas pool** (se avsnitt 5b). Poolen är en fast andel av teamets del som producenten fördelar efter development (F1). Fördelningen dokumenteras i registret och ändras inte därefter. Den som föder idén, äger underliggande rättigheter (t.ex. "life rights") till en verklig historia eller driver projektet i dess tidigaste skede får sin del där. Tilldelningen läggs till utöver ägarenheter personen senare tjänar in genom faktiskt arbete: om idéns upphovsperson också skriver manuset får de båda delarna, de ersätter inte varandra. Producenten bör ta hänsyn till vilka development-dagar som redan ger ägarenheter i skiva 1, så att samma insats inte belönas två gånger.
 
 ---
 
@@ -170,9 +170,40 @@ Scenografen äger mer än DOP:en i det här exemplet — inte för att rollen ä
 
 ---
 
+## 5b. Hur teamets del delas: pooler och skivor
+
+Teamets del är det som finns kvar av nettot när finansiärerna fått sitt (se avsnitt 7). Den delas i fem delar med **fast storlek**. Storleken beslutas före projektstart och ändras inte.
+
+| Del | Andel av teamets del | Hur den fördelas |
+|---|---|---|
+| Produktionsbolagets pool | 5 % | Statisk. Finns med från start och förändras inte. |
+| Initiativtagarnas pool | 10 % | Statisk. Fördelas av producenten efter development (F1), enligt avsnitt 4d. |
+| Skiva 1: Lock 1 | 25 % | Efter ägarenheter i F1, F2 och F3 |
+| Skiva 2: Lock 2 | 40 % | Efter ägarenheter i F4 och F5 |
+| Skiva 3: Lock 3 | 20 % | Efter ägarenheter i F6, F7 och F8 |
+
+**Din andel** av teamets del är summan av dina delar:
+
+```
+Andel i en skiva = Skivans storlek × (Dina enheter i skivan ÷ Alla enheter i skivan)
+Din andel        = Andelarna i skivorna + din tilldelning ur initiativtagarnas pool
+```
+
+**Varför skivor.** Utan dem växer den gemensamma poolen för varje fas som tillkommer, och den som gick in tidigt ser sin procentandel krympa kraftigt. Med skivor påverkas du bara av enheterna i dina egna skivor. Det som tillkommer i senare faser delas ur de senare skivorna och rör inte din andel i den tidigare. Din andel i en skiva är slutgiltig när skivans lock passerat. Fram till dess kan den späddas ut av att fler får enheter i samma skiva.
+
+**Skivor är reserverade.** En skiva är avsatt från början, även om ingen är bokad i den än. Ingen får en reserverad skiva förrän någon har ägarenheter i den. Portalen visar den som reserverad.
+
+**Risken balanseras av skivornas storlek.** Faspoängen (avsnitt 3) bestämmer fördelningen *inom* en skiva. Skivornas storlek bestämmer hur mycket varje fasgrupp som helhet är värd. Därför är det skivorna som ger tidiga bidragsgivare deras riskpremie mellan faserna.
+
+**Produktionsbolagets pool** tillhör bolaget, som äger rättigheterna och bär ansvaret för att representera projektet (avsnitt 4e). Den ersätter inte producentens egna ägarenheter för utfört arbete.
+
+**Procenten gäller teamets del**, alltså efter finansiärernas andel. Finansiärerna påverkas inte av hur teamets del delas.
+
+---
+
 ## 6. Lock-punkter
 
-Ägarandelarna låses vid tre definierade tidpunkter. Lock-punkterna skyddar alla parter — utan dem är det oklart vad som gäller när projektet förändras, när nya personer tillkommer eller när någon lämnar.
+Ägarenheterna fastslås vid tre definierade tidpunkter, en per skiva (avsnitt 5b). Produktionsbolagets pool och initiativtagarnas pool är statiska och berörs inte av lock-punkterna. Lock-punkterna skyddar alla parter — utan dem är det oklart vad som gäller när projektet förändras, när nya personer tillkommer eller när någon lämnar.
 
 **Lock 1 — Green Light**  
 *Omedelbart innan inspelning påbörjas.*  
@@ -220,7 +251,7 @@ Alla intäkter från filmen — oavsett källa — flödar genom utbetalningsord
 | 1 | Distributör / Säljagent | Avgifter och kostnader dras från brutto (typiskt 20–30%) |
 | 2 | Extern finansiär | Återbetalning av kapital + avtalad avkastning (ex. 1,2×) |
 | 3 | Uppskjutna arvoden | Alla uppskjutna arvoden betalas ut pro rata — ingen enskild person betalas helt förrän alla betalas proportionellt |
-| 4 | Teamets pool | 50% av nettot fördelas bland teamets ägare efter ägarenheter |
+| 4 | Teamets pool | 50% av nettot fördelas i produktionsbolagets pool, initiativtagarnas pool och de tre skivorna (avsnitt 5b) |
 | 5 | Investerarpool | 50% av nettot fördelas till externa equity-investerare |
 
 **Nettoprofit** = Bruttointäkter − Distributionsavgifter och -kostnader − Negativkostnad − Uppskjutna arvoden
@@ -285,6 +316,7 @@ Systemet bygger på att alla vet vad alla äger. Det är ovanligt i filmbransche
 |---|---|---|---|
 | Egna ägarenheter och historik per fas | ✓ | ✓ | — |
 | Totalt antal ägarenheter i projektet | ✓ | ✓ | ✓ |
+| Poolernas och skivornas storlek | ✓ | ✓ | ✓ |
 | Alla teammedlemmars ägarenheter | — | ✓ | — |
 | Utbetalningsordning och recoupment | ✓ | ✓ | ✓ |
 | Total kostnad och finansieringsstatus | ✓ | ✓ | ✓ |

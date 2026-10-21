@@ -1,4 +1,5 @@
 import type { CrewMember } from "./sheets";
+import { beraknaFordelning, STANDARD_POOLER_DATA, type Fordelning, type PoolerData } from "./pooler";
 
 export interface TeamSummary {
   /** Unik nyckel per person (namn + e-post). */
@@ -31,10 +32,15 @@ export function sharedEmails(rows: CrewMember[]): Set<string> {
   return new Set(Array.from(names).filter(([, set]) => set.size > 1).map(([epost]) => epost));
 }
 
-/** Grupperar crew-rader per person och summerar dagar/poäng/deferred fee.
+/** Grupperar crew-rader per person och summerar dagar/poäng/deferred fee. Andelen är
+ * personens del av teamets del enligt poolmodellen (lib/pooler.ts).
  * Personen identifieras av namn + e-post, så att flera obokade personer med
  * samma platshållaradress inte slås ihop. Sorterat efter poäng, högst först. */
-export function groupByPerson(rows: CrewMember[]): TeamSummary[] {
+export function groupByPerson(
+  rows: CrewMember[],
+  pooler: PoolerData = STANDARD_POOLER_DATA,
+  fordelning: Fordelning = beraknaFordelning(rows, pooler)
+): TeamSummary[] {
   const byEmail = new Map<string, CrewMember[]>();
   for (const r of rows) {
     const key = `${r.namn.trim().toLowerCase()}|${r.epost.trim().toLowerCase()}`;
@@ -44,8 +50,6 @@ export function groupByPerson(rows: CrewMember[]): TeamSummary[] {
   }
 
   const delade = sharedEmails(rows);
-  const totalPoang = rows.reduce((sum, r) => sum + r.poang, 0);
-
   const members: TeamSummary[] = Array.from(byEmail.entries()).map(([key, personRows]) => {
     const poang = personRows.reduce((sum, r) => sum + r.poang, 0);
     const epost = personRows[0]?.epost.trim().toLowerCase() ?? "";
@@ -64,7 +68,7 @@ export function groupByPerson(rows: CrewMember[]): TeamSummary[] {
       dagar: personRows.reduce((sum, r) => sum + r.dagar, 0),
       poang,
       deferredFee: personRows.reduce((sum, r) => sum + r.deferredFee, 0),
-      andel: totalPoang > 0 ? poang / totalPoang : 0,
+      andel: fordelning.perPerson.get(key) ?? 0,
     };
   });
 

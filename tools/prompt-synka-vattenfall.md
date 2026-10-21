@@ -7,6 +7,7 @@ film.coop-portalen (filmcoop.nu) har en vattenfallsmodell som kalkylbladets flik
 2. Färgmarkerar bladet: GUL cell med blå text = fyll i, GRÅ cell = formel eller länk som man inte ska ändra manuellt. Formelblock får dessutom ett varningsskydd (man kan fortfarande ändra, men får en varning först).
 3. Lägger till kolumnen "Avtal" (JA/NEJ-rullista) sist bland rubrikerna i Egeninsats & Poäng. Portalen använder den för att visa vem som skrivit under rättighetsöverlåtelse och Participation Agreement. Den ska lämnas tom: jag fyller i den själv.
 4. Skapar fliken "Frågor och svar" med de frågor en medverkande brukar ställa (betalning, sociala avgifter, försäkring, kollektivavtal, avhopp, rättigheter). Svaren i kolumn B ska lämnas tomma: jag skriver dem själv, och de visas för crew i portalen.
+5. Skapar fliken "Pooler" med teamets fem delar (produktionsbolaget 5 %, initiativtagarna 10 %, skivorna 25 / 40 / 20 %) och en tabell där jag själv fördelar initiativtagarnas pool. Tabellen ska lämnas tom.
 
 Kalkylbladet: [KLISTRA IN LÄNK TILL EPER-BLADET HÄR]
 
@@ -38,6 +39,7 @@ Du måste kunna redigera kalkylbladet som mig, antingen i min inloggade webbläs
    - Vid manuell ändring i en grå formelcell visas en varning.
    - Egeninsats & Poäng har en ny rubrik "Avtal" sist bland rubrikerna på rad 4 (troligen kolumn R), med JA/NEJ-rullista på datarader. Cellerna ska vara tomma. Fyll inte i några värden.
    - En ny flik "Frågor och svar" finns, med sju frågor i kolumn A och tomma gula svarsceller i kolumn B. Skriv inga svar.
+   - En ny flik "Pooler" finns: B4:C8 har 5 %, 10 %, 25 %, 40 % och 20 % (C9 = 100 %), och tilldelningstabellen B13:D32 är tom och gul. Fyll inte i något.
 7. Rapportera: vad du gjorde, namnet på säkerhetskopian, och alla avvikelser mot tabellen ovan (med cellreferens och faktiskt värde).
 
 ## Regler
@@ -70,6 +72,9 @@ Du måste kunna redigera kalkylbladet som mig, antingen i min inloggade webbläs
  *   - Fliken "Frågor och svar" skapas (om den saknas) med de frågor en medverkande brukar
  *     ställa. Skriv svaren i kolumn B: de visas för crew i portalen, och obesvarade
  *     frågor visas som "Inte besvarat än".
+ *   - Fliken "Pooler" skapas (om den saknas): teamets del delas i produktionsbolagets pool
+ *     (5 %), initiativtagarnas pool (10 %) och tre skivor (25 / 40 / 20 %), och här fördelar
+ *     producenten initiativtagarnas pool. Portalen läser fliken.
  *   - Kolumnen "Avtal" (JA/NEJ) läggs till sist i Egeninsats & Poäng. JA betyder att
  *     personen skrivit under rättighetsöverlåtelse och Participation Agreement.
  *     Portalen visar avtalsstatus per person och varnar för dem som saknar avtal.
@@ -207,6 +212,7 @@ function uppdateraVattenfall() {
   pi.getRange("D43").setValue("Kontantinsatsen återbetalas med samproducentens multiplikator");
 
   skapaFragorOchSvar_();
+  skapaPooler_();
   markeraInmatning();
 
   SpreadsheetApp.getUi().alert(
@@ -238,6 +244,43 @@ function skapaFragorOchSvar_() {
   blad.setColumnWidth(1, 460);
   blad.setColumnWidth(2, 620);
   blad.getRange(2, 2, 59, 1).setBackground(STIL_INMATNING.bakgrund).setFontColor(STIL_INMATNING.text);
+}
+
+// Skapar fliken "Pooler" om den saknas: teamets fem delar (B4:C8) och producentens
+// tilldelning av initiativtagarnas pool (B13:C32). Befintliga värden skrivs aldrig över.
+// Portalen läser fliken; saknas den används 5 / 10 / 25 / 40 / 20 %.
+function skapaPooler_() {
+  const ss = SpreadsheetApp.getActive();
+  if (ss.getSheetByName("Pooler")) return;
+
+  const blad = ss.insertSheet("Pooler");
+  blad.getRange("B2").setValue("POOLER — hur teamets del av vinsten delas").setFontWeight("bold");
+  blad.getRange("B3:C3").setValues([["Del", "Andel av teamets del"]]).setFontWeight("bold");
+  blad.getRange("B4:C8").setValues([
+    ["Produktionsbolagets pool (statisk)", 0.05],
+    ["Initiativtagarnas pool (statisk, fördelas av producenten efter F1)", 0.1],
+    ["Skiva 1: Lock 1 (F1–F3)", 0.25],
+    ["Skiva 2: Lock 2 (F4–F5)", 0.4],
+    ["Skiva 3: Lock 3 (F6–F8)", 0.2],
+  ]);
+  blad.getRange("B9").setValue("Summa (ska vara 100 %)").setFontWeight("bold");
+  blad.getRange("C9").setFormula("=SUM(C4:C8)").setFontWeight("bold");
+  blad.getRange("C4:C9").setNumberFormat("0%");
+  blad.getRange("C4:C8").setBackground(STIL_INMATNING.bakgrund).setFontColor(STIL_INMATNING.text);
+  blad.getRange("C9").setBackground(STIL_FORMEL.bakgrund).setFontColor(STIL_FORMEL.text);
+
+  blad.getRange("B11").setValue("TILLDELNING AV INITIATIVTAGARNAS POOL (producentbeslut efter F1)").setFontWeight("bold");
+  blad.getRange("B12:D12").setValues([["Namn (som i Egeninsats & Poäng)", "Andel av initiativpoolen", "Motivering"]]).setFontWeight("bold");
+  blad.getRange("C13:C32").setNumberFormat("0%");
+  blad.getRange("B13:D32").setBackground(STIL_INMATNING.bakgrund).setFontColor(STIL_INMATNING.text);
+  blad.getRange("B33").setValue("Summa tilldelat").setFontWeight("bold");
+  blad.getRange("C33").setFormula("=SUM(C13:C32)").setNumberFormat("0%").setFontWeight("bold");
+  blad.getRange("C33").setBackground(STIL_FORMEL.bakgrund).setFontColor(STIL_FORMEL.text);
+  blad.getRange("D33").setValue("Det som inte tilldelats är ofördelat och betalas inte ut.");
+
+  blad.setColumnWidth(2, 460);
+  blad.setColumnWidth(3, 190);
+  blad.setColumnWidth(4, 420);
 }
 
 /** Färgar inmatning respektive formler och lägger varningsskydd på formelblock. */

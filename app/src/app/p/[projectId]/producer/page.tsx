@@ -7,6 +7,7 @@ import type { CrewMember, FaqPost, ModelParams, ProjectSettings, WaterfallData }
 import { slaIhopFaq } from "@/lib/faq";
 import { groupByPerson, sharedEmails } from "@/lib/team";
 import { groupByFas } from "@/lib/fas";
+import { beraknaFordelning, STANDARD_POOLER_DATA, type PoolerData } from "@/lib/pooler";
 import { formatPercent, formatSek } from "@/lib/format";
 import { NavPills } from "../../../components/NavPills";
 import { Tooltip } from "../../../components/Tooltip";
@@ -20,6 +21,7 @@ interface ProducerResponse {
   waterfall: WaterfallData;
   params: ModelParams;
   faq: FaqPost[];
+  pooler?: PoolerData;
 }
 
 type Tab = "oversikt" | "crew" | "team" | "waterfall";
@@ -66,7 +68,10 @@ export default function ProducerPage() {
   const totalDagar = rows.reduce((sum, r) => sum + r.dagar, 0);
   const totalPoang = rows.reduce((sum, r) => sum + r.poang, 0);
   const totalDeferred = rows.reduce((sum, r) => sum + r.deferredFee, 0);
-  const team = groupByPerson(rows);
+  const pooler = data.pooler ?? STANDARD_POOLER_DATA;
+  const fordelning = beraknaFordelning(rows, pooler);
+  const team = groupByPerson(rows, pooler, fordelning);
+  const initiativOfordelat = fordelning.initiativOfordelat > 0.00001;
   const delade = sharedEmails(rows);
   const obokade = team.filter((m) => !m.bokad);
   const harAvtalskolumn = team.some((m) => m.avtal !== null);
@@ -194,6 +199,8 @@ export default function ProducerPage() {
               saknadeLock.length === 0 &&
               utanAvtal.length === 0 &&
               obesvaradeFragor === 0 &&
+              !initiativOfordelat &&
+              pooler.varning === null &&
               harAvtalskolumn ? (
                 <p className="muted">Inget att göra just nu.</p>
               ) : (
@@ -204,6 +211,22 @@ export default function ProducerPage() {
                         .map((m) => m.namn)
                         .join(", ")}). De syns i listorna och räknas med i andelarna, men kan
                       inte logga in förrän deras egen e-postadress lagts in i kalkylbladet.
+                    </li>
+                  )}
+                  {pooler.varning && (
+                    <li>
+                      <strong>Poolerna stämmer inte.</strong> {pooler.varning}
+                    </li>
+                  )}
+                  {initiativOfordelat && (
+                    <li>
+                      <strong>
+                        Initiativtagarnas pool är inte fullt fördelad (
+                        {formatPercent(fordelning.initiativOfordelat)} av teamets del återstår).
+                      </strong>{" "}
+                      Fördela den som producentbeslut efter development, i fliken "Pooler" i
+                      kalkylbladet{pooler.finns ? "" : " (fliken finns inte än, skriptet skapar den)"}.
+                      Tills dess får ingen del av den.
                     </li>
                   )}
                   {!harAvtalskolumn && (
@@ -306,6 +329,52 @@ export default function ProducerPage() {
         )}
 
         {tab === "team" && (
+          <>
+            <div className="card">
+              <div className="section-header">
+                Så delas teamets del
+                <Tooltip text="Teamets del av nettot (det som finns kvar efter finansiärerna) delas i fem delar med fast storlek. Skivorna delas efter ägarenheter inom skivan och är reserverade tills någon har enheter i dem." />
+              </div>
+              <div className="wf-row">
+                <span>Produktionsbolagets pool</span>
+                <span className="wf-value">{formatPercent(fordelning.produktionsbolag)}</span>
+              </div>
+              <div className="wf-row">
+                <span>
+                  Initiativtagarnas pool
+                  <Tooltip text="Fördelas av producenten efter development (F1) och ändras sedan inte. Ersätter särskilda ägarenheter för originalidé." />
+                </span>
+                <span className="wf-value">{formatPercent(fordelning.initiativTotal)}</span>
+              </div>
+              {fordelning.initiativ.map((t) => (
+                <div className="wf-row sub" key={t.namn}>
+                  <span>
+                    {t.namn}
+                    {!t.iRegistret && <span className="muted"> · finns inte i registret</span>}
+                  </span>
+                  <span className="wf-value">{formatPercent(t.andel)}</span>
+                </div>
+              ))}
+              {initiativOfordelat && (
+                <div className="wf-row sub">
+                  <span className="muted">Ofördelat</span>
+                  <span className="wf-value">{formatPercent(fordelning.initiativOfordelat)}</span>
+                </div>
+              )}
+              {fordelning.skivor.map((sk) => (
+                <div className="wf-row" key={sk.skiva}>
+                  <span>
+                    Skiva {sk.skiva}: {sk.etikett}
+                    {sk.reserverad ? (
+                      <span className="muted"> · reserverad, inga enheter än</span>
+                    ) : (
+                      <span className="muted"> · {sk.enheter.toFixed(1)} enheter</span>
+                    )}
+                  </span>
+                  <span className="wf-value">{formatPercent(sk.andel)}</span>
+                </div>
+              ))}
+            </div>
           <div className="table-scroll">
             <table className="data-table">
               <thead>
@@ -373,7 +442,9 @@ export default function ProducerPage() {
                   <td>
                     <strong>{team.reduce((sum, m) => sum + m.poang, 0).toFixed(1)}</strong>
                   </td>
-                  <td></td>
+                  <td>
+                    <strong>{formatPercent(team.reduce((sum, m) => sum + m.andel, 0))}</strong>
+                  </td>
                   <td>
                     <strong>{formatSek(team.reduce((sum, m) => sum + m.deferredFee, 0))}</strong>
                   </td>
@@ -386,6 +457,7 @@ export default function ProducerPage() {
               </tfoot>
             </table>
           </div>
+          </>
         )}
 
         {tab === "waterfall" && (
