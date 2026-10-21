@@ -176,7 +176,7 @@ Scenografen äger mer än DOP:en i det här exemplet — inte för att rollen ä
 
 **Lock 1 — Green Light**  
 *Omedelbart innan inspelning påbörjas.*  
-Poäng från F1 och F2 fastslås och kan inte ändras retroaktivt. Utan detta lock kan en ny teammedlem i teorin kräva development-poäng efter att produktionsbeslutet redan är fattat. Faspoängtabellen för resterande faser fastslås också här — den gäller för hela resten av projektet.
+Poäng från F1, F2 och F3 (pilot/testinspelning) fastslås och kan inte ändras retroaktivt. Utan detta lock kan en ny teammedlem i teorin kräva development-poäng efter att produktionsbeslutet redan är fattat. Faspoängtabellen för resterande faser fastslås också här — den gäller för hela resten av projektet.
 
 **Lock 2 — Wrap**  
 *Sista inspelningsdagen (senast 5 arbetsdagar därefter).*  
@@ -184,7 +184,30 @@ Inspelningspoängen (F4/F5) fastslås. Utan detta lock är det oklart hur man ha
 
 **Lock 3 — Leverans**  
 *Vid godkänd teknisk leverans eller signerat distributionsavtal.*  
-Post- och promotionpoäng (F6/F7) fastslås. Det slutgiltiga registret är nu oföränderligt och utgör grund för alla framtida utbetalningar. Alla ägare får ett skriftligt utdrag.
+Poäng från F6 (post), F7 (promotion) och F8 (övrigt) fastslås. Det slutgiltiga registret är nu oföränderligt och utgör grund för alla framtida utbetalningar. Alla ägare får ett skriftligt utdrag.
+
+Promotion sker ofta efter leverans. För F7 fastställs därför de **bokade promotiondagarna** vid Lock 3: vem som ska arbeta hur många dagar med lansering och marknadsföring. Det är de bokade dagarna som ger enheter, oavsett om arbetet utförs före eller efter Lock 3. Extra promotiondagar utöver de bokade kräver producentens godkännande och en daterad ändring i registret (se nedan).
+
+### Arbete efter ett lock
+
+Varje lock gäller en grupp av faser:
+
+| Lock | Faser som fastslås |
+|---|---|
+| Lock 1, Green Light | F1, F2, F3 |
+| Lock 2, Wrap | F4, F5 |
+| Lock 3, Leverans | F6, F7, F8 |
+
+**Regel:** arbete som utförs i en fas efter att fasens lock har passerat ger bara ägarenheter genom en **daterad ändring i registret**. Utan en sådan ändring ger det inga enheter, hur mycket arbete som än läggs ned.
+
+En ändring i registret:
+- görs skriftligt och dateras,
+- anger person, fas, antal dagar, klass och skäl,
+- godkänns av producenten och undertecknas av den berörda personen,
+- ändrar aldrig enheter som redan fastslagits, utan lägger bara till nya,
+- tas med i nästa skriftliga utdrag till alla ägare, eftersom nya enheter påverkar allas procentandelar.
+
+Regeln gäller även en person som tillkommer sent, en efterinspelning efter Wrap och extra promotiondagar efter Lock 3.
 
 ---
 

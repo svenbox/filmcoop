@@ -145,9 +145,9 @@ export function ScenarioTabell({ params, waterfall, uppskjutet, andel }: Scenari
 }
 
 const NOTER: Record<"lock1" | "lock2" | "lock3", string> = {
-  lock1: "Din ägarandel för development och förproduktion fastställs. Kan inte ändras bakåt efter detta datum.",
-  lock2: "Din ägarandel för inspelningen fastställs.",
-  lock3: "Slutligt register. Grund för alla utbetalningar. Du får ett skriftligt utdrag.",
+  lock1: "Dina ägarenheter för development, förproduktion och pilot (F1–F3) fastställs. Kan inte ändras bakåt efter detta datum.",
+  lock2: "Dina ägarenheter för inspelningen (F4–F5) fastställs. Extra arbete efteråt kräver en daterad ändring i registret.",
+  lock3: "Slutligt register (F6–F8). Grund för alla utbetalningar. Du får ett skriftligt utdrag.",
 };
 
 /** Datum för produktionen och när andelarna låses. */
