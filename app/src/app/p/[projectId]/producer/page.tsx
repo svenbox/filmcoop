@@ -66,6 +66,7 @@ export default function ProducerPage() {
 
   const { project, rows, params } = data;
   const totalDagar = rows.reduce((sum, r) => sum + r.dagar, 0);
+  const totalPoang = rows.reduce((sum, r) => sum + r.poang, 0);
   const totalDeferred = rows.reduce((sum, r) => sum + r.deferredFee, 0);
   const pooler = data.pooler ?? STANDARD_POOLER_DATA;
   const fordelning = beraknaFordelning(rows, pooler);
@@ -149,6 +150,10 @@ export default function ProducerPage() {
                 <div className="value">{totalDagar}</div>
               </div>
               <div className="stat-box">
+                <div className="label">Totalt antal ägarenheter</div>
+                <div className="value">{totalPoang.toFixed(1)}</div>
+              </div>
+              <div className="stat-box">
                 <div className="label">Uppskjutna arvoden</div>
                 <div className="value">{formatSek(totalDeferred)}</div>
               </div>
@@ -218,13 +223,12 @@ export default function ProducerPage() {
                   {tunnaSkivor.map((sk) => (
                     <li key={sk.skiva}>
                       <strong>
-                        Skiva {sk.skiva} ({sk.etikett}) har lite planerat arbete än.
+                        Skiva {sk.skiva} ({sk.etikett}) har bara {sk.enheter.toFixed(1)} enheter.
                       </strong>{" "}
-                      Arbete där är värt {sk.relativtVarde.toFixed(1).replace(".", ",")} gånger så
-                      mycket som snittet i de andra skivorna, så andelarna i skivan är
-                      preliminära. Det beror oftast på att budgeten inte är komplett (t.ex. post
-                      eller promotion saknas). Fyll i de planerade dagarna för skivans faser så
-                      jämnar det ut sig.
+                      Varje enhet där är värd {sk.relativtVarde.toFixed(1).replace(".", ",")} gånger
+                      snittet, så andelarna i skivan är preliminära. Det beror oftast på att
+                      budgeten inte är komplett (t.ex. post eller promotion saknas). Fyll i de
+                      planerade dagarna för skivans faser så jämnar det ut sig.
                     </li>
                   ))}
                   {initiativOfordelat && (
@@ -283,14 +287,15 @@ export default function ProducerPage() {
                 <div className="table-scroll">
                   <table className="data-table fixed">
                     <colgroup>
-                      <col style={{ width: "15%" }} />
-                      <col style={{ width: "20%" }} />
+                      <col style={{ width: "14%" }} />
+                      <col style={{ width: "19%" }} />
                       <col style={{ width: "6%" }} />
-                      <col style={{ width: "7%" }} />
-                      <col style={{ width: "11%" }} />
+                      <col style={{ width: "6%" }} />
                       <col style={{ width: "10%" }} />
-                      <col style={{ width: "11%" }} />
-                      <col style={{ width: "20%" }} />
+                      <col style={{ width: "9%" }} />
+                      <col style={{ width: "10%" }} />
+                      <col style={{ width: "9%" }} />
+                      <col style={{ width: "17%" }} />
                     </colgroup>
                     <thead>
                       <tr>
@@ -304,6 +309,7 @@ export default function ProducerPage() {
                         <th>Utbetalt dagarvode</th>
                         <th>Markn.pris/dag</th>
                         <th>Uppskjutet arvode</th>
+                        <th>Ägarenheter</th>
                         <th>E-post</th>
                       </tr>
                     </thead>
@@ -319,6 +325,7 @@ export default function ProducerPage() {
                           <td>{formatSek(r.cashFeePerDag)}</td>
                           <td>{formatSek(r.marknPrisPerDag)}</td>
                           <td>{formatSek(r.deferredFee)}</td>
+                          <td>{r.poang.toFixed(1)}</td>
                           <td>{r.epost && !delade.has(r.epost.trim().toLowerCase()) ? (
                               r.epost
                             ) : (
@@ -339,7 +346,7 @@ export default function ProducerPage() {
             <div className="card">
               <div className="section-header">
                 Så delas teamets del
-                <Tooltip text="Teamets del av nettot (det som finns kvar efter finansiärerna) delas i fem delar med fast storlek. Varje skiva delas mellan dem som arbetar i den, och är reserverad tills någon är bokad i den." />
+                <Tooltip text="Teamets del av nettot (det som finns kvar efter finansiärerna) delas i fem delar med fast storlek. Skivorna delas efter ägarenheter inom skivan och är reserverade tills någon har enheter i dem." />
               </div>
               <div className="wf-row">
                 <span>Produktionsbolagets pool</span>
@@ -348,7 +355,7 @@ export default function ProducerPage() {
               <div className="wf-row">
                 <span>
                   Initiativtagarnas pool
-                  <Tooltip text="Fördelas av producenten efter development (F1) och ändras sedan inte. Ersätter särskild tilldelning för originalidé." />
+                  <Tooltip text="Fördelas av producenten efter development (F1) och ändras sedan inte. Ersätter särskilda ägarenheter för originalidé." />
                 </span>
                 <span className="wf-value">{formatPercent(fordelning.initiativTotal)}</span>
               </div>
@@ -371,7 +378,15 @@ export default function ProducerPage() {
                 <div className="wf-row" key={sk.skiva}>
                   <span>
                     Skiva {sk.skiva}: {sk.etikett}
-                    {sk.reserverad && <span className="muted"> · reserverad, ingen bokad än</span>}
+                    {sk.reserverad ? (
+                      <span className="muted"> · reserverad, inga enheter än</span>
+                    ) : (
+                      <span className="muted">
+                        {" "}
+                        · {sk.enheter.toFixed(1)} enheter ·{" "}
+                        {formatPercent(sk.vardePer100)} per 100 enheter
+                      </span>
+                    )}
                     {sk.tunn && <span className="badge-warn"> · tunn skiva, preliminär</span>}
                   </span>
                   <span className="wf-value">{formatPercent(sk.andel)}</span>
@@ -389,6 +404,7 @@ export default function ProducerPage() {
                     Grupp
                     <Tooltip text={GRUPP_HEADER_TOOLTIP} />
                   </th>
+                  <th>Ägarenheter</th>
                   <th>Andel</th>
                   <th>Uppskjutet arvode</th>
                   {harAvtalskolumn && (
@@ -411,6 +427,7 @@ export default function ProducerPage() {
                     <td>
                       <span className="klass-badge">{m.klass}</span>
                     </td>
+                    <td>{m.poang.toFixed(1)}</td>
                     <td>
                       <div className="rank-row">
                         <div className="rank-bar-track">
@@ -424,7 +441,7 @@ export default function ProducerPage() {
                           {m.preliminar && (
                             <span
                               className="muted"
-                              title="Har arbete i en skiva med lite planerat arbete. Andelen är preliminär tills budgeten är komplett."
+                              title="Har enheter i en skiva med få enheter. Andelen är preliminär tills budgeten är komplett."
                             >
                               {" "}
                               prel.
@@ -450,6 +467,9 @@ export default function ProducerPage() {
                 <tr>
                   <td colSpan={4}>
                     <strong>Totalt</strong>
+                  </td>
+                  <td>
+                    <strong>{team.reduce((sum, m) => sum + m.poang, 0).toFixed(1)}</strong>
                   </td>
                   <td>
                     <strong>{formatPercent(team.reduce((sum, m) => sum + m.andel, 0))}</strong>
