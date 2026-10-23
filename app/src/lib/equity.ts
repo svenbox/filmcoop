@@ -24,7 +24,6 @@ export interface MyEquityData {
   params: ModelParams;
   kontakt: Kontakt | null;
   faq: FaqPost[];
-  totalPoang: number;
   samagareCount: number;
   /** Den egna andelen av teamets del enligt poolmodellen. */
   minAndel: number;
@@ -41,11 +40,10 @@ export interface MyEquityData {
  * Returnerar null om e-posten inte finns i registret. Delas mellan
  * /api/sheets/me och /api/sheets/print.
  *
- * Skickar medvetet INTE med hela teamets individuella ägarenheter —
- * bara en räknad totalsumma och antal samägare. Enligt
- * docs/ramverk.md §7 (Transparens) ska crew bara se totalt antal
- * enheter, inte varandras individuella andelar. Den fullständiga
- * per-person-listan finns bara i /api/sheets/producer.
+ * Skickar medvetet INTE med hela teamets individuella andelar, bara antal
+ * samägare och den egna andelen. Enligt docs/ramverk.md §9 (Transparens)
+ * ser crew inte varandras andelar. Den fullständiga per-person-listan finns
+ * bara i /api/p/[projectId]/producer.
  */
 export async function getMyEquityData(
   spreadsheetId: string,
@@ -65,7 +63,6 @@ export async function getMyEquityData(
     getPooler(spreadsheetId),
   ]);
 
-  const totalPoang = allRows.reduce((sum, r) => sum + r.poang, 0);
   const samagareCount = groupByPerson(allRows).length;
 
   // Bara den egna andelen skickas vidare, inte hela teamets (se kommentaren ovan).
@@ -88,7 +85,6 @@ export async function getMyEquityData(
     params,
     kontakt,
     faq,
-    totalPoang,
     samagareCount,
     minAndel,
     minDelar,

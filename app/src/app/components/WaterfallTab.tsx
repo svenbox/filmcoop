@@ -323,7 +323,7 @@ export function WaterfallTab({ params, team = [], antalPersoner, self }: Props) 
                 </div>
               )}
               <div className="wf-row total">
-                <span>Teamet (efter ägarenheter)</span>
+                <span>Teamet</span>
                 <span className="wf-value">{formatPercent(1 - wf.finansiarsAndel)}</span>
               </div>
               <div className="wf-footnote">
@@ -411,7 +411,7 @@ export function WaterfallTab({ params, team = [], antalPersoner, self }: Props) 
           <div className="wf-row">
             <span>
               Andel av vinsten ({formatPercent(person.andel)} av teamets del)
-              <Tooltip text="Personens ägarenheter delat med alla ägarenheter. Vinsten delas först när alla uppskjutna arvoden är betalda." />
+              <Tooltip text="Personens andel av teamets del. Vinsten delas först när alla uppskjutna arvoden är betalda." />
             </span>
             <span className="wf-value">{formatSek(personVinst)}</span>
           </div>
@@ -509,7 +509,7 @@ export function WaterfallTab({ params, team = [], antalPersoner, self }: Props) 
             <span className="wf-value">{formatSek(wf.crewPool)}</span>
           </div>
           <div className="wf-footnote">
-            ← fördelas bland {antalPersoner} personer efter ägarenheter
+            ← fördelas bland {antalPersoner} personer efter ägarandel
           </div>
           {wf.finansiarsAndel > 0 && (
             <div className="wf-row total">

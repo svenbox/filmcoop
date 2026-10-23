@@ -14,7 +14,6 @@ interface PrintResponse {
   rows: CrewMember[];
   waterfall: WaterfallData;
   params: ModelParams;
-  totalPoang: number;
   samagareCount: number;
   minAndel: number;
   minDelar: PersonDelar;
@@ -69,7 +68,6 @@ export default function PrintPage() {
   if (!data) return null;
 
   const { project, rows, waterfall, params, samagareCount, minAndel, minDelar, pooler, tunnaSkivor } = data;
-  const minPoang = rows.reduce((sum, r) => sum + r.poang, 0);
   const minDeferred = rows.reduce((sum, r) => sum + r.deferredFee, 0);
   const minNamn = rows[0]?.namn || "";
   const minaRoller = Array.from(new Set(rows.map((r) => r.roll).filter(Boolean))).join(" / ");
@@ -120,10 +118,6 @@ export default function PrintPage() {
           )}
         </div>
         <div className="stat-box">
-          <div className="label">Ägarenheter</div>
-          <div className="value">{minPoang.toFixed(1)}</div>
-        </div>
-        <div className="stat-box">
           <div className="label">Uppskjutet arvode</div>
           <div className="value">{formatSek(minDeferred)}</div>
         </div>
@@ -140,7 +134,6 @@ export default function PrintPage() {
                 <th>Roll</th>
                 <th>Dagar</th>
                 <th>Uppskjutet arvode</th>
-                <th>Ägarenheter</th>
               </tr>
             </thead>
             <tbody>
@@ -149,7 +142,6 @@ export default function PrintPage() {
                   <td>{r.roll}</td>
                   <td>{r.dagar}</td>
                   <td>{formatSek(r.deferredFee)}</td>
-                  <td>{r.poang.toFixed(1)}</td>
                 </tr>
               ))}
             </tbody>
@@ -175,7 +167,7 @@ export default function PrintPage() {
         </div>
         <p className="muted">
           Uppskjutna arvoden betalas före vinst, och först när alla är betalda delas vinsten
-          efter ägarenheter. Beloppen är en beräkning vid respektive intäktsnivå, inte en
+          efter ägarandelar. Beloppen är en beräkning vid respektive intäktsnivå, inte en
           garanti.
         </p>
       </div>
@@ -204,7 +196,7 @@ export default function PrintPage() {
 
       <p className="print-footnote">
         Detta utdrag är konfidentiellt. Utfärdat av {project.producent || "producenten"} via
-        film.coop. Baserat på {samagareCount} samägares registrerade ägarenheter.
+        film.coop. Baserat på {samagareCount} samägares registrerade ägarandelar.
       </p>
     </div>
   );

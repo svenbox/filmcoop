@@ -57,7 +57,7 @@ export function MinInsatsKort({ rows, andel, params }: MinInsatsProps) {
       <div className="wf-row">
         <span>
           Din andel av vinsten
-          <Tooltip text="Din del av teamets del av vinsten: dina ägarenheter delat med enheterna i respektive skiva, plus eventuell tilldelning ur initiativtagarnas pool. Vinsten delas först när alla uppskjutna arvoden är betalda." />
+          <Tooltip text="Din del av teamets del av vinsten, räknad per skiva utifrån vad du bidrar med, plus eventuell tilldelning ur initiativtagarnas pool. Vinsten delas först när alla uppskjutna arvoden är betalda." />
         </span>
         <span className="wf-value">{formatPercent(andel)}</span>
       </div>
@@ -71,7 +71,7 @@ export function MinInsatsKort({ rows, andel, params }: MinInsatsProps) {
       <div className="alert">
         <strong>Din andel är preliminär.</strong> Den fastställs vid lock-punkterna och kan
         ändras om fler personer tillkommer eller om dagar justeras. Procenten är relativ: den
-        sjunker om andras ägarenheter ökar.
+        kan sjunka om fler tillkommer i samma skiva.
       </div>
     </div>
   );
@@ -146,8 +146,8 @@ export function ScenarioTabell({ params, waterfall, uppskjutet, andel }: Scenari
 }
 
 const NOTER: Record<"lock1" | "lock2" | "lock3", string> = {
-  lock1: "Dina ägarenheter för development, förproduktion och pilot (F1–F3) fastställs. Kan inte ändras bakåt efter detta datum.",
-  lock2: "Dina ägarenheter för inspelningen (F4–F5) fastställs. Extra arbete efteråt kräver en daterad ändring i registret.",
+  lock1: "Din ägarandel för development, förproduktion och pilot (F1–F3) fastställs. Kan inte ändras bakåt efter detta datum.",
+  lock2: "Din ägarandel för inspelningen (F4–F5) fastställs. Extra arbete efteråt kräver en daterad ändring i registret.",
   lock3: "Slutligt register (F6–F8). Grund för alla utbetalningar. Du får ett skriftligt utdrag.",
 };
 
@@ -266,8 +266,8 @@ export function PoolKort({
     ...([1, 2, 3] as Skiva[]).map((s) => ({
       namn: SKIVA_ETIKETT[s],
       not: tunna.includes(s)
-        ? "Preliminär: få enheter planerade i skivan än"
-        : "Delas efter ägarenheter, fast efter låsningen",
+        ? "Preliminär: lite planerat arbete i skivan än"
+        : "Delas efter bidrag, fast efter låsningen",
       del: pooler.skivor[s],
       min: delar.skivor[s],
     })),

@@ -22,7 +22,6 @@ interface MeResponse {
   params: ModelParams;
   kontakt: Kontakt | null;
   faq: FaqPost[];
-  totalPoang: number;
   samagareCount: number;
   minAndel: number;
   minDelar: PersonDelar;
@@ -71,7 +70,6 @@ export default function CrewPage() {
   if (!data) return null;
 
   const { project, rows, waterfall, params, kontakt, faq, samagareCount, minAndel, minDelar, pooler, tunnaSkivor } = data;
-  const minPoang = rows.reduce((sum, r) => sum + r.poang, 0);
   const minDagar = rows.reduce((sum, r) => sum + r.dagar, 0);
   const minDeferred = rows.reduce((sum, r) => sum + r.deferredFee, 0);
   const minAvtal: "ja" | "nej" | null = rows.every((r) => r.avtal === null)
@@ -143,7 +141,7 @@ export default function CrewPage() {
               <div className="stat-box">
                 <div className="label">
                   Din ägarandel
-                  <Tooltip text="Din procentandel av teamets del av vinsten. Beräknas per skiva: dina ägarenheter delat med skivans enheter, gånger skivans storlek, plus eventuell tilldelning ur initiativtagarnas pool." />
+                  <Tooltip text="Din procentandel av teamets del av vinsten. Den räknas per skiva utifrån vad du bidrar med, plus eventuell tilldelning ur initiativtagarnas pool." />
                 </div>
                 <div className="value">{formatPercent(minAndel)}</div>
                 <div className="muted">
@@ -152,10 +150,10 @@ export default function CrewPage() {
               </div>
               <div className="stat-box">
                 <div className="label">
-                  Dina ägarenheter
-                  <Tooltip text="Ägarenheter du tjänat in. Beräknas utifrån antal arbetsdagar × poäng per fas × din funktionsmultiplikator." />
+                  Dina dagar
+                  <Tooltip text="Antal arbetsdagar du är bokad för, summerat över alla faser." />
                 </div>
-                <div className="value">{minPoang.toFixed(1)}</div>
+                <div className="value">{minDagar}</div>
               </div>
               <div className="stat-box">
                 <div className="label">Produktionsbolag</div>
@@ -215,12 +213,11 @@ export default function CrewPage() {
                 <div className="table-scroll">
                   <table className="data-table fixed">
                     <colgroup>
-                      <col style={{ width: "30%" }} />
-                      <col style={{ width: "10%" }} />
-                      <col style={{ width: "10%" }} />
-                      <col style={{ width: "18%" }} />
-                      <col style={{ width: "18%" }} />
-                      <col style={{ width: "14%" }} />
+                      <col style={{ width: "34%" }} />
+                      <col style={{ width: "12%" }} />
+                      <col style={{ width: "12%" }} />
+                      <col style={{ width: "21%" }} />
+                      <col style={{ width: "21%" }} />
                     </colgroup>
                     <thead>
                       <tr>
@@ -235,7 +232,6 @@ export default function CrewPage() {
                           Uppskjutet arvode
                           <Tooltip text="Uppskjutet arvode — skillnaden mellan ditt marknadspris och vad som betalas ut nu. Betalas tillbaka ur filmens intäkter före vinst." />
                         </th>
-                        <th>Ägarenheter</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -249,7 +245,6 @@ export default function CrewPage() {
                           <td>{r.dagar}</td>
                           <td>{formatSek(r.cashFeePerDag)}</td>
                           <td>{formatSek(r.deferredFee)}</td>
-                          <td>{r.poang.toFixed(1)}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -271,10 +266,6 @@ export default function CrewPage() {
                 <div className="wf-row">
                   <span>Uppskjutet arvode</span>
                   <span className="wf-value">{formatSek(minDeferred)}</span>
-                </div>
-                <div className="wf-row">
-                  <span>Ägarenheter</span>
-                  <span className="wf-value">{minPoang.toFixed(1)}</span>
                 </div>
               </div>
             )}

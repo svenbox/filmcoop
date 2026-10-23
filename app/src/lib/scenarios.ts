@@ -9,11 +9,11 @@ export const GRUPP_TOOLTIP: Record<string, string> = {
 
 export const LOCK_TOOLTIP: Record<"lock1" | "lock2" | "lock3", string> = {
   lock1:
-    "Lock 1, Green Light: strax innan inspelning. Ägarenheter från utveckling, förproduktion och pilot (F1–F3) fastställs och kan inte ändras i efterhand.",
+    "Lock 1, Green Light: strax innan inspelning. Ägarandelar för utveckling, förproduktion och pilot (F1–F3) fastställs och kan inte ändras i efterhand.",
   lock2:
-    "Lock 2, Wrap: sista inspelningsdagen. Ägarenheter från inspelningen (F4–F5) fastställs. Arbete efter ett lock ger bara enheter genom en daterad ändring i registret.",
+    "Lock 2, Wrap: sista inspelningsdagen. Ägarandelar för inspelningen (F4–F5) fastställs. Arbete efter ett lock ger bara andel genom en daterad ändring i registret.",
   lock3:
-    "Lock 3, Leverans: vid godkänd leverans eller signerat distributionsavtal. Ägarenheter från post, promotion och övrigt (F6–F8) fastställs, där promotion räknas på bokade dagar. Registret blir slutgiltigt och alla får ett skriftligt utdrag.",
+    "Lock 3, Leverans: vid godkänd leverans eller signerat distributionsavtal. Ägarandelar för post, promotion och övrigt (F6–F8) fastställs, där promotion räknas på bokade dagar. Registret blir slutgiltigt och alla får ett skriftligt utdrag.",
 };
 
 export const WATERFALL_TOOLTIP: Record<string, string> = {
@@ -31,7 +31,7 @@ export const WATERFALL_TOOLTIP: Record<string, string> = {
   nettoEfterDeferred:
     "Filmens faktiska nettovinst — det som finns kvar att dela mellan team och investerare.",
   crewPool:
-    "Teamets del av nettovinsten, fördelad efter ägarenheter. Utan samproducent går hela nettot till teamet.",
+    "Teamets del av nettovinsten, fördelad efter ägarandel. Utan samproducent går hela nettot till teamet.",
   finansiarspool:
     "Finansiärernas del av nettot. Samproducentens och kontantinsatsens andel motsvarar deras del av totalbudgeten, plus en eventuell fast andel för distributören som angetts i kalkylbladet. Stöd tar ingen andel.",
   stod:
