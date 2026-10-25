@@ -20,6 +20,8 @@ Valfritt: fliken `Frågor och svar` (kolumn A = fråga, B = svar) visas för cre
 
 Valfritt: fliken `Pooler` anger hur teamets del delas (produktionsbolagets pool, initiativtagarnas pool och tre skivor; se ramverket avsnitt 5b) och var producenten fördelar initiativtagarnas pool (B13:C32: namn och andel av poolen). Saknas fliken används 5 / 10 / 25 / 40 / 20 %. Summan av de fem andelarna ska vara 100 %, annars varnar portalen och använder standardvärdena. Skriptet nedan skapar fliken och skriver om Equity Dashboard så att ägarandelen räknas med samma poolmodell som portalen (kolumn F är summan av skivorna H:J och initiativandelen K, och Personutdrag följer med).
 
+Länken till budgetkalkylbladet ligger i **Projektinställningar!C15**. Totalbudget (C11), egeninsats (C13) och fliken Budgetdata läser alla från den cellen, så du byter budget genom att klistra in en ny länk där. Skriptet nedan lägger in cellen och kopplar om formlerna i äldre kopior.
+
 Valfritt: lägg till kolumnen `Avtal` (JA/NEJ) sist bland rubrikerna i **Egeninsats & Poäng**. Portalen visar då vem som skrivit under rättighetsöverlåtelse och Participation Agreement, och varnar producenten för dem som saknar avtal. Skriptet nedan lägger till kolumnen åt dig.
 
 Har du en äldre kopia av mallen kan du synka dess vattenfall med portalens modell genom att köra [`tools/uppdatera-vattenfall.gs`](../tools/uppdatera-vattenfall.gs) en gång (instruktioner i filens huvud). Då visar kalkylbladet och portalen samma siffror för samma scenario.

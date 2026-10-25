@@ -9,6 +9,7 @@ film.coop-portalen (filmcoop.nu) har en vattenfallsmodell som kalkylbladets flik
 4. Skapar fliken "Frågor och svar" med de frågor en medverkande brukar ställa (betalning, sociala avgifter, försäkring, kollektivavtal, avhopp, rättigheter). Svaren i kolumn B ska lämnas tomma: jag skriver dem själv, och de visas för crew i portalen.
 5. Skapar fliken "Pooler" med teamets fem delar (produktionsbolaget 5 %, initiativtagarna 10 %, skivorna 25 / 40 / 20 %) och en tabell där jag själv fördelar initiativtagarnas pool. Tabellen ska lämnas tom.
 6. Skriver om Equity Dashboard så att ägarandelen (kolumn F) är andelen av teamets del enligt poolmodellen (skivornas andelar i H:J plus initiativandel i K). Personutdrag läser kolumn F och följer med. Rättar också texterna om faser och lock-punkter i Instruktioner och om poolen i Personutdrag.
+7. Lägger en plats för länken till budgetkalkylbladet i Projektinställningar!C15 och kopplar C11, C13 och Budgetdata!A1 till den (länken hämtas ur den IMPORTRANGE som redan finns).
 
 Kalkylbladet: [KLISTRA IN LÄNK TILL EPER-BLADET HÄR]
 
@@ -42,6 +43,7 @@ Du måste kunna redigera kalkylbladet som mig, antingen i min inloggade webbläs
    - En ny flik "Frågor och svar" finns, med sju frågor i kolumn A och tomma gula svarsceller i kolumn B. Skriv inga svar.
    - En ny flik "Pooler" finns: B4:C8 har 5 %, 10 %, 25 %, 40 % och 20 % (C9 = 100 %), och tilldelningstabellen B13:D32 är tom och gul. Fyll inte i något. D6:D8 har formler för ägarenheter per skiva.
    - Equity Dashboard: F7 är =SUM(H7:K7), kolumnerna H:K har rubrikerna Skiva 1, Skiva 2, Skiva 3 och Initiativ, raden under TOTALT visar Produktionsbolagets pool (5 %) och raden därunder det som är reserverat eller ofördelat. Summan F(TOTALT) + 5 % + sista raden = 100 %.
+   - Projektinställningar!C15 har en gul cell med länken till budgeten, och C11, C13 och Budgetdata!A1 använder =IMPORTRANGE(…C15…). Värdena i C11 och C13 är oförändrade.
    - Instruktioner nämner F1–F3, F4–F5 och F6–F8 under Lock 1–3.
 7. Rapportera: vad du gjorde, namnet på säkerhetskopian, och alla avvikelser mot tabellen ovan (med cellreferens och faktiskt värde).
 
@@ -83,6 +85,9 @@ Du måste kunna redigera kalkylbladet som mig, antingen i min inloggade webbläs
  *     Personutdrag läser kolumn F och följer med. Rad under TOTALT visar produktionsbolagets
  *     pool och det som är reserverat eller ofördelat. Instruktioner och Personutdrag får
  *     rättade texter om faser, lock-punkter och poolen.
+ *   - Länken till budgetkalkylbladet får en egen cell, Projektinställningar!C15. Totalbudget (C11),
+ *     egeninsats (C13) och Budgetdata läser från den, så budgeten byts på ett ställe. Länken
+ *     hämtas ur den IMPORTRANGE som redan finns.
  *   - Kolumnen "Avtal" (JA/NEJ) läggs till sist i Egeninsats & Poäng. JA betyder att
  *     personen skrivit under rättighetsöverlåtelse och Participation Agreement.
  *     Portalen visar avtalsstatus per person och varnar för dem som saknar avtal.
@@ -117,6 +122,7 @@ const ZONER = [
   ["Waterfall Simulering", "D41:F54", "formel"],
   ["Projektinställningar", "C5:C13", "inmatning"],
   ["Projektinställningar", "C14", "formel"],
+  ["Projektinställningar", "C15", "inmatning"],
   ["Projektinställningar", "C17:C19", "inmatning"],
   ["Projektinställningar", "D24:F31", "inmatning"],
   ["Projektinställningar", "G24:G31", "formel"],
@@ -244,6 +250,7 @@ function uppdateraVattenfall() {
   uppdateraPoolerVarden_();
   uppdateraEquityDashboard_();
   uppdateraTexter_();
+  laggTillBudgetlank_();
   markeraInmatning();
 
   SpreadsheetApp.getUi().alert(
@@ -456,6 +463,49 @@ function uppdateraTexter_() {
           );
       }
     });
+  }
+}
+
+// Lägger en plats för länken till budgetkalkylbladet i Projektinställningar!C15 och kopplar
+// C11, C13 och Budgetdata!A1 till den, så att budgeten byts på ett ställe. Länken hämtas ur
+// den IMPORTRANGE som redan finns i C11 (eller Budgetdata!A1). Går att köra om.
+function laggTillBudgetlank_() {
+  const ss = SpreadsheetApp.getActive();
+  const pi = ss.getSheetByName("Projektinställningar");
+  const bd = ss.getSheetByName("Budgetdata");
+  if (!pi) return;
+
+  // Källa och intervall i en befintlig IMPORTRANGE, t.ex. ("id";"'Blad'!K1269").
+  const importera = (cell) => {
+    const m = /IMPORTRANGE\(\s*("[^"]+"|[^,;]+?)\s*[,;]\s*("[^"]+")/i.exec(cell.getFormula());
+    return m ? { kalla: m[1], intervall: m[2], redan: m[1].indexOf("$C$15") !== -1 } : null;
+  };
+  const c11 = importera(pi.getRange("C11"));
+  const c13 = importera(pi.getRange("C13"));
+  const a1 = bd ? importera(bd.getRange("A1")) : null;
+
+  const lank = pi.getRange("C15");
+  if (String(lank.getValue()).trim() === "") {
+    const kalla = [c11, c13, a1].filter((x) => x && !x.redan).map((x) => x.kalla.replace(/"/g, ""))[0];
+    if (!kalla) return; // ingen budgetimport att koppla
+    const url = /^https?:/.test(kalla) ? kalla : "https://docs.google.com/spreadsheets/d/" + kalla + "/edit";
+    pi.setRowHeight(15, pi.getRowHeight(13));
+    pi.getRange("B13:D13").copyTo(pi.getRange("B15:D15"), SpreadsheetApp.CopyPasteType.PASTE_FORMAT, false);
+    pi.getRange("B15").setValue("Länk till budgetkalkylblad");
+    lank.setNumberFormat("@").setValue(url);
+    pi.getRange("D15").setValue("Klistra in länken till budgeten (fliken Budget Detaljerad). Styr C11, C13 och Budgetdata.");
+  }
+  färgaZon_(lank, "inmatning");
+
+  if (c11 && !c11.redan) pi.getRange("C11").setFormula(lokalFormel_("=IMPORTRANGE($C$15," + c11.intervall + ")"));
+  if (c13 && !c13.redan) pi.getRange("C13").setFormula(lokalFormel_("=IMPORTRANGE($C$15," + c13.intervall + ")"));
+  if (bd && a1 && !a1.redan) {
+    bd.getRange("A1").setFormula(lokalFormel_("=IMPORTRANGE('Projektinställningar'!$C$15," + a1.intervall + ")"));
+  }
+  if (pi.getRange("C14").getFormula().indexOf("FEL: uppskjutet större än total") !== -1) {
+    pi.getRange("C14").setFormula(
+      lokalFormel_('=IF(C15="","Lägg in länk till budgeten i C15",IF(C12<0,"FEL: uppskjutet större än total — kolla kolumn M i budgeten","OK"))')
+    );
   }
 }
 
