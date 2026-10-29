@@ -8,7 +8,7 @@ import { slaIhopFaq } from "@/lib/faq";
 import { groupByPerson, sharedEmails } from "@/lib/team";
 import { groupByFas } from "@/lib/fas";
 import { beraknaFordelning, STANDARD_POOLER_DATA, type PoolerData } from "@/lib/pooler";
-import { formatPercent, formatSek } from "@/lib/format";
+import { formatPercent, formatSek, formatUnits } from "@/lib/format";
 import { NavPills } from "../../../components/NavPills";
 import { Tooltip } from "../../../components/Tooltip";
 import { GRUPP_HEADER_TOOLTIP, LOCK_TOOLTIP } from "@/lib/scenarios";
@@ -151,7 +151,7 @@ export default function ProducerPage() {
               </div>
               <div className="stat-box">
                 <div className="label">Totalt antal ägarenheter</div>
-                <div className="value">{totalPoang.toFixed(1)}</div>
+                <div className="value">{formatUnits(totalPoang)}</div>
               </div>
               <div className="stat-box">
                 <div className="label">Uppskjutna arvoden</div>
@@ -223,7 +223,7 @@ export default function ProducerPage() {
                   {tunnaSkivor.map((sk) => (
                     <li key={sk.skiva}>
                       <strong>
-                        Skiva {sk.skiva} ({sk.etikett}) har bara {sk.enheter.toFixed(1)} enheter.
+                        Skiva {sk.skiva} ({sk.etikett}) har bara {formatUnits(sk.enheter)} enheter.
                       </strong>{" "}
                       Varje enhet där är värd {sk.relativtVarde.toFixed(1).replace(".", ",")} gånger
                       snittet, så andelarna i skivan är preliminära. Det beror oftast på att
@@ -325,7 +325,7 @@ export default function ProducerPage() {
                           <td>{formatSek(r.cashFeePerDag)}</td>
                           <td>{formatSek(r.marknPrisPerDag)}</td>
                           <td>{formatSek(r.deferredFee)}</td>
-                          <td>{r.poang.toFixed(1)}</td>
+                          <td>{formatUnits(r.poang)}</td>
                           <td>{r.epost && !delade.has(r.epost.trim().toLowerCase()) ? (
                               r.epost
                             ) : (
@@ -383,7 +383,7 @@ export default function ProducerPage() {
                     ) : (
                       <span className="muted">
                         {" "}
-                        · {sk.enheter.toFixed(1)} enheter ·{" "}
+                        · {formatUnits(sk.enheter)} enheter ·{" "}
                         {formatPercent(sk.vardePer100)} per 100 enheter
                       </span>
                     )}
@@ -427,7 +427,7 @@ export default function ProducerPage() {
                     <td>
                       <span className="klass-badge">{m.klass}</span>
                     </td>
-                    <td>{m.poang.toFixed(1)}</td>
+                    <td>{formatUnits(m.poang)}</td>
                     <td>
                       <div className="rank-row">
                         <div className="rank-bar-track">
@@ -469,7 +469,7 @@ export default function ProducerPage() {
                     <strong>Totalt</strong>
                   </td>
                   <td>
-                    <strong>{team.reduce((sum, m) => sum + m.poang, 0).toFixed(1)}</strong>
+                    <strong>{formatUnits(team.reduce((sum, m) => sum + m.poang, 0))}</strong>
                   </td>
                   <td>
                     <strong>{formatPercent(team.reduce((sum, m) => sum + m.andel, 0))}</strong>

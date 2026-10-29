@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
 import type { CrewMember, FaqPost, Kontakt, ModelParams, ProjectSettings, WaterfallData } from "@/lib/sheets";
-import { formatPercent, formatSek } from "@/lib/format";
+import { formatPercent, formatSek, formatUnits } from "@/lib/format";
 import { GRUPP_HEADER_TOOLTIP, GRUPP_TOOLTIP } from "@/lib/scenarios";
 import { groupByFas } from "@/lib/fas";
 import { OnboardingModal } from "../../../components/OnboardingModal";
@@ -155,7 +155,7 @@ export default function CrewPage() {
                   Dina ägarenheter
                   <Tooltip text="Ägarenheter du tjänat in. Beräknas utifrån antal arbetsdagar × poäng per fas × din funktionsmultiplikator." />
                 </div>
-                <div className="value">{minPoang.toFixed(1)}</div>
+                <div className="value">{formatUnits(minPoang)}</div>
               </div>
               <div className="stat-box">
                 <div className="label">Produktionsbolag</div>
@@ -249,7 +249,7 @@ export default function CrewPage() {
                           <td>{r.dagar}</td>
                           <td>{formatSek(r.cashFeePerDag)}</td>
                           <td>{formatSek(r.deferredFee)}</td>
-                          <td>{r.poang.toFixed(1)}</td>
+                          <td>{formatUnits(r.poang)}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -274,7 +274,7 @@ export default function CrewPage() {
                 </div>
                 <div className="wf-row">
                   <span>Ägarenheter</span>
-                  <span className="wf-value">{minPoang.toFixed(1)}</span>
+                  <span className="wf-value">{formatUnits(minPoang)}</span>
                 </div>
               </div>
             )}

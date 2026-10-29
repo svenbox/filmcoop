@@ -335,11 +335,11 @@ export function WaterfallTab({ params, team = [], antalPersoner, self }: Props) 
         </div>
       )}
 
-      <div className="card outcome">
+      <div className="outcome-group">
+      <div className="card outcome sticky-panel">
         <div className="section-header">Vad händer vid olika intäkter?</div>
         <MoneySlider
           label="Bruttointäkt"
-          hint="Allt filmen tar in från försäljning, visningar och stöd som ska betalas tillbaka, innan några avdrag."
           tooltip={WATERFALL_TOOLTIP.bruttointakt}
           value={brutto}
           max={bruttoMax}
@@ -352,7 +352,19 @@ export function WaterfallTab({ params, team = [], antalPersoner, self }: Props) 
           ]}
           onChange={setBrutto}
         />
+        {person && (
+          <div className="wf-row highlight sticky-result">
+            <span>{crewVy ? "Din del" : "Personens del"}</span>
+            <span className="wf-value">{formatSek(personUppskjutet + personVinst)}</span>
+          </div>
+        )}
+      </div>
 
+      <div className="card">
+        <div className="slider-hint">
+          Bruttointäkt är allt filmen tar in från försäljning, visningar och stöd som ska betalas
+          tillbaka, innan några avdrag.
+        </div>
         <p className="outcome-text">{utfallSomText(wf, brutto)}</p>
 
         {brutto > 0 && stapel.length > 0 && (
@@ -428,6 +440,7 @@ export function WaterfallTab({ params, team = [], antalPersoner, self }: Props) 
           </div>
         </div>
       )}
+      </div>
 
       <details className="utrakning">
         <summary>Visa hela uträkningen</summary>

@@ -8,3 +8,7 @@ export function formatPercent(n: number): string {
     "\u00A0%"
   );
 }
+
+export function formatUnits(n: number): string {
+  return n.toLocaleString("sv-SE", { maximumFractionDigits: 1 });
+}

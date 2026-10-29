@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import type { CrewMember, ModelParams, ProjectSettings, WaterfallData } from "@/lib/sheets";
-import { formatPercent, formatSek } from "@/lib/format";
+import { formatPercent, formatSek, formatUnits } from "@/lib/format";
 import { computeWaterfall } from "@/lib/waterfallModel";
 import { groupByFas } from "@/lib/fas";
 import type { PersonDelar, PoolInstallning, Skiva } from "@/lib/pooler";
@@ -121,7 +121,7 @@ export default function PrintPage() {
         </div>
         <div className="stat-box">
           <div className="label">Ägarenheter</div>
-          <div className="value">{minPoang.toFixed(1)}</div>
+          <div className="value">{formatUnits(minPoang)}</div>
         </div>
         <div className="stat-box">
           <div className="label">Uppskjutet arvode</div>
@@ -149,7 +149,7 @@ export default function PrintPage() {
                   <td>{r.roll}</td>
                   <td>{r.dagar}</td>
                   <td>{formatSek(r.deferredFee)}</td>
-                  <td>{r.poang.toFixed(1)}</td>
+                  <td>{formatUnits(r.poang)}</td>
                 </tr>
               ))}
             </tbody>
